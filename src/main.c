@@ -58,8 +58,8 @@ typedef struct {
 static const f32 FRAME_DURATION = (1.0f / 60.0f) * MICROSECONDS;
 static const f32 FRAME_UPDATE_STEP = FRAME_DURATION / FRAME_UPDATE_COUNT;
 
-#define INIT_WINDOW_WIDTH  1024
-#define INIT_WINDOW_HEIGHT 768
+#define INIT_WINDOW_WIDTH  1280
+#define INIT_WINDOW_HEIGHT 960
 
 static i32 WINDOW_WIDTH = INIT_WINDOW_WIDTH;
 static i32 WINDOW_HEIGHT = INIT_WINDOW_HEIGHT;
@@ -119,7 +119,7 @@ static const Vec3 MODEL_SCALE = {
     .z = 1.25f,
 };
 
-#define VIEW_EYE_Y 3.75f
+#define VIEW_EYE_Y 3.85f
 
 static Mat4 VIEW;
 static Vec3 VIEW_EYE = {
@@ -405,10 +405,10 @@ static void set_translations(void) {
                 .y = 0.0f,
                 .z = -COORDS[j],
             };
-            f32  size = 4.0f / sqrtf((f32)k + 1.0f);
+            f32  size = 6.0f / sqrtf((f32)k + 1.0f);
             Vec3 scale = {
                 .x = size,
-                .y = size,
+                .y = 2.5f,
                 .z = size,
             };
             TRANSLATIONS[k++] =
