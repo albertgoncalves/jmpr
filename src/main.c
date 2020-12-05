@@ -53,7 +53,7 @@ typedef struct {
 
 #define MICROSECONDS 1000000.0f
 
-#define FRAME_UPDATE_COUNT 5
+#define FRAME_UPDATE_COUNT 10
 
 static const f32 FRAME_DURATION = (1.0f / 60.0f) * MICROSECONDS;
 static const f32 FRAME_UPDATE_STEP = FRAME_DURATION / FRAME_UPDATE_COUNT;
@@ -140,12 +140,10 @@ static const Vec3 VIEW_UP = {
 
 #define EPSILON 0.0001f
 
-#define RUN 0.005f
-// #define RUN_MAX
+#define RUN      0.0025f
 #define FRICTION 0.965f
-// #define DRAG 0.99f
 
-#define JUMP    0.05f
+#define JUMP    0.045f
 #define GRAVITY 0.000225;
 
 static f32 CURSOR_X;
@@ -213,6 +211,8 @@ static void show_cursor(Native native) {
 
 #define NORM_CROSS(a, b) norm_vec3(cross_vec3(a, b))
 
+#define WITHIN_EPSILON(x) ((-EPSILON < (x)) && ((x) < EPSILON))
+
 static void set_input(GLFWwindow* window, State* state) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, TRUE);
@@ -245,12 +245,6 @@ static void set_input(GLFWwindow* window, State* state) {
         state->player.speed.y += JUMP;
         state->player.can_jump = FALSE;
     }
-    // {
-    //     f32 x = state->player.speed.x;
-    //     f32 z = state->player.speed.z;
-    //     if (RUN_MAX < (x * x) + (z * z)) {
-    //     }
-    // }
     {
         state->player.speed.y -= GRAVITY;
         if (state->player.position.y < VIEW_EYE_Y) {
@@ -261,20 +255,17 @@ static void set_input(GLFWwindow* window, State* state) {
     }
     state->player.speed.x *= FRICTION;
     state->player.speed.z *= FRICTION;
-    if ((EPSILON < state->player.speed.x) && (state->player.speed.x < EPSILON))
-    {
+    if (WITHIN_EPSILON(state->player.speed.x)) {
         state->player.speed.x = 0.0f;
     } else {
         state->player.position.x += state->player.speed.x;
     }
-    if ((EPSILON < state->player.speed.y) && (state->player.speed.y < EPSILON))
-    {
+    if (WITHIN_EPSILON(state->player.speed.y)) {
         state->player.speed.y = 0.0f;
     } else {
         state->player.position.y += state->player.speed.y;
     }
-    if ((EPSILON < state->player.speed.z) && (state->player.speed.z < EPSILON))
-    {
+    if (WITHIN_EPSILON(state->player.speed.z)) {
         state->player.speed.z = 0.0f;
     } else {
         state->player.position.z += state->player.speed.z;
