@@ -4,6 +4,11 @@
 #include "init.h"
 #include "math.h"
 
+typedef struct {
+    Vec3 bottom_left_back;
+    Vec3 top_right_front;
+} Cube;
+
 #define CLEAR_COLOR 0.095f
 
 // clang-format off
@@ -46,8 +51,10 @@ static u8 COUNT_COORDS = sizeof(COORDS) / sizeof(COORDS[0]);
 
 // NOTE: `COUNT_TRANSLATIONS == (COUNT_COORDS * COUNT_COORDS)`
 #define COUNT_TRANSLATIONS 25
+#define COUNT_PLATFORMS    COUNT_TRANSLATIONS
 
 static Mat4 TRANSLATIONS[COUNT_TRANSLATIONS];
+static Cube PLATFORMS[COUNT_PLATFORMS];
 
 static u32 VAO;
 static u32 VBO;
@@ -60,6 +67,27 @@ static u32 DBO;
 static const u32 INDEX_VERTEX = 0;
 static const u32 INDEX_TRANSLATE = 1;
 
+static Cube get_cube_mat4(Mat4 m) {
+    f32  width_half = m.cell[0][0] / 2.0f;
+    f32  height_half = m.cell[1][1] / 2.0f;
+    f32  depth_half = m.cell[2][2] / 2.0f;
+    Vec3 bottom_left_back = {
+        .x = m.cell[3][0] - width_half,
+        .y = m.cell[3][1] - height_half,
+        .z = m.cell[3][2] - depth_half,
+    };
+    Vec3 top_right_front = {
+        .x = m.cell[3][0] + width_half,
+        .y = m.cell[3][1] + height_half,
+        .z = m.cell[3][2] + depth_half,
+    };
+    Cube cube = {
+        .bottom_left_back = bottom_left_back,
+        .top_right_front = top_right_front,
+    };
+    return cube;
+}
+
 static void set_translations(void) {
     u8 k = 0;
     for (u8 i = 0; i < COUNT_COORDS; ++i) {
@@ -69,17 +97,19 @@ static void set_translations(void) {
         for (u8 j = 0; j < COUNT_COORDS; ++j) {
             Vec3 position = {
                 .x = COORDS[i],
-                .y = 0.0f,
+                .y = 4.0f,
                 .z = -COORDS[j],
             };
             f32  size = 6.0f / sqrtf((f32)k + 1.0f);
             Vec3 scale = {
                 .x = size,
-                .y = -0.5f,
+                .y = 0.5f,
                 .z = size,
             };
-            TRANSLATIONS[k++] =
+            TRANSLATIONS[k] =
                 mul_mat4(translate_mat4(position), scale_mat4(scale));
+            PLATFORMS[k] = get_cube_mat4(TRANSLATIONS[k]);
+            ++k;
         }
     }
 }

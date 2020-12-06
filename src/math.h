@@ -21,10 +21,10 @@ typedef union {
     Simd4f32 column[4];
 } Mat4;
 
-static void print_mat4(Mat4 x) {
+static void print_mat4(Mat4 m) {
     for (u8 i = 0; i < 4; ++i) {
         for (u8 j = 0; j < 4; ++j) {
-            fprintf(stderr, " %5.2f", x.cell[i][j]);
+            fprintf(stderr, " %6.2f", m.cell[i][j]);
         }
         fprintf(stderr, "\n");
     }
