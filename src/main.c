@@ -349,6 +349,8 @@ i32 main(i32 n, const char** args) {
            "sizeof(Bool)           : %zu\n"
            "sizeof(Vec3)           : %zu\n"
            "sizeof(Mat4)           : %zu\n"
+           "sizeof(Instance)       : %zu\n"
+           "sizeof(Cube)           : %zu\n"
            "sizeof(Frame)          : %zu\n"
            "sizeof(Uniforms)       : %zu\n"
            "sizeof(Player)         : %zu\n"
@@ -359,6 +361,8 @@ i32 main(i32 n, const char** args) {
            sizeof(Bool),
            sizeof(Vec3),
            sizeof(Mat4),
+           sizeof(Instance),
+           sizeof(Cube),
            sizeof(Player),
            sizeof(Frame),
            sizeof(Uniforms),

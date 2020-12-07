@@ -5,11 +5,17 @@
 #include "math.h"
 
 typedef struct {
+    Mat4 translation;
+    Vec3 color;
+    f32  alpha;
+} Instance;
+
+typedef struct {
     Vec3 bottom_left_front;
     Vec3 top_right_back;
 } Cube;
 
-#define CLEAR_COLOR 0.095f
+#define CLEAR_COLOR 0.75f
 
 // clang-format off
 static const f32 VERTICES[] = {
@@ -90,10 +96,10 @@ static const Vec3 PLATFORM_POSITIONS[] = {
 
 #define COUNT_PLATFORMS \
     (sizeof(PLATFORM_POSITIONS) / sizeof(PLATFORM_POSITIONS[0]))
-#define COUNT_TRANSLATIONS COUNT_PLATFORMS
+#define COUNT_INSTANCES COUNT_PLATFORMS
 
-static Mat4 TRANSLATIONS[COUNT_TRANSLATIONS];
-static Cube PLATFORMS[COUNT_PLATFORMS];
+static Instance INSTANCES[COUNT_INSTANCES];
+static Cube     PLATFORMS[COUNT_PLATFORMS];
 
 static u32 VAO;
 static u32 VBO;
@@ -104,7 +110,7 @@ static u32 RBO;
 static u32 DBO;
 
 static const u32 INDEX_VERTEX = 0;
-static const u32 INDEX_TRANSLATE = 1;
+static const u32 INDEX_INSTANCE = 1;
 
 static Cube get_cube_mat4(Mat4 m) {
     f32  width_half = m.cell[0][0] / 2.0f;
@@ -127,16 +133,24 @@ static Cube get_cube_mat4(Mat4 m) {
     return cube;
 }
 
-static void set_translations(void) {
+static void set_instances(void) {
     Vec3 scale = {
-        .x = 8.0f,
+        .x = 10.0f,
         .y = 0.5f,
-        .z = 8.0f,
+        .z = 10.0f,
     };
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-        TRANSLATIONS[i] =
+        INSTANCES[i].translation =
             mul_mat4(translate_mat4(PLATFORM_POSITIONS[i]), scale_mat4(scale));
-        PLATFORMS[i] = get_cube_mat4(TRANSLATIONS[i]);
+        INSTANCES[i].color.x = cosf((f32)(i * 2));
+        INSTANCES[i].color.y = sinf((f32)(i * 3));
+        INSTANCES[i].color.z =
+            (sinf((f32)(i * 5)) + cosf((f32)(i * 7))) / 2.0f;
+        INSTANCES[i].color.x *= INSTANCES[i].color.x;
+        INSTANCES[i].color.y *= INSTANCES[i].color.y;
+        INSTANCES[i].color.z *= INSTANCES[i].color.z;
+        INSTANCES[i].alpha = 1.0f;
+        PLATFORMS[i] = get_cube_mat4(INSTANCES[i].translation);
     }
 }
 
@@ -198,19 +212,23 @@ static void set_buffers(void) {
         CHECK_GL_ERROR();
     }
     {
-        set_translations();
+        set_instances();
         glGenBuffers(1, &IBO);
         glBindBuffer(GL_ARRAY_BUFFER, IBO);
         glBufferData(GL_ARRAY_BUFFER,
-                     sizeof(TRANSLATIONS),
-                     &TRANSLATIONS[0].cell[0][0],
+                     sizeof(INSTANCES),
+                     &INSTANCES[0].translation.cell[0][0],
                      GL_STATIC_DRAW);
-        i32 stride = sizeof(TRANSLATIONS[0]);
-        // NOTE: Instances are limited to `sizeof(f32) * 4`, so `Mat4` data
-        // must be constructed in four parts.
+        i32 stride = sizeof(INSTANCES[0]);
+        // NOTE: Instances are limited to `sizeof(f32) * 4`, so `Instance` must
+        // be constructed in multiple layers.
         usize offset = sizeof(f32) * 4;
-        for (u32 i = 0; i < 4; ++i) {
-            u32 index = INDEX_TRANSLATE + i;
+        usize n = sizeof(Instance) / offset;
+        if (sizeof(Instance) != (offset * n)) {
+            ERROR("sizeof(Instance) != (offset * n)");
+        }
+        for (u32 i = 0; i < n; ++i) {
+            u32 index = INDEX_INSTANCE + i;
             set_vertex_attrib(index, 4, stride, (void*)(i * offset));
             glVertexAttribDivisor(index, 1);
         }
@@ -272,7 +290,7 @@ static void draw(GLFWwindow* window) {
                                 sizeof(INDICES) / sizeof(INDICES[0]),
                                 GL_UNSIGNED_INT,
                                 (void*)VERTEX_OFFSET,
-                                COUNT_TRANSLATIONS);
+                                COUNT_INSTANCES);
     }
     {
         // NOTE: Blit off-screen to on-screen.
