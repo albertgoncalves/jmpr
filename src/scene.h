@@ -5,8 +5,8 @@
 #include "math.h"
 
 typedef struct {
-    Vec3 bottom_left_back;
-    Vec3 top_right_front;
+    Vec3 bottom_left_front;
+    Vec3 top_right_back;
 } Cube;
 
 #define CLEAR_COLOR 0.095f
@@ -38,20 +38,59 @@ static const u32 INDICES[] = {
     3, 2, 6,
     6, 7, 3,
 };
-static const f32 COORDS[] = {
-    0.0f,
-    10.0f,
-    20.0f,
-    30.0f,
-    40.0f,
-};
 // clang-format on
 
-static u8 COUNT_COORDS = sizeof(COORDS) / sizeof(COORDS[0]);
+static const Vec3 PLATFORM_POSITIONS[] = {
+    {
+        .x = 0.0f,
+        .y = 4.0f,
+        .z = 0.0f,
+    },
+    {
+        .x = 0.0f,
+        .y = 6.0f,
+        .z = -10.0f,
+    },
+    {
+        .x = 0.0f,
+        .y = 8.0f,
+        .z = -20.0f,
+    },
+    {
+        .x = 10.0f,
+        .y = 10.0f,
+        .z = -20.0f,
+    },
+    {
+        .x = 10.0f,
+        .y = 12.0f,
+        .z = -10.0f,
+    },
+    {
+        .x = 10.0f,
+        .y = 14.0f,
+        .z = 0.0f,
+    },
+    {
+        .x = 10.0f,
+        .y = 4.0f,
+        .z = 0.0f,
+    },
+    {
+        .x = 10.0f,
+        .y = 4.0f,
+        .z = -10.0f,
+    },
+    {
+        .x = 10.0f,
+        .y = 4.0f,
+        .z = -20.0f,
+    },
+};
 
-// NOTE: `COUNT_TRANSLATIONS == (COUNT_COORDS * COUNT_COORDS)`
-#define COUNT_TRANSLATIONS 25
-#define COUNT_PLATFORMS    COUNT_TRANSLATIONS
+#define COUNT_PLATFORMS \
+    (sizeof(PLATFORM_POSITIONS) / sizeof(PLATFORM_POSITIONS[0]))
+#define COUNT_TRANSLATIONS COUNT_PLATFORMS
 
 static Mat4 TRANSLATIONS[COUNT_TRANSLATIONS];
 static Cube PLATFORMS[COUNT_PLATFORMS];
@@ -71,46 +110,33 @@ static Cube get_cube_mat4(Mat4 m) {
     f32  width_half = m.cell[0][0] / 2.0f;
     f32  height_half = m.cell[1][1] / 2.0f;
     f32  depth_half = m.cell[2][2] / 2.0f;
-    Vec3 bottom_left_back = {
+    Vec3 bottom_left_front = {
         .x = m.cell[3][0] - width_half,
         .y = m.cell[3][1] - height_half,
         .z = m.cell[3][2] - depth_half,
     };
-    Vec3 top_right_front = {
+    Vec3 top_right_back = {
         .x = m.cell[3][0] + width_half,
         .y = m.cell[3][1] + height_half,
         .z = m.cell[3][2] + depth_half,
     };
     Cube cube = {
-        .bottom_left_back = bottom_left_back,
-        .top_right_front = top_right_front,
+        .bottom_left_front = bottom_left_front,
+        .top_right_back = top_right_back,
     };
     return cube;
 }
 
 static void set_translations(void) {
-    u8 k = 0;
-    for (u8 i = 0; i < COUNT_COORDS; ++i) {
-        if (COUNT_TRANSLATIONS < k) {
-            ERROR("COUNT_TRANSLATIONS < k");
-        }
-        for (u8 j = 0; j < COUNT_COORDS; ++j) {
-            Vec3 position = {
-                .x = COORDS[i],
-                .y = 4.0f,
-                .z = -COORDS[j],
-            };
-            f32  size = 6.0f / sqrtf((f32)k + 1.0f);
-            Vec3 scale = {
-                .x = size,
-                .y = 0.5f,
-                .z = size,
-            };
-            TRANSLATIONS[k] =
-                mul_mat4(translate_mat4(position), scale_mat4(scale));
-            PLATFORMS[k] = get_cube_mat4(TRANSLATIONS[k]);
-            ++k;
-        }
+    Vec3 scale = {
+        .x = 8.0f,
+        .y = 0.5f,
+        .z = 8.0f,
+    };
+    for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
+        TRANSLATIONS[i] =
+            mul_mat4(translate_mat4(PLATFORM_POSITIONS[i]), scale_mat4(scale));
+        PLATFORMS[i] = get_cube_mat4(TRANSLATIONS[i]);
     }
 }
 

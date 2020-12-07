@@ -31,14 +31,14 @@ typedef struct {
 #define INIT_PLAYER_POSITION_Y 40.0f
 #define INIT_PLAYER_POSITION_Z 0.0f
 
-#define PLAYER_WIDTH  2.0f
+#define PLAYER_WIDTH  1.0f
 #define PLAYER_HEIGHT 4.0f
-#define PLAYER_DEPTH  2.0f
+#define PLAYER_DEPTH  1.0f
 
 static const f32 PLAYER_WIDTH_HALF = PLAYER_WIDTH / 2.0f;
 static const f32 PLAYER_DEPTH_HALF = PLAYER_DEPTH / 2.0f;
 
-#define RUN       0.004f
+#define RUN       0.00325f
 #define SPEED_MAX 0.125f
 #define FRICTION  0.96f
 #define DRAG      0.99f
@@ -47,8 +47,8 @@ static const f32 PLAYER_DEPTH_HALF = PLAYER_DEPTH / 2.0f;
 
 static const f32 SPEED_MAX_SQUARED = SPEED_MAX * SPEED_MAX;
 
-#define JUMP    0.045f
-#define GRAVITY 0.00035f
+#define JUMP    0.0585f
+#define GRAVITY 0.000345f
 
 static const Vec3 VIEW_UP = {
     .x = 0.0f, // NOTE: `x`-axis is left/right.
@@ -66,7 +66,7 @@ static Vec3 VIEW_TARGET = {
 
 #define MICROSECONDS 1000000.0f
 
-#define FRAME_UPDATE_COUNT 10
+#define FRAME_UPDATE_COUNT 8
 
 static const f32 FRAME_DURATION = (1.0f / 60.0f) * MICROSECONDS;
 static const f32 FRAME_UPDATE_STEP = FRAME_DURATION / FRAME_UPDATE_COUNT;
@@ -93,31 +93,52 @@ static void init_player(State* state) {
     state->player.position.z = INIT_PLAYER_POSITION_Z;
 }
 
-static Cube get_cube_player(Player player) {
-    Vec3 bottom_left_back = {
+static Cube get_cube_below(Player player) {
+    f32  top = player.position.y - PLAYER_HEIGHT;
+    Vec3 bottom_left_front = {
         .x = player.position.x - PLAYER_WIDTH_HALF,
-        .y = player.position.y - PLAYER_HEIGHT,
+        // NOTE: `player.speed.y` *should* be negative if we're checking
+        // _below_ the player!
+        .y = top + player.speed.y,
         .z = player.position.z - PLAYER_DEPTH_HALF,
     };
-    Vec3 top_right_front = {
+    Vec3 top_right_back = {
         .x = player.position.x + PLAYER_WIDTH_HALF,
-        .y = player.position.y,
+        .y = top,
         .z = player.position.z + PLAYER_DEPTH_HALF,
     };
     Cube cube = {
-        .bottom_left_back = bottom_left_back,
-        .top_right_front = top_right_front,
+        .bottom_left_front = bottom_left_front,
+        .top_right_back = top_right_back,
+    };
+    return cube;
+}
+
+static Cube get_cube_above(Player player) {
+    Vec3 bottom_left_front = {
+        .x = player.position.x - PLAYER_WIDTH_HALF,
+        .y = player.position.y,
+        .z = player.position.z - PLAYER_DEPTH_HALF,
+    };
+    Vec3 top_right_back = {
+        .x = player.position.x + PLAYER_WIDTH_HALF,
+        .y = player.position.y + player.speed.y,
+        .z = player.position.z + PLAYER_DEPTH_HALF,
+    };
+    Cube cube = {
+        .bottom_left_front = bottom_left_front,
+        .top_right_back = top_right_back,
     };
     return cube;
 }
 
 static Bool intersect_player_platform(Cube player, Cube platform) {
-    return (player.bottom_left_back.x <= platform.top_right_front.x) &&
-        (platform.bottom_left_back.x <= player.top_right_front.x) &&
-        (player.bottom_left_back.y <= platform.top_right_front.y) &&
-        (platform.bottom_left_back.y <= player.top_right_front.y) &&
-        (player.bottom_left_back.z <= platform.top_right_front.z) &&
-        (platform.bottom_left_back.z <= player.top_right_front.z);
+    return (player.bottom_left_front.x <= platform.top_right_back.x) &&
+        (platform.bottom_left_front.x <= player.top_right_back.x) &&
+        (player.bottom_left_front.y <= platform.top_right_back.y) &&
+        (platform.bottom_left_front.y <= player.top_right_back.y) &&
+        (player.bottom_left_front.z <= platform.top_right_back.z) &&
+        (platform.bottom_left_front.z <= player.top_right_back.z);
 }
 
 #define NORM_CROSS(a, b) norm_vec3(cross_vec3(a, b))
@@ -166,14 +187,14 @@ static void set_motion(State* state) {
     }
     state->player.speed.y -= GRAVITY;
     state->player.position.y += state->player.speed.y;
-    {
-        Cube player = get_cube_player(state->player);
-        f32  x_speed = state->player.speed.x * DRAG;
-        f32  z_speed = state->player.speed.z * DRAG;
+    f32 x_speed = state->player.speed.x * DRAG;
+    f32 z_speed = state->player.speed.z * DRAG;
+    if (state->player.speed.y <= 0.0f) {
+        Cube below = get_cube_below(state->player);
         for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-            if (intersect_player_platform(player, PLATFORMS[i])) {
+            if (intersect_player_platform(below, PLATFORMS[i])) {
                 state->player.position.y =
-                    PLATFORMS[i].top_right_front.y + PLAYER_HEIGHT;
+                    PLATFORMS[i].top_right_back.y + PLAYER_HEIGHT;
                 state->player.speed.y = 0.0f;
                 state->player.can_jump = TRUE;
                 x_speed = state->player.speed.x * FRICTION;
@@ -181,6 +202,17 @@ static void set_motion(State* state) {
                 break;
             }
         }
+    } else {
+        Cube above = get_cube_above(state->player);
+        for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
+            if (intersect_player_platform(above, PLATFORMS[i])) {
+                state->player.position.y = PLATFORMS[i].bottom_left_front.y;
+                state->player.speed.y = 0.0f;
+                break;
+            }
+        }
+    }
+    {
         if (SPEED_MAX_SQUARED < ((x_speed * x_speed) + (z_speed * z_speed))) {
             f32 radians = atan2f(z_speed, x_speed);
             state->player.speed.x = SPEED_MAX * cosf(radians);
