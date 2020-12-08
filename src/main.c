@@ -183,15 +183,15 @@ static Cube get_cube_above(Player player) {
     return cube;
 }
 
-static Cube get_cube_front(Player player, f32 y_speed) {
+static Cube get_cube_front(Player player) {
     Vec3 bottom_left_front = {
         .x = (player.position.x - PLAYER_WIDTH_HALF) - player.speed.x,
-        .y = (player.position.y - PLAYER_HEIGHT) - y_speed,
+        .y = player.position.y - PLAYER_HEIGHT,
         .z = player.position.z - PLAYER_DEPTH_HALF,
     };
     Vec3 top_right_back = {
         .x = (player.position.x + PLAYER_WIDTH_HALF) - player.speed.x,
-        .y = player.position.y - y_speed,
+        .y = player.position.y,
         .z = bottom_left_front.z - player.speed.z,
     };
     Cube cube = {
@@ -201,15 +201,15 @@ static Cube get_cube_front(Player player, f32 y_speed) {
     return cube;
 }
 
-static Cube get_cube_back(Player player, f32 y_speed) {
+static Cube get_cube_back(Player player) {
     Vec3 top_right_back = {
         .x = (player.position.x + PLAYER_WIDTH_HALF) - player.speed.x,
-        .y = player.position.y - y_speed,
+        .y = player.position.y,
         .z = player.position.z + PLAYER_DEPTH_HALF,
     };
     Vec3 bottom_left_front = {
         .x = (player.position.x - PLAYER_WIDTH_HALF) - player.speed.x,
-        .y = (player.position.y - PLAYER_HEIGHT) - y_speed,
+        .y = player.position.y - PLAYER_HEIGHT,
         .z = top_right_back.z - player.speed.z,
     };
     Cube cube = {
@@ -219,15 +219,15 @@ static Cube get_cube_back(Player player, f32 y_speed) {
     return cube;
 }
 
-static Cube get_cube_left(Player player, f32 y_speed) {
+static Cube get_cube_left(Player player) {
     Vec3 bottom_left_front = {
         .x = player.position.x - PLAYER_WIDTH_HALF,
-        .y = (player.position.y - PLAYER_HEIGHT) - y_speed,
+        .y = player.position.y - PLAYER_HEIGHT,
         .z = (player.position.z - PLAYER_DEPTH_HALF) - player.speed.z,
     };
     Vec3 top_right_back = {
         .x = bottom_left_front.x - player.speed.x,
-        .y = player.position.y - y_speed,
+        .y = player.position.y,
         .z = (player.position.z + PLAYER_DEPTH_HALF) - player.speed.z,
     };
     Cube cube = {
@@ -237,15 +237,15 @@ static Cube get_cube_left(Player player, f32 y_speed) {
     return cube;
 }
 
-static Cube get_cube_right(Player player, f32 y_speed) {
+static Cube get_cube_right(Player player) {
     Vec3 top_right_back = {
         .x = player.position.x + PLAYER_WIDTH_HALF,
-        .y = player.position.y - y_speed,
+        .y = player.position.y,
         .z = (player.position.z + PLAYER_DEPTH_HALF) - player.speed.z,
     };
     Vec3 bottom_left_front = {
         .x = top_right_back.x - player.speed.x,
-        .y = (player.position.y - PLAYER_HEIGHT) - y_speed,
+        .y = player.position.y - PLAYER_HEIGHT,
         .z = (player.position.z - PLAYER_DEPTH_HALF) - player.speed.z,
     };
     Cube cube = {
@@ -256,12 +256,12 @@ static Cube get_cube_right(Player player, f32 y_speed) {
 }
 
 static Bool intersect_player_platform(Cube player, Cube platform) {
-    return (player.bottom_left_front.x <= platform.top_right_back.x) &&
-        (platform.bottom_left_front.x <= player.top_right_back.x) &&
-        (player.bottom_left_front.y <= platform.top_right_back.y) &&
-        (platform.bottom_left_front.y <= player.top_right_back.y) &&
-        (player.bottom_left_front.z <= platform.top_right_back.z) &&
-        (platform.bottom_left_front.z <= player.top_right_back.z);
+    return (player.bottom_left_front.x < platform.top_right_back.x) &&
+        (platform.bottom_left_front.x < player.top_right_back.x) &&
+        (player.bottom_left_front.y < platform.top_right_back.y) &&
+        (platform.bottom_left_front.y < player.top_right_back.y) &&
+        (player.bottom_left_front.z < platform.top_right_back.z) &&
+        (platform.bottom_left_front.z < player.top_right_back.z);
 }
 
 #define WITHIN_SPEED_EPSILON(x) \
@@ -274,7 +274,6 @@ static void set_motion(State* state) {
     }
     state->player.speed.y -= GRAVITY;
     state->player.can_jump = FALSE;
-    f32 y_speed = state->player.speed.y;
     state->player.position.y += state->player.speed.y;
     f32 x_speed = state->player.speed.x * DRAG;
     f32 z_speed = state->player.speed.z * DRAG;
@@ -322,18 +321,20 @@ static void set_motion(State* state) {
         state->player.position.z += state->player.speed.z;
     }
     {
+        state->player.position.y += GRAVITY;
         Cube front_back;
         if (state->player.speed.z < 0.0f) {
-            front_back = get_cube_front(state->player, y_speed);
+            front_back = get_cube_front(state->player);
         } else {
-            front_back = get_cube_back(state->player, y_speed);
+            front_back = get_cube_back(state->player);
         }
         Cube left_right;
         if (state->player.speed.x < 0.0f) {
-            left_right = get_cube_left(state->player, y_speed);
+            left_right = get_cube_left(state->player);
         } else {
-            left_right = get_cube_right(state->player, y_speed);
+            left_right = get_cube_right(state->player);
         }
+        state->player.position.y -= GRAVITY;
         for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
             if (intersect_player_platform(front_back, PLATFORMS[i])) {
                 state->player.position.z -= state->player.speed.z;
