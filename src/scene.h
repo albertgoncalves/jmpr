@@ -14,8 +14,6 @@ typedef struct {
     Vec3 top_right_back;
 } Cube;
 
-#define CLEAR_COLOR 0.75f
-
 // clang-format off
 static const f32 VERTICES[] = {
     // NOTE: position       // NOTE: normal
@@ -294,7 +292,6 @@ static void set_buffers(void) {
 
 static void set_program(u32 program) {
     glUseProgram(program);
-    glClearColor(CLEAR_COLOR, CLEAR_COLOR, CLEAR_COLOR, 1.0f);
 }
 
 static void draw(GLFWwindow* window) {

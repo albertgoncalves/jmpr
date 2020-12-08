@@ -412,6 +412,10 @@ static void loop(GLFWwindow* window, u32 program) {
             frame.delta -= FRAME_UPDATE_STEP;
         }
         set_uniforms(uniforms, &state);
+        {
+            f32 sin_height = sinf(fabsf(state.player.position.y) / 10.0f);
+            glClearColor(sin_height, sin_height, sin_height, 1.0f);
+        }
         draw(window);
         set_debug(&frame, &state);
         frame.prev = frame.time;
