@@ -13,6 +13,7 @@ typedef struct {
     Vec3 position;
     Vec3 speed;
     Bool can_jump;
+    Bool jump_key_released;
 } Player;
 
 typedef struct {
@@ -118,6 +119,10 @@ static void set_input(GLFWwindow* window, State* state) {
     {
         state->player.speed.y += JUMP;
         state->player.can_jump = FALSE;
+        state->player.jump_key_released = FALSE;
+    }
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
+        state->player.jump_key_released = TRUE;
     }
 }
 
@@ -129,6 +134,7 @@ static void init_player(State* state) {
     state->player.speed.y = 0.0f;
     state->player.speed.z = 0.0f;
     state->player.can_jump = FALSE;
+    state->player.jump_key_released = FALSE;
     VIEW_TARGET.x = 0.0f;
     VIEW_TARGET.y = 0.0f;
     VIEW_TARGET.z = -1.0f;
@@ -267,6 +273,7 @@ static void set_motion(State* state) {
         return;
     }
     state->player.speed.y -= GRAVITY;
+    state->player.can_jump = FALSE;
     f32 y_speed = state->player.speed.y;
     state->player.position.y += state->player.speed.y;
     f32 x_speed = state->player.speed.x * DRAG;
@@ -278,9 +285,11 @@ static void set_motion(State* state) {
                 state->player.position.y =
                     PLATFORMS[i].top_right_back.y + PLAYER_HEIGHT;
                 state->player.speed.y = 0.0f;
-                state->player.can_jump = TRUE;
                 x_speed = state->player.speed.x * FRICTION;
                 z_speed = state->player.speed.z * FRICTION;
+                if (state->player.jump_key_released) {
+                    state->player.can_jump = TRUE;
+                }
                 break;
             }
         }
@@ -319,15 +328,6 @@ static void set_motion(State* state) {
         } else {
             front_back = get_cube_back(state->player, y_speed);
         }
-        for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-            if (intersect_player_platform(front_back, PLATFORMS[i])) {
-                state->player.position.z -= state->player.speed.z;
-                state->player.speed.z = 0.0f;
-                break;
-            }
-        }
-    }
-    {
         Cube left_right;
         if (state->player.speed.x < 0.0f) {
             left_right = get_cube_left(state->player, y_speed);
@@ -335,10 +335,13 @@ static void set_motion(State* state) {
             left_right = get_cube_right(state->player, y_speed);
         }
         for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
+            if (intersect_player_platform(front_back, PLATFORMS[i])) {
+                state->player.position.z -= state->player.speed.z;
+                state->player.speed.z = 0.0f;
+            }
             if (intersect_player_platform(left_right, PLATFORMS[i])) {
                 state->player.position.x -= state->player.speed.x;
                 state->player.speed.x = 0.0f;
-                break;
             }
         }
     }
