@@ -146,17 +146,15 @@ static void init_player(State* state) {
 
 static Cube get_cube_below(Player player) {
     f32  bottom = player.position.y - PLAYER_HEIGHT;
-    Vec3 bottom_left_front = {
-        .x = player.position.x - PLAYER_WIDTH_HALF,
-        .y = bottom,
-        .z = player.position.z - PLAYER_DEPTH_HALF,
-    };
     Vec3 top_right_back = {
         .x = player.position.x + PLAYER_WIDTH_HALF,
-        // NOTE: `player.speed.y` *should* be negative if we're checking
-        // _below_ the player!
-        .y = bottom - player.speed.y,
+        .y = bottom,
         .z = player.position.z + PLAYER_DEPTH_HALF,
+    };
+    Vec3 bottom_left_front = {
+        .x = player.position.x - PLAYER_WIDTH_HALF,
+        .y = bottom + player.speed.y,
+        .z = player.position.z - PLAYER_DEPTH_HALF,
     };
     Cube cube = {
         .bottom_left_front = bottom_left_front,
@@ -168,12 +166,12 @@ static Cube get_cube_below(Player player) {
 static Cube get_cube_above(Player player) {
     Vec3 bottom_left_front = {
         .x = player.position.x - PLAYER_WIDTH_HALF,
-        .y = player.position.y - player.speed.y,
+        .y = player.position.y,
         .z = player.position.z - PLAYER_DEPTH_HALF,
     };
     Vec3 top_right_back = {
         .x = player.position.x + PLAYER_WIDTH_HALF,
-        .y = player.position.y,
+        .y = player.position.y + player.speed.y,
         .z = player.position.z + PLAYER_DEPTH_HALF,
     };
     Cube cube = {
@@ -184,15 +182,15 @@ static Cube get_cube_above(Player player) {
 }
 
 static Cube get_cube_front(Player player) {
-    Vec3 bottom_left_front = {
-        .x = (player.position.x - PLAYER_WIDTH_HALF) - player.speed.x,
-        .y = player.position.y - PLAYER_HEIGHT,
+    Vec3 top_right_back = {
+        .x = player.position.x + PLAYER_WIDTH_HALF,
+        .y = player.position.y,
         .z = player.position.z - PLAYER_DEPTH_HALF,
     };
-    Vec3 top_right_back = {
-        .x = (player.position.x + PLAYER_WIDTH_HALF) - player.speed.x,
-        .y = player.position.y,
-        .z = bottom_left_front.z - player.speed.z,
+    Vec3 bottom_left_front = {
+        .x = player.position.x - PLAYER_WIDTH_HALF,
+        .y = player.position.y - PLAYER_HEIGHT,
+        .z = top_right_back.z + player.speed.z,
     };
     Cube cube = {
         .bottom_left_front = bottom_left_front,
@@ -202,15 +200,15 @@ static Cube get_cube_front(Player player) {
 }
 
 static Cube get_cube_back(Player player) {
-    Vec3 top_right_back = {
-        .x = (player.position.x + PLAYER_WIDTH_HALF) - player.speed.x,
-        .y = player.position.y,
+    Vec3 bottom_left_front = {
+        .x = player.position.x - PLAYER_WIDTH_HALF,
+        .y = player.position.y - PLAYER_HEIGHT,
         .z = player.position.z + PLAYER_DEPTH_HALF,
     };
-    Vec3 bottom_left_front = {
-        .x = (player.position.x - PLAYER_WIDTH_HALF) - player.speed.x,
-        .y = player.position.y - PLAYER_HEIGHT,
-        .z = top_right_back.z - player.speed.z,
+    Vec3 top_right_back = {
+        .x = player.position.x + PLAYER_WIDTH_HALF,
+        .y = player.position.y,
+        .z = bottom_left_front.z + player.speed.z,
     };
     Cube cube = {
         .bottom_left_front = bottom_left_front,
@@ -220,15 +218,15 @@ static Cube get_cube_back(Player player) {
 }
 
 static Cube get_cube_left(Player player) {
-    Vec3 bottom_left_front = {
-        .x = player.position.x - PLAYER_WIDTH_HALF,
-        .y = player.position.y - PLAYER_HEIGHT,
-        .z = (player.position.z - PLAYER_DEPTH_HALF) - player.speed.z,
-    };
     Vec3 top_right_back = {
-        .x = bottom_left_front.x - player.speed.x,
+        .x = player.position.x - PLAYER_WIDTH_HALF,
         .y = player.position.y,
-        .z = (player.position.z + PLAYER_DEPTH_HALF) - player.speed.z,
+        .z = player.position.z + PLAYER_DEPTH_HALF,
+    };
+    Vec3 bottom_left_front = {
+        .x = top_right_back.x + player.speed.x,
+        .y = player.position.y - PLAYER_HEIGHT,
+        .z = player.position.z - PLAYER_DEPTH_HALF,
     };
     Cube cube = {
         .bottom_left_front = bottom_left_front,
@@ -238,15 +236,15 @@ static Cube get_cube_left(Player player) {
 }
 
 static Cube get_cube_right(Player player) {
-    Vec3 top_right_back = {
-        .x = player.position.x + PLAYER_WIDTH_HALF,
-        .y = player.position.y,
-        .z = (player.position.z + PLAYER_DEPTH_HALF) - player.speed.z,
-    };
     Vec3 bottom_left_front = {
-        .x = top_right_back.x - player.speed.x,
+        .x = player.position.x + PLAYER_WIDTH_HALF,
         .y = player.position.y - PLAYER_HEIGHT,
-        .z = (player.position.z - PLAYER_DEPTH_HALF) - player.speed.z,
+        .z = player.position.z - PLAYER_DEPTH_HALF,
+    };
+    Vec3 top_right_back = {
+        .x = bottom_left_front.x + player.speed.x,
+        .y = player.position.y,
+        .z = player.position.z + PLAYER_DEPTH_HALF,
     };
     Cube cube = {
         .bottom_left_front = bottom_left_front,
@@ -274,11 +272,11 @@ static void set_motion(State* state) {
     }
     state->player.speed.y -= GRAVITY;
     state->player.can_jump = FALSE;
-    state->player.position.y += state->player.speed.y;
     f32 x_speed = state->player.speed.x * DRAG;
     f32 z_speed = state->player.speed.z * DRAG;
     if (state->player.speed.y <= 0.0f) {
         Cube below = get_cube_below(state->player);
+        state->player.position.y += state->player.speed.y;
         for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
             if (intersect_player_platform(below, PLATFORMS[i])) {
                 state->player.position.y =
@@ -294,6 +292,7 @@ static void set_motion(State* state) {
         }
     } else {
         Cube above = get_cube_above(state->player);
+        state->player.position.y += state->player.speed.y;
         for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
             if (intersect_player_platform(above, PLATFORMS[i])) {
                 state->player.position.y = PLATFORMS[i].bottom_left_front.y;
@@ -310,6 +309,20 @@ static void set_motion(State* state) {
         state->player.speed.x = x_speed;
         state->player.speed.z = z_speed;
     }
+    state->player.position.y += GRAVITY;
+    Cube front_back;
+    if (state->player.speed.z < 0.0f) {
+        front_back = get_cube_front(state->player);
+    } else {
+        front_back = get_cube_back(state->player);
+    }
+    Cube left_right;
+    if (state->player.speed.x < 0.0f) {
+        left_right = get_cube_left(state->player);
+    } else {
+        left_right = get_cube_right(state->player);
+    }
+    state->player.position.y -= GRAVITY;
     if (WITHIN_SPEED_EPSILON(state->player.speed.x)) {
         state->player.speed.x = 0.0f;
     } else {
@@ -320,30 +333,14 @@ static void set_motion(State* state) {
     } else {
         state->player.position.z += state->player.speed.z;
     }
-    {
-        state->player.position.y += GRAVITY;
-        Cube front_back;
-        if (state->player.speed.z < 0.0f) {
-            front_back = get_cube_front(state->player);
-        } else {
-            front_back = get_cube_back(state->player);
+    for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
+        if (intersect_player_platform(front_back, PLATFORMS[i])) {
+            state->player.position.z -= state->player.speed.z;
+            state->player.speed.z = 0.0f;
         }
-        Cube left_right;
-        if (state->player.speed.x < 0.0f) {
-            left_right = get_cube_left(state->player);
-        } else {
-            left_right = get_cube_right(state->player);
-        }
-        state->player.position.y -= GRAVITY;
-        for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-            if (intersect_player_platform(front_back, PLATFORMS[i])) {
-                state->player.position.z -= state->player.speed.z;
-                state->player.speed.z = 0.0f;
-            }
-            if (intersect_player_platform(left_right, PLATFORMS[i])) {
-                state->player.position.x -= state->player.speed.x;
-                state->player.speed.x = 0.0f;
-            }
+        if (intersect_player_platform(left_right, PLATFORMS[i])) {
+            state->player.position.x -= state->player.speed.x;
+            state->player.speed.x = 0.0f;
         }
     }
 }
