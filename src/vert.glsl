@@ -5,7 +5,7 @@ precision mediump float;
 layout(location = 0) in vec3 IN_VERTEX;
 layout(location = 1) in vec3 IN_NORMAL;
 layout(location = 2) in mat4 IN_TRANSLATE;
-layout(location = 6) in vec4 IN_COLOR;
+layout(location = 6) in vec3 IN_COLOR;
 
 // NOTE: `U_TIME` unused!
 uniform float U_TIME;
@@ -22,6 +22,6 @@ void main() {
     VERT_OUT_VERTEX = vec3(IN_TRANSLATE * vec4(IN_VERTEX, 1.0));
     VERT_OUT_NORMAL = mat3(transpose(inverse(IN_TRANSLATE))) * IN_NORMAL;
     VERT_OUT_POSITION = U_POSITION;
-    VERT_OUT_COLOR = IN_COLOR.rgb;
+    VERT_OUT_COLOR = IN_COLOR;
     gl_Position = U_PROJECTION * U_VIEW * IN_TRANSLATE * vec4(IN_VERTEX, 1.0);
 }

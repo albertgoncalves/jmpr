@@ -7,7 +7,6 @@
 typedef struct {
     Mat4 matrix;
     Vec3 color;
-    f32  alpha;
 } Instance;
 
 typedef struct {
@@ -167,7 +166,6 @@ static void set_instances(void) {
         INSTANCES[i].color.x *= INSTANCES[i].color.x;
         INSTANCES[i].color.y *= INSTANCES[i].color.y;
         INSTANCES[i].color.z *= INSTANCES[i].color.z;
-        INSTANCES[i].alpha = 1.0f;
         PLATFORMS[i] = get_cube_mat4(INSTANCES[i].matrix);
     }
 }
@@ -198,7 +196,7 @@ static void set_instances(void) {
 
 static void set_vertex_attrib(u32 index, i32 size, i32 stride, void* offset) {
     glEnableVertexAttribArray(index);
-    glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride, offset);
+    glVertexAttribPointer(index, size, GL_FLOAT, FALSE, stride, offset);
 }
 
 static void set_buffers(void) {
@@ -246,13 +244,14 @@ static void set_buffers(void) {
         // NOTE: Instances are limited to `sizeof(f32) * 4`, so `Instance` must
         // be constructed in multiple layers.
         usize offset = sizeof(f32) * 4;
-        usize n = sizeof(Instance) / offset;
-        if (sizeof(Instance) != (offset * n)) {
-            ERROR("sizeof(Instance) != (offset * n)");
-        }
-        for (u32 i = 0; i < n; ++i) {
+        for (u32 i = 0; i < 4; ++i) {
             u32 index = INDEX_INSTANCE + i;
             set_vertex_attrib(index, 4, stride, (void*)(i * offset));
+            glVertexAttribDivisor(index, 1);
+        }
+        {
+            u32 index = INDEX_INSTANCE + 4;
+            set_vertex_attrib(index, 3, stride, (void*)(4 * offset));
             glVertexAttribDivisor(index, 1);
         }
         CHECK_GL_ERROR();
