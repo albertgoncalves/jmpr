@@ -19,32 +19,61 @@ typedef struct {
 
 // clang-format off
 static const f32 VERTICES[] = {
-    // NOTE: (x,y,z)
-    -0.5f, -0.5f, -0.5f, //  0
-     0.5f, -0.5f, -0.5f, //  1
-     0.5f,  0.5f, -0.5f, //  2
-    -0.5f,  0.5f, -0.5f, //  3
-    -0.5f, -0.5f,  0.5f, //  4
-     0.5f, -0.5f,  0.5f, //  5
-     0.5f,  0.5f,  0.5f, //  6
-    -0.5f,  0.5f,  0.5f, //  7
+    // NOTE: position       // NOTE: normal
+    -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
+     0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
+    -0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,
+    -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
+     0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f
 };
-#define VERTEX_OFFSET 0
 static const u32 INDICES[] = {
-    0, 1, 2,
-    2, 3, 0,
-    4, 5, 6,
-    6, 7, 4,
-    7, 3, 0,
-    0, 4, 7,
-    6, 2, 1,
-    1, 5, 6,
-    0, 1, 5,
-    5, 4, 0,
-    3, 2, 6,
-    6, 7, 3,
+     0,  1,  2,
+     3,  4,  5,
+     6,  7,  8,
+     9, 10, 11,
+    12, 13, 14,
+    15, 16, 17,
+    18, 19, 20,
+    21, 22, 23,
+    24, 25, 26,
+    27, 28 ,29,
+    30, 31, 32,
+    33, 34, 35,
 };
 // clang-format on
+
+#define VERTEX_OFFSET 0
 
 static const Vec3 PLATFORM_POSITIONS[] = {
     {
@@ -110,7 +139,8 @@ static u32 RBO;
 static u32 DBO;
 
 static const u32 INDEX_VERTEX = 0;
-static const u32 INDEX_INSTANCE = 1;
+static const u32 INDEX_NORMAL = 1;
+static const u32 INDEX_INSTANCE = 2;
 
 static Cube get_cube_mat4(Mat4 m) {
     f32  width_half = m.cell[0][0] / 2.0f;
@@ -195,11 +225,16 @@ static void set_buffers(void) {
                      VERTICES,
                      GL_STATIC_DRAW);
         i32 position_width = 3;
-        i32 stride = ((i32)(sizeof(f32))) * position_width;
+        i32 normal_width = 3;
+        i32 stride = ((i32)(sizeof(f32))) * (position_width + normal_width);
         set_vertex_attrib(INDEX_VERTEX,
                           position_width,
                           stride,
                           (void*)VERTEX_OFFSET);
+        set_vertex_attrib(INDEX_NORMAL,
+                          normal_width,
+                          stride,
+                          (void*)(sizeof(f32) * (usize)position_width));
         CHECK_GL_ERROR();
     }
     {

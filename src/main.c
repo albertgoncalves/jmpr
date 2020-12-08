@@ -4,6 +4,7 @@
 
 typedef struct {
     i32 time;
+    i32 position;
     i32 projection;
     i32 view;
 } Uniforms;
@@ -345,6 +346,10 @@ static void set_motion(State* state) {
 
 static void set_uniforms(Uniforms uniforms, const State* state) {
     glUniform1f(uniforms.time, state->time);
+    glUniform3f(uniforms.position,
+                state->player.position.x,
+                state->player.position.y,
+                state->player.position.z);
     Mat4 projection = perspective_mat4(get_radians(45.0f),
                                        (f32)WINDOW_WIDTH / (f32)WINDOW_HEIGHT,
                                        VIEW_NEAR,
@@ -391,6 +396,7 @@ static void loop(GLFWwindow* window, u32 program) {
     set_program(program);
     Uniforms uniforms = {
         .time = glGetUniformLocation(program, "U_TIME"),
+        .position = glGetUniformLocation(program, "U_POSITION"),
         .projection = glGetUniformLocation(program, "U_PROJECTION"),
         .view = glGetUniformLocation(program, "U_VIEW"),
     };
