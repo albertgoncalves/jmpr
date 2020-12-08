@@ -5,7 +5,7 @@
 #include "math.h"
 
 typedef struct {
-    Mat4 translation;
+    Mat4 matrix;
     Vec3 color;
     f32  alpha;
 } Instance;
@@ -140,7 +140,7 @@ static void set_instances(void) {
         .z = 10.0f,
     };
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-        INSTANCES[i].translation =
+        INSTANCES[i].matrix =
             mul_mat4(translate_mat4(PLATFORM_POSITIONS[i]), scale_mat4(scale));
         INSTANCES[i].color.x = cosf((f32)(i * 2));
         INSTANCES[i].color.y = sinf((f32)(i * 3));
@@ -150,7 +150,7 @@ static void set_instances(void) {
         INSTANCES[i].color.y *= INSTANCES[i].color.y;
         INSTANCES[i].color.z *= INSTANCES[i].color.z;
         INSTANCES[i].alpha = 1.0f;
-        PLATFORMS[i] = get_cube_mat4(INSTANCES[i].translation);
+        PLATFORMS[i] = get_cube_mat4(INSTANCES[i].matrix);
     }
 }
 
@@ -217,7 +217,7 @@ static void set_buffers(void) {
         glBindBuffer(GL_ARRAY_BUFFER, IBO);
         glBufferData(GL_ARRAY_BUFFER,
                      sizeof(INSTANCES),
-                     &INSTANCES[0].translation.cell[0][0],
+                     &INSTANCES[0].matrix.cell[0][0],
                      GL_STATIC_DRAW);
         i32 stride = sizeof(INSTANCES[0]);
         // NOTE: Instances are limited to `sizeof(f32) * 4`, so `Instance` must

@@ -28,8 +28,8 @@ typedef struct {
 } Frame;
 
 #define INIT_PLAYER_POSITION_X 0.0f
-#define INIT_PLAYER_POSITION_Y 40.0f
-#define INIT_PLAYER_POSITION_Z 0.0f
+#define INIT_PLAYER_POSITION_Y 15.0f
+#define INIT_PLAYER_POSITION_Z 5.0f
 
 #define PLAYER_WIDTH  1.5f
 #define PLAYER_HEIGHT 4.0f
@@ -38,15 +38,16 @@ typedef struct {
 static const f32 PLAYER_WIDTH_HALF = PLAYER_WIDTH / 2.0f;
 static const f32 PLAYER_DEPTH_HALF = PLAYER_DEPTH / 2.0f;
 
-#define RUN           0.00325f
+#define RUN      0.00325f
+#define FRICTION 0.96f
+#define DRAG     0.99f
+
 #define SPEED_MAX     0.125f
 #define SPEED_EPSILON 0.0001f
-#define FRICTION      0.96f
-#define DRAG          0.99f
-
-#define WORLD_Y_MIN -20.0f
 
 static const f32 SPEED_MAX_SQUARED = SPEED_MAX * SPEED_MAX;
+
+#define WORLD_Y_MIN -20.0f
 
 #define JUMP    0.0585f
 #define GRAVITY 0.000345f
@@ -57,20 +58,9 @@ static const Vec3 VIEW_UP = {
     .z = 0.0f, // NOTE: `z`-axis is forward/back.
 };
 
-static Vec3 VIEW_TARGET = {
-    .x = 0.0f,
-    .y = 0.0f,
-    .z = -1.0f,
-};
+static Vec3 VIEW_TARGET;
 
 #define CURSOR_SENSITIVITY 0.1f
-
-#define MICROSECONDS 1000000.0f
-
-#define FRAME_UPDATE_COUNT 8
-
-static const f32 FRAME_DURATION = (1.0f / 60.0f) * MICROSECONDS;
-static const f32 FRAME_UPDATE_STEP = FRAME_DURATION / FRAME_UPDATE_COUNT;
 
 static f32 CURSOR_X;
 static f32 CURSOR_Y;
@@ -86,10 +76,65 @@ static f32 VIEW_PITCH = 0.0f;
 
 #define PITCH_LIMIT 89.0f
 
+#define MICROSECONDS 1000000.0f
+
+#define FRAME_UPDATE_COUNT 8
+
+static const f32 FRAME_DURATION = (1.0f / 60.0f) * MICROSECONDS;
+static const f32 FRAME_UPDATE_STEP = FRAME_DURATION / FRAME_UPDATE_COUNT;
+
+#define NORM_CROSS(a, b) norm_vec3(cross_vec3(a, b))
+
+static void set_input(GLFWwindow* window, State* state) {
+    glfwPollEvents();
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, TRUE);
+    }
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        state->player.speed = sub_vec3(
+            state->player.speed,
+            mul_vec3_f32(NORM_CROSS(cross_vec3(VIEW_TARGET, VIEW_UP), VIEW_UP),
+                         RUN));
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        state->player.speed =
+            add_vec3(state->player.speed,
+                     mul_vec3_f32(NORM_CROSS(VIEW_TARGET, VIEW_UP), RUN));
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        state->player.speed = add_vec3(
+            state->player.speed,
+            mul_vec3_f32(NORM_CROSS(cross_vec3(VIEW_TARGET, VIEW_UP), VIEW_UP),
+                         RUN));
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        state->player.speed =
+            sub_vec3(state->player.speed,
+                     mul_vec3_f32(NORM_CROSS(VIEW_TARGET, VIEW_UP), RUN));
+    }
+    if ((glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) &&
+        (state->player.can_jump))
+    {
+        state->player.speed.y += JUMP;
+        state->player.can_jump = FALSE;
+    }
+}
+
 static void init_player(State* state) {
     state->player.position.x = INIT_PLAYER_POSITION_X;
     state->player.position.y = INIT_PLAYER_POSITION_Y;
     state->player.position.z = INIT_PLAYER_POSITION_Z;
+    state->player.speed.x = 0.0f;
+    state->player.speed.y = 0.0f;
+    state->player.speed.z = 0.0f;
+    state->player.can_jump = FALSE;
+    VIEW_TARGET.x = 0.0f;
+    VIEW_TARGET.y = 0.0f;
+    VIEW_TARGET.z = -1.0f;
+    CURSOR_X_DELTA = 0.0f;
+    CURSOR_Y_DELTA = 0.0f;
+    VIEW_YAW = -90.0f;
+    VIEW_PITCH = 0.0f;
 }
 
 static Cube get_cube_below(Player player) {
@@ -212,43 +257,6 @@ static Bool intersect_player_platform(Cube player, Cube platform) {
         (platform.bottom_left_front.z <= player.top_right_back.z);
 }
 
-#define NORM_CROSS(a, b) norm_vec3(cross_vec3(a, b))
-
-static void set_input(GLFWwindow* window, State* state) {
-    glfwPollEvents();
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, TRUE);
-    }
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        state->player.speed = sub_vec3(
-            state->player.speed,
-            mul_vec3_f32(NORM_CROSS(cross_vec3(VIEW_TARGET, VIEW_UP), VIEW_UP),
-                         RUN));
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        state->player.speed =
-            add_vec3(state->player.speed,
-                     mul_vec3_f32(NORM_CROSS(VIEW_TARGET, VIEW_UP), RUN));
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        state->player.speed = add_vec3(
-            state->player.speed,
-            mul_vec3_f32(NORM_CROSS(cross_vec3(VIEW_TARGET, VIEW_UP), VIEW_UP),
-                         RUN));
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        state->player.speed =
-            sub_vec3(state->player.speed,
-                     mul_vec3_f32(NORM_CROSS(VIEW_TARGET, VIEW_UP), RUN));
-    }
-    if ((glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) &&
-        (state->player.can_jump))
-    {
-        state->player.speed.y += JUMP;
-        state->player.can_jump = FALSE;
-    }
-}
-
 #define WITHIN_SPEED_EPSILON(x) \
     ((-SPEED_EPSILON < (x)) && ((x) < SPEED_EPSILON))
 
@@ -285,15 +293,13 @@ static void set_motion(State* state) {
             }
         }
     }
-    {
-        if (SPEED_MAX_SQUARED < ((x_speed * x_speed) + (z_speed * z_speed))) {
-            f32 radians = atan2f(z_speed, x_speed);
-            state->player.speed.x = SPEED_MAX * cosf(radians);
-            state->player.speed.z = SPEED_MAX * sinf(radians);
-        } else {
-            state->player.speed.x = x_speed;
-            state->player.speed.z = z_speed;
-        }
+    if (SPEED_MAX_SQUARED < ((x_speed * x_speed) + (z_speed * z_speed))) {
+        f32 radians = atan2f(z_speed, x_speed);
+        state->player.speed.x = SPEED_MAX * cosf(radians);
+        state->player.speed.z = SPEED_MAX * sinf(radians);
+    } else {
+        state->player.speed.x = x_speed;
+        state->player.speed.z = z_speed;
     }
     if (WITHIN_SPEED_EPSILON(state->player.speed.x)) {
         state->player.speed.x = 0.0f;
@@ -309,7 +315,7 @@ static void set_motion(State* state) {
         Cube front_back;
         if (state->player.speed.z < 0.0f) {
             front_back = get_cube_front(state->player, y_speed);
-        } else if (0.0f < state->player.speed.z) {
+        } else {
             front_back = get_cube_back(state->player, y_speed);
         }
         for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
@@ -324,7 +330,7 @@ static void set_motion(State* state) {
         Cube left_right;
         if (state->player.speed.x < 0.0f) {
             left_right = get_cube_left(state->player, y_speed);
-        } else if (0.0f < state->player.speed.x) {
+        } else {
             left_right = get_cube_right(state->player, y_speed);
         }
         for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
