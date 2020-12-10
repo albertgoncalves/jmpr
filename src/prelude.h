@@ -19,7 +19,7 @@ typedef FILE File;
 typedef enum {
     FALSE = 0,
     TRUE = 1,
-} Bool;
+} Bool_;
 
 #define ERROR(x)                     \
     {                                \

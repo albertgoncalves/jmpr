@@ -10,10 +10,10 @@ typedef struct {
 } Uniforms;
 
 typedef struct {
-    Vec3 position;
-    Vec3 speed;
-    Bool can_jump;
-    Bool jump_key_released;
+    Vec3  position;
+    Vec3  speed;
+    Bool_ can_jump;
+    Bool_ jump_key_released;
 } Player;
 
 typedef struct {
@@ -253,7 +253,7 @@ static Cube get_cube_right(Player player) {
     return cube;
 }
 
-static Bool intersect_player_platform(Cube player, Cube platform) {
+static Bool_ intersect_player_platform(Cube player, Cube platform) {
     return (player.bottom_left_front.x < platform.top_right_back.x) &&
         (platform.bottom_left_front.x < player.top_right_back.x) &&
         (player.bottom_left_front.y < platform.top_right_back.y) &&
@@ -466,7 +466,7 @@ i32 main(i32 n, const char** args) {
         ERROR("`calloc` failed");
     }
     printf("GLFW version: %s\n\n"
-           "sizeof(Bool)           : %zu\n"
+           "sizeof(Bool_)          : %zu\n"
            "sizeof(Vec3)           : %zu\n"
            "sizeof(Mat4)           : %zu\n"
            "sizeof(Instance)       : %zu\n"
@@ -478,7 +478,7 @@ i32 main(i32 n, const char** args) {
            "sizeof(Memory)         : %zu\n"
            "sizeof(memory->buffer) : %zu\n\n",
            glfwGetVersionString(),
-           sizeof(Bool),
+           sizeof(Bool_),
            sizeof(Vec3),
            sizeof(Mat4),
            sizeof(Instance),
