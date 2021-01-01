@@ -156,11 +156,10 @@ static Cube get_cube_below(Player player) {
         .y = bottom + player.speed.y,
         .z = player.position.z - PLAYER_DEPTH_HALF,
     };
-    Cube cube = {
+    return (Cube){
         .bottom_left_front = bottom_left_front,
         .top_right_back = top_right_back,
     };
-    return cube;
 }
 
 static Cube get_cube_above(Player player) {
@@ -174,11 +173,10 @@ static Cube get_cube_above(Player player) {
         .y = player.position.y + player.speed.y,
         .z = player.position.z + PLAYER_DEPTH_HALF,
     };
-    Cube cube = {
+    return (Cube){
         .bottom_left_front = bottom_left_front,
         .top_right_back = top_right_back,
     };
-    return cube;
 }
 
 static Cube get_cube_front(Player player) {
@@ -192,11 +190,10 @@ static Cube get_cube_front(Player player) {
         .y = player.position.y - PLAYER_HEIGHT,
         .z = top_right_back.z + player.speed.z,
     };
-    Cube cube = {
+    return (Cube){
         .bottom_left_front = bottom_left_front,
         .top_right_back = top_right_back,
     };
-    return cube;
 }
 
 static Cube get_cube_back(Player player) {
@@ -210,11 +207,10 @@ static Cube get_cube_back(Player player) {
         .y = player.position.y,
         .z = bottom_left_front.z + player.speed.z,
     };
-    Cube cube = {
+    return (Cube){
         .bottom_left_front = bottom_left_front,
         .top_right_back = top_right_back,
     };
-    return cube;
 }
 
 static Cube get_cube_left(Player player) {
@@ -228,11 +224,10 @@ static Cube get_cube_left(Player player) {
         .y = player.position.y - PLAYER_HEIGHT,
         .z = player.position.z - PLAYER_DEPTH_HALF,
     };
-    Cube cube = {
+    return (Cube){
         .bottom_left_front = bottom_left_front,
         .top_right_back = top_right_back,
     };
-    return cube;
 }
 
 static Cube get_cube_right(Player player) {
@@ -246,11 +241,10 @@ static Cube get_cube_right(Player player) {
         .y = player.position.y,
         .z = player.position.z + PLAYER_DEPTH_HALF,
     };
-    Cube cube = {
+    return (Cube){
         .bottom_left_front = bottom_left_front,
         .top_right_back = top_right_back,
     };
-    return cube;
 }
 
 static Bool_ intersect_player_platform(Cube player, Cube platform) {

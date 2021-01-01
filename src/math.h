@@ -40,39 +40,35 @@ static f32 get_degrees(f32 radians) {
 }
 
 static Vec3 add_vec3(Vec3 l, Vec3 r) {
-    Vec3 out = {
+    return (Vec3){
         .x = l.x + r.x,
         .y = l.y + r.y,
         .z = l.z + r.z,
     };
-    return out;
 }
 
 static Vec3 mul_vec3_f32(Vec3 l, f32 r) {
-    Vec3 out = {
+    return (Vec3){
         .x = l.x * r,
         .y = l.y * r,
         .z = l.z * r,
     };
-    return out;
 }
 
 static Vec3 sub_vec3(Vec3 l, Vec3 r) {
-    Vec3 out = {
+    return (Vec3){
         .x = l.x - r.x,
         .y = l.y - r.y,
         .z = l.z - r.z,
     };
-    return out;
 }
 
 static Vec3 cross_vec3(Vec3 l, Vec3 r) {
-    Vec3 out = {
+    return (Vec3){
         .x = (l.y * r.z) - (l.z * r.y),
         .y = (l.z * r.x) - (l.x * r.z),
         .z = (l.x * r.y) - (l.y * r.x),
     };
-    return out;
 }
 
 static f32 dot_vec3(Vec3 l, Vec3 r) {
@@ -84,13 +80,12 @@ static f32 len_vec3(Vec3 v) {
 }
 
 static Vec3 norm_vec3(Vec3 v) {
-    f32  len = len_vec3(v);
-    Vec3 out = {
+    f32 len = len_vec3(v);
+    return (Vec3){
         .x = v.x / len,
         .y = v.y / len,
         .z = v.z / len,
     };
-    return out;
 }
 
 static Simd4f32 linear_combine(Simd4f32 l, Mat4 r) {

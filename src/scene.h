@@ -141,11 +141,10 @@ static Cube get_cube_mat4(Mat4 m) {
         .y = m.cell[3][1] + height_half,
         .z = m.cell[3][2] + depth_half,
     };
-    Cube cube = {
+    return (Cube){
         .bottom_left_front = bottom_left_front,
         .top_right_back = top_right_back,
     };
-    return cube;
 }
 
 static void set_instances(void) {
