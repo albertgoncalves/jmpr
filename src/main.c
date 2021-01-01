@@ -458,13 +458,9 @@ static void init_cursor_callback(GLFWwindow* window, f64 x, f64 y) {
 }
 
 i32 main(i32 n, const char** args) {
-    if (n < 3) {
-        ERROR("Missing args");
-    }
+    EXIT_IF(n < 3);
     Memory* memory = calloc(1, sizeof(Memory));
-    if (!memory) {
-        ERROR("`calloc` failed");
-    }
+    EXIT_IF(!memory);
     printf("GLFW version: %s\n\n"
            "sizeof(Bool_)          : %zu\n"
            "sizeof(Vec3)           : %zu\n"
@@ -490,9 +486,7 @@ i32 main(i32 n, const char** args) {
            sizeof(Memory),
            sizeof(memory->buffer));
     glfwSetErrorCallback(error_callback);
-    if (!glfwInit()) {
-        ERROR("!glfwInit()");
-    }
+    EXIT_IF(!glfwInit());
     GLFWwindow* window = get_window("float");
     glfwSetCursorPosCallback(window, init_cursor_callback);
     glfwSetInputMode(window, GLFW_STICKY_KEYS, TRUE);

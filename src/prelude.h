@@ -32,4 +32,9 @@ typedef enum {
         exit(EXIT_FAILURE);          \
     }
 
+#define EXIT_IF(condition) \
+    if (condition) {       \
+        ERROR(#condition)  \
+    }
+
 #endif
