@@ -452,10 +452,9 @@ static void init_cursor_callback(GLFWwindow* window, f64 x, f64 y) {
 }
 
 i32 main(i32 n, const char** args) {
-    EXIT_IF(n < 3);
     Memory* memory = calloc(1, sizeof(Memory));
     EXIT_IF(!memory);
-    printf("GLFW version: %s\n\n"
+    printf("GLFW version : %s\n\n"
            "sizeof(Bool_)          : %zu\n"
            "sizeof(Vec3)           : %zu\n"
            "sizeof(Mat4)           : %zu\n"
@@ -479,6 +478,7 @@ i32 main(i32 n, const char** args) {
            sizeof(State),
            sizeof(Memory),
            sizeof(memory->buffer));
+    EXIT_IF(n < 3);
     glfwSetErrorCallback(error_callback);
     EXIT_IF(!glfwInit());
     GLFWwindow* window = get_window("float");
