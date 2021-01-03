@@ -46,9 +46,9 @@ static void set_file(Memory* memory, const char* filename) {
     u32 file_size = (u32)ftell(file);
     EXIT_IF(sizeof(memory->buffer) <= file_size);
     rewind(file);
-    memory->buffer[file_size] = '\0';
     EXIT_IF(fread(&memory->buffer, sizeof(char), file_size, file) !=
             file_size);
+    memory->buffer[file_size] = '\0';
     fclose(file);
 }
 
