@@ -20,3 +20,10 @@ $ ./shell
 [nix-shell:path/to/jmpr]$ ./scripts/run.sh      # build, run
 [nix-shell:path/to/jmpr]$ ./scripts/profile.sh  # build, profile via perf, cachegrind
 ```
+
+Controls
+--
+* `move` - <kbd>Up</kbd> <kbd>Down</kbd> <kbd>Left</kbd> <kbd>Right</kbd>
+* `jump` - <kbd>Space</kbd>
+* `look` - <kbd>Mouse</kbd>
+* `quit` - <kbd>Escape</kbd>
