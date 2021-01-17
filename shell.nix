@@ -10,6 +10,7 @@ mkShell {
         pkg-config
         python3
         shellcheck
+        simplescreenrecorder
         valgrind
         xorg.libX11
         xorg.libXcursor

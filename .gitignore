@@ -2,8 +2,12 @@
 !.gitignore
 !*.nix
 !.shellhook
+!README.md
+!cover.gif
 !shell
 !.clang-format
+!scripts/
+!*.sh
 !src/
 !*.h
 !*.c
