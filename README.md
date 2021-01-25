@@ -23,7 +23,7 @@ $ ./shell
 
 Controls
 --
-* `move` - <kbd>Up</kbd> <kbd>Down</kbd> <kbd>Left</kbd> <kbd>Right</kbd>
+* `move` - <kbd>w</kbd> <kbd>a</kbd> <kbd>s</kbd> <kbd>d</kbd>
 * `jump` - <kbd>Space</kbd>
 * `look` - <kbd>Mouse</kbd>
 * `quit` - <kbd>Escape</kbd>
