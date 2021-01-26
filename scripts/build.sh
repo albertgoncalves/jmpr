@@ -14,6 +14,7 @@ fi
 flags=(
     "-fshort-enums"
     "-fsingle-precision-constant"
+    "-g"
     "-march=native"
     "-O1"
     "-Wall"
@@ -28,8 +29,8 @@ flags=(
     "-Wextra"
     "-Wfatal-errors"
     "-Wfloat-equal"
-    "-Wformat-signedness"
     "-Wformat=2"
+    "-Wformat-signedness"
     "-Winline"
     "-Wlogical-op"
     "-Wmissing-declarations"
