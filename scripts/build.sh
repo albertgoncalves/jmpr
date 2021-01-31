@@ -3,8 +3,9 @@
 set -euo pipefail
 
 if [ ! -d "$WD/glfw" ]; then
-    git clone https://github.com/glfw/glfw.git
     (
+        cd "$WD" || exit 1
+        git clone https://github.com/glfw/glfw.git
         cd "$WD/glfw" || exit 1
         cmake -DBUILD_SHARED_LIBS=ON .
         make
