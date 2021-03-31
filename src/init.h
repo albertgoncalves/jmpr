@@ -62,9 +62,8 @@ static void show_cursor(Native native) {
     XFlush(native.display);
 }
 
-static void framebuffer_size_callback(GLFWwindow* window,
-                                      i32         width,
-                                      i32         height) {
+static void framebuffer_size_callback(GLFWwindow* _, i32 width, i32 height) {
+    (void)_;
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
 }

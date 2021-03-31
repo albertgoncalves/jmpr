@@ -441,6 +441,7 @@ static void error_callback(i32 code, const char* error) {
     }
 
 static void cursor_callback(GLFWwindow* _, f64 x, f64 y) {
+    (void)_;
     CURSOR_X_DELTA = ((f32)x - CURSOR_X) * CURSOR_SENSITIVITY;
     CURSOR_Y_DELTA = (CURSOR_Y - (f32)y) * CURSOR_SENSITIVITY;
     CURSOR_CALLBACK(x, y);
