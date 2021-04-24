@@ -43,7 +43,7 @@ static void set_file(Memory* memory, const char* filename) {
     File* file = fopen(filename, "r");
     EXIT_IF(!file);
     fseek(file, 0, SEEK_END);
-    u32 file_size = (u32)ftell(file);
+    const u32 file_size = (u32)ftell(file);
     EXIT_IF(sizeof(memory->buffer) <= file_size);
     rewind(file);
     EXIT_IF(fread(&memory->buffer, sizeof(char), file_size, file) !=
@@ -93,9 +93,9 @@ static GLFWwindow* get_window(const char* name) {
     return window;
 }
 
-static u32 get_shader(Memory* memory, const char* filename, GLenum type) {
+static u32 get_shader(Memory* memory, const char* filename, u32 type) {
     set_file(memory, filename);
-    u32         shader = glCreateShader(type);
+    const u32   shader = glCreateShader(type);
     const char* source = memory->buffer;
     glShaderSource(shader, 1, &source, NULL);
     glCompileShader(shader);
@@ -115,7 +115,7 @@ static u32 get_shader(Memory* memory, const char* filename, GLenum type) {
 static u32 get_program(Memory* memory,
                        u32     vertex_shader,
                        u32     fragment_shader) {
-    u32 program = glCreateProgram();
+    const u32 program = glCreateProgram();
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
     glLinkProgram(program);

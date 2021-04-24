@@ -80,7 +80,7 @@ static f32 len_vec3(Vec3 v) {
 }
 
 static Vec3 norm_vec3(Vec3 v) {
-    f32 len = len_vec3(v);
+    const f32 len = len_vec3(v);
     return (Vec3){
         .x = v.x / len,
         .y = v.y / len,
@@ -98,21 +98,21 @@ static Simd4f32 linear_combine(Simd4f32 l, Mat4 r) {
 }
 
 static Mat4 mul_mat4(Mat4 l, Mat4 r) {
-    Mat4 out;
-    out.column[0] = linear_combine(r.column[0], l);
-    out.column[1] = linear_combine(r.column[1], l);
-    out.column[2] = linear_combine(r.column[2], l);
-    out.column[3] = linear_combine(r.column[3], l);
-    return out;
+    return (Mat4){
+        .column[0] = linear_combine(r.column[0], l),
+        .column[1] = linear_combine(r.column[1], l),
+        .column[2] = linear_combine(r.column[2], l),
+        .column[3] = linear_combine(r.column[3], l),
+    };
 }
 
 static Mat4 diag_mat4(f32 x) {
-    Mat4 out = {0};
-    out.cell[0][0] = x;
-    out.cell[1][1] = x;
-    out.cell[2][2] = x;
-    out.cell[3][3] = x;
-    return out;
+    return (Mat4){
+        .cell[0][0] = x,
+        .cell[1][1] = x,
+        .cell[2][2] = x,
+        .cell[3][3] = x,
+    };
 }
 
 static Mat4 translate_mat4(Vec3 translation) {
@@ -132,17 +132,17 @@ static Mat4 scale_mat4(Vec3 scale) {
 }
 
 static Mat4 rotate_mat4(f32 radians, Vec3 axis) {
-    Mat4 out = diag_mat4(1.0f);
-    Vec3 norm = norm_vec3(axis);
-    f32  sin_theta = sinf(radians);
-    f32  cos_theta = cosf(radians);
-    f32  cos_delta = 1.0f - cos_theta;
-    f32  norm_x_sin_theta = norm.x * sin_theta;
-    f32  norm_y_sin_theta = norm.y * sin_theta;
-    f32  norm_z_sin_theta = norm.z * sin_theta;
-    f32  norm_xy_cos_delta = norm.x * norm.y * cos_delta;
-    f32  norm_yz_cos_delta = norm.y * norm.z * cos_delta;
-    f32  norm_xz_cos_delta = norm.x * norm.z * cos_delta;
+    const Vec3 norm = norm_vec3(axis);
+    const f32  sin_theta = sinf(radians);
+    const f32  cos_theta = cosf(radians);
+    const f32  cos_delta = 1.0f - cos_theta;
+    const f32  norm_x_sin_theta = norm.x * sin_theta;
+    const f32  norm_y_sin_theta = norm.y * sin_theta;
+    const f32  norm_z_sin_theta = norm.z * sin_theta;
+    const f32  norm_xy_cos_delta = norm.x * norm.y * cos_delta;
+    const f32  norm_yz_cos_delta = norm.y * norm.z * cos_delta;
+    const f32  norm_xz_cos_delta = norm.x * norm.z * cos_delta;
+    Mat4       out = diag_mat4(1.0f);
     out.cell[0][0] = (norm.x * norm.x * cos_delta) + cos_theta;
     out.cell[0][1] = norm_xy_cos_delta + norm_z_sin_theta;
     out.cell[0][2] = norm_xz_cos_delta - norm_y_sin_theta;
@@ -159,39 +159,39 @@ static Mat4 perspective_mat4(f32 fov_radians,
                              f32 aspect_ratio,
                              f32 near,
                              f32 far) {
-    Mat4 out = {0};
-    f32  cotangent = 1.0f / tanf(fov_radians / 2.0);
-    out.cell[0][0] = cotangent / aspect_ratio;
-    out.cell[1][1] = cotangent;
-    out.cell[2][3] = -1.0f;
-    out.cell[2][2] = (near + far) / (near - far);
-    out.cell[3][2] = (near * far * 2.0f) / (near - far);
-    out.cell[3][3] = 0.0f;
-    return out;
+    const f32 cotangent = 1.0f / tanf(fov_radians / 2.0);
+    return (Mat4){
+        .cell[0][0] = cotangent / aspect_ratio,
+        .cell[1][1] = cotangent,
+        .cell[2][3] = -1.0f,
+        .cell[2][2] = (near + far) / (near - far),
+        .cell[3][2] = (near * far * 2.0f) / (near - far),
+        .cell[3][3] = 0.0f,
+    };
 }
 
 static Mat4 look_at_mat4(Vec3 eye, Vec3 target, Vec3 up) {
-    Mat4 out;
-    Vec3 f = norm_vec3(sub_vec3(target, eye));
-    Vec3 s = norm_vec3(cross_vec3(f, up));
-    Vec3 u = cross_vec3(s, f);
-    out.cell[0][0] = s.x;
-    out.cell[0][1] = u.x;
-    out.cell[0][2] = -f.x;
-    out.cell[0][3] = 0.0f;
-    out.cell[1][0] = s.y;
-    out.cell[1][1] = u.y;
-    out.cell[1][2] = -f.y;
-    out.cell[1][3] = 0.0f;
-    out.cell[2][0] = s.z;
-    out.cell[2][1] = u.z;
-    out.cell[2][2] = -f.z;
-    out.cell[2][3] = 0.0f;
-    out.cell[3][0] = -dot_vec3(s, eye);
-    out.cell[3][1] = -dot_vec3(u, eye);
-    out.cell[3][2] = dot_vec3(f, eye);
-    out.cell[3][3] = 1.0f;
-    return out;
+    const Vec3 f = norm_vec3(sub_vec3(target, eye));
+    const Vec3 s = norm_vec3(cross_vec3(f, up));
+    const Vec3 u = cross_vec3(s, f);
+    return (Mat4){
+        .cell[0][0] = s.x,
+        .cell[0][1] = u.x,
+        .cell[0][2] = -f.x,
+        .cell[0][3] = 0.0f,
+        .cell[1][0] = s.y,
+        .cell[1][1] = u.y,
+        .cell[1][2] = -f.y,
+        .cell[1][3] = 0.0f,
+        .cell[2][0] = s.z,
+        .cell[2][1] = u.z,
+        .cell[2][2] = -f.z,
+        .cell[2][3] = 0.0f,
+        .cell[3][0] = -dot_vec3(s, eye),
+        .cell[3][1] = -dot_vec3(u, eye),
+        .cell[3][2] = dot_vec3(f, eye),
+        .cell[3][3] = 1.0f,
+    };
 }
 
 #endif

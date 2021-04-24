@@ -128,15 +128,15 @@ static const u32 INDEX_NORMAL = 1;
 static const u32 INDEX_INSTANCE = 2;
 
 static Cube get_cube_mat4(Mat4 m) {
-    f32  width_half = m.cell[0][0] / 2.0f;
-    f32  height_half = m.cell[1][1] / 2.0f;
-    f32  depth_half = m.cell[2][2] / 2.0f;
-    Vec3 bottom_left_front = {
+    const f32  width_half = m.cell[0][0] / 2.0f;
+    const f32  height_half = m.cell[1][1] / 2.0f;
+    const f32  depth_half = m.cell[2][2] / 2.0f;
+    const Vec3 bottom_left_front = {
         .x = m.cell[3][0] - width_half,
         .y = m.cell[3][1] - height_half,
         .z = m.cell[3][2] - depth_half,
     };
-    Vec3 top_right_back = {
+    const Vec3 top_right_back = {
         .x = m.cell[3][0] + width_half,
         .y = m.cell[3][1] + height_half,
         .z = m.cell[3][2] + depth_half,
@@ -148,7 +148,7 @@ static Cube get_cube_mat4(Mat4 m) {
 }
 
 static void set_instances(void) {
-    Vec3 scale = {
+    const Vec3 scale = {
         .x = 10.0f,
         .y = 0.5f,
         .z = 10.0f,
@@ -191,7 +191,10 @@ static void set_instances(void) {
         }                                              \
     }
 
-static void set_vertex_attrib(u32 index, i32 size, i32 stride, void* offset) {
+static void set_vertex_attrib(u32         index,
+                              i32         size,
+                              i32         stride,
+                              const void* offset) {
     glEnableVertexAttribArray(index);
     glVertexAttribPointer(index, size, GL_FLOAT, FALSE, stride, offset);
 }
@@ -207,9 +210,10 @@ static void set_buffers(void) {
                      sizeof(VERTICES),
                      VERTICES,
                      GL_STATIC_DRAW);
-        i32 position_width = 3;
-        i32 normal_width = 3;
-        i32 stride = ((i32)(sizeof(f32))) * (position_width + normal_width);
+        const i32 position_width = 3;
+        const i32 normal_width = 3;
+        const i32 stride =
+            ((i32)(sizeof(f32))) * (position_width + normal_width);
         set_vertex_attrib(INDEX_VERTEX,
                           position_width,
                           stride,
@@ -237,17 +241,17 @@ static void set_buffers(void) {
                      sizeof(INSTANCES),
                      &INSTANCES[0].matrix.cell[0][0],
                      GL_STATIC_DRAW);
-        i32 stride = sizeof(INSTANCES[0]);
+        const i32 stride = sizeof(INSTANCES[0]);
         // NOTE: Instances are limited to `sizeof(f32) * 4`, so `Instance` must
         // be constructed in multiple layers.
-        usize offset = sizeof(f32) * 4;
+        const usize offset = sizeof(f32) * 4;
         for (u32 i = 0; i < 4; ++i) {
-            u32 index = INDEX_INSTANCE + i;
+            const u32 index = INDEX_INSTANCE + i;
             set_vertex_attrib(index, 4, stride, (void*)(i * offset));
             glVertexAttribDivisor(index, 1);
         }
         {
-            u32 index = INDEX_INSTANCE + 4;
+            const u32 index = INDEX_INSTANCE + 4;
             set_vertex_attrib(index, 3, stride, (void*)(4 * offset));
             glVertexAttribDivisor(index, 1);
         }
