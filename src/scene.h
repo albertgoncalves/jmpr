@@ -106,6 +106,26 @@ static const Vec3 PLATFORM_POSITIONS[] = {
         .y = 4.0f,
         .z = -20.0f,
     },
+    {
+        .x = -20.0f,
+        .y = 6.0f,
+        .z = 0.0f,
+    },
+    {
+        .x = -10.0f,
+        .y = 0.0f,
+        .z = -10.0f,
+    },
+    {
+        .x = -20.0f,
+        .y = 2.5f,
+        .z = -10.0f,
+    },
+    {
+        .x = -6.25f,
+        .y = 4.125f,
+        .z = -25.0f,
+    },
 };
 
 #define COUNT_PLATFORMS \
