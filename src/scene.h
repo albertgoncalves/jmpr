@@ -128,34 +128,34 @@ static const u32 INDEX_NORMAL = 1;
 static const u32 INDEX_INSTANCE = 2;
 
 static Cube get_cube_mat4(Mat4 m) {
-    const f32  width_half = m.cell[0][0] / 2.0f;
-    const f32  height_half = m.cell[1][1] / 2.0f;
-    const f32  depth_half = m.cell[2][2] / 2.0f;
-    const Vec3 bottom_left_front = {
-        .x = m.cell[3][0] - width_half,
-        .y = m.cell[3][1] - height_half,
-        .z = m.cell[3][2] - depth_half,
-    };
-    const Vec3 top_right_back = {
-        .x = m.cell[3][0] + width_half,
-        .y = m.cell[3][1] + height_half,
-        .z = m.cell[3][2] + depth_half,
-    };
+    const f32 width_half = m.cell[0][0] / 2.0f;
+    const f32 height_half = m.cell[1][1] / 2.0f;
+    const f32 depth_half = m.cell[2][2] / 2.0f;
     return (Cube){
-        .bottom_left_front = bottom_left_front,
-        .top_right_back = top_right_back,
+        .bottom_left_front =
+            {
+                .x = m.cell[3][0] - width_half,
+                .y = m.cell[3][1] - height_half,
+                .z = m.cell[3][2] - depth_half,
+            },
+        .top_right_back =
+            {
+                .x = m.cell[3][0] + width_half,
+                .y = m.cell[3][1] + height_half,
+                .z = m.cell[3][2] + depth_half,
+            },
     };
 }
 
 static void set_instances(void) {
-    const Vec3 scale = {
+    Mat4 scale = scale_mat4((Vec3){
         .x = 10.0f,
         .y = 0.5f,
         .z = 10.0f,
-    };
+    });
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
         INSTANCES[i].matrix =
-            mul_mat4(translate_mat4(PLATFORM_POSITIONS[i]), scale_mat4(scale));
+            mul_mat4(translate_mat4(PLATFORM_POSITIONS[i]), scale);
         INSTANCES[i].color.x = cosf((f32)(i * 2));
         INSTANCES[i].color.y = sinf((f32)(i * 3));
         INSTANCES[i].color.z =
