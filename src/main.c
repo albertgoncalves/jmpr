@@ -56,7 +56,7 @@ static const f32 SPEED_MAX_SQUARED = SPEED_MAX * SPEED_MAX;
 
 static const Vec3 VIEW_UP = {
     .x = 0.0f, // NOTE: `x`-axis is left/right.
-    .y = 1.0f, // NOTE: `y`-axis is up/down.
+    .y = 1.0f, // NOTE: `y`-axis is down/up.
     .z = 0.0f, // NOTE: `z`-axis is forward/back.
 };
 
