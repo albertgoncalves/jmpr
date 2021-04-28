@@ -38,7 +38,6 @@ flags=(
     "-Wmissing-include-dirs"
     "-Wmissing-prototypes"
     "-Wnested-externs"
-    "-Wno-unused-function"
     "-Wnull-dereference"
     "-Wpacked"
     "-Wpedantic"

@@ -21,22 +21,8 @@ typedef union {
     Simd4f32 column[4];
 } Mat4;
 
-static void print_mat4(Mat4 m) {
-    for (u8 i = 0; i < 4; ++i) {
-        for (u8 j = 0; j < 4; ++j) {
-            fprintf(stderr, " %6.2f", m.cell[i][j]);
-        }
-        fprintf(stderr, "\n");
-    }
-    fprintf(stderr, "\n");
-}
-
 static f32 get_radians(f32 degrees) {
     return (degrees * PI) / 180.0f;
-}
-
-static f32 get_degrees(f32 radians) {
-    return (radians * 180.0f) / PI;
 }
 
 static Vec3 add_vec3(Vec3 l, Vec3 r) {
@@ -128,30 +114,6 @@ static Mat4 scale_mat4(Vec3 scale) {
     out.cell[0][0] = scale.x;
     out.cell[1][1] = scale.y;
     out.cell[2][2] = scale.z;
-    return out;
-}
-
-static Mat4 rotate_mat4(f32 radians, Vec3 axis) {
-    const Vec3 norm = norm_vec3(axis);
-    const f32  sin_theta = sinf(radians);
-    const f32  cos_theta = cosf(radians);
-    const f32  cos_delta = 1.0f - cos_theta;
-    const f32  norm_x_sin_theta = norm.x * sin_theta;
-    const f32  norm_y_sin_theta = norm.y * sin_theta;
-    const f32  norm_z_sin_theta = norm.z * sin_theta;
-    const f32  norm_xy_cos_delta = norm.x * norm.y * cos_delta;
-    const f32  norm_yz_cos_delta = norm.y * norm.z * cos_delta;
-    const f32  norm_xz_cos_delta = norm.x * norm.z * cos_delta;
-    Mat4       out = diag_mat4(1.0f);
-    out.cell[0][0] = (norm.x * norm.x * cos_delta) + cos_theta;
-    out.cell[0][1] = norm_xy_cos_delta + norm_z_sin_theta;
-    out.cell[0][2] = norm_xz_cos_delta - norm_y_sin_theta;
-    out.cell[1][0] = norm_xy_cos_delta - norm_z_sin_theta;
-    out.cell[1][1] = (norm.y * norm.y * cos_delta) + cos_theta;
-    out.cell[1][2] = norm_yz_cos_delta + norm_x_sin_theta;
-    out.cell[2][0] = norm_xz_cos_delta + norm_y_sin_theta;
-    out.cell[2][1] = norm_yz_cos_delta - norm_x_sin_theta;
-    out.cell[2][2] = (norm.z * norm.z * cos_delta) + cos_theta;
     return out;
 }
 
