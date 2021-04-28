@@ -37,4 +37,8 @@ typedef enum {
         ERROR(#condition)  \
     }
 
+#define MIN(a, b)     ((a) < (b) ? (a) : (b))
+#define MAX(a, b)     ((a) < (b) ? (b) : (a))
+#define CLIP(x, l, r) MIN((r), MAX((l), (x)))
+
 #endif

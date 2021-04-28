@@ -37,9 +37,9 @@ typedef struct {
 
 typedef struct {
     char buffer[SIZE_BUFFER];
-} Memory;
+} BufferMemory;
 
-static void set_file(Memory* memory, const char* filename) {
+static void set_file(BufferMemory* memory, const char* filename) {
     File* file = fopen(filename, "r");
     EXIT_IF(!file);
     fseek(file, 0, SEEK_END);
@@ -93,7 +93,7 @@ static GLFWwindow* get_window(const char* name) {
     return window;
 }
 
-static u32 get_shader(Memory* memory, const char* filename, u32 type) {
+static u32 get_shader(BufferMemory* memory, const char* filename, u32 type) {
     set_file(memory, filename);
     const u32   shader = glCreateShader(type);
     const char* source = memory->buffer;
@@ -112,9 +112,9 @@ static u32 get_shader(Memory* memory, const char* filename, u32 type) {
     return shader;
 }
 
-static u32 get_program(Memory* memory,
-                       u32     vertex_shader,
-                       u32     fragment_shader) {
+static u32 get_program(BufferMemory* memory,
+                       u32           vertex_shader,
+                       u32           fragment_shader) {
     const u32 program = glCreateProgram();
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);

@@ -1,4 +1,4 @@
-#include "scene.h"
+#include "spatial_hash.h"
 
 #include <unistd.h>
 
@@ -28,6 +28,11 @@ typedef struct {
     f32 fps_time;
     u8  fps_count;
 } Frame;
+
+typedef struct {
+    BufferMemory buffer;
+    GridMemory   grid;
+} Memory;
 
 #define INIT_PLAYER_POSITION_X 0.0f
 #define INIT_PLAYER_POSITION_Y 15.0f
@@ -258,7 +263,7 @@ static Cube get_cube_right(Player player) {
 #define WITHIN_SPEED_EPSILON(x) \
     ((-SPEED_EPSILON < (x)) && ((x) < SPEED_EPSILON))
 
-static void set_motion(State* state) {
+static void set_motion(GridMemory* memory, State* state) {
     if (state->player.position.y < WORLD_Y_MIN) {
         init_player(state);
         return;
@@ -270,10 +275,11 @@ static void set_motion(State* state) {
     if (state->player.speed.y <= 0.0f) {
         const Cube below = get_cube_below(state->player);
         state->player.position.y += state->player.speed.y;
-        for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-            if (INTERSECT_PLAYER_PLATFORM(below, PLATFORMS[i])) {
+        set_intersects(memory, below);
+        for (u8 i = 0; i < memory->len_intersects; ++i) {
+            if (INTERSECT_PLAYER_PLATFORM(below, (*memory->intersects[i]))) {
                 state->player.position.y =
-                    PLATFORMS[i].top_right_back.y + PLAYER_HEIGHT;
+                    memory->intersects[i]->top_right_back.y + PLAYER_HEIGHT;
                 state->player.speed.y = 0.0f;
                 x_speed = state->player.speed.x * FRICTION;
                 z_speed = state->player.speed.z * FRICTION;
@@ -286,9 +292,11 @@ static void set_motion(State* state) {
     } else {
         const Cube above = get_cube_above(state->player);
         state->player.position.y += state->player.speed.y;
-        for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-            if (INTERSECT_PLAYER_PLATFORM(above, PLATFORMS[i])) {
-                state->player.position.y = PLATFORMS[i].bottom_left_front.y;
+        set_intersects(memory, above);
+        for (u8 i = 0; i < memory->len_intersects; ++i) {
+            if (INTERSECT_PLAYER_PLATFORM(above, (*memory->intersects[i]))) {
+                state->player.position.y =
+                    memory->intersects[i]->bottom_left_front.y;
                 state->player.speed.y = 0.0f;
                 break;
             }
@@ -320,12 +328,16 @@ static void set_motion(State* state) {
     } else {
         state->player.position.z += state->player.speed.z;
     }
-    for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-        if (INTERSECT_PLAYER_PLATFORM(front_back, PLATFORMS[i])) {
+    set_intersects(memory, front_back);
+    for (u8 i = 0; i < memory->len_intersects; ++i) {
+        if (INTERSECT_PLAYER_PLATFORM(front_back, (*memory->intersects[i]))) {
             state->player.position.z -= state->player.speed.z;
             state->player.speed.z = 0.0f;
         }
-        if (INTERSECT_PLAYER_PLATFORM(left_right, PLATFORMS[i])) {
+    }
+    set_intersects(memory, left_right);
+    for (u8 i = 0; i < memory->len_intersects; ++i) {
+        if (INTERSECT_PLAYER_PLATFORM(left_right, (*memory->intersects[i]))) {
             state->player.position.x -= state->player.speed.x;
             state->player.speed.x = 0.0f;
         }
@@ -379,7 +391,7 @@ static void set_debug(Frame* frame, const State* state) {
     }
 }
 
-static void loop(GLFWwindow* window, u32 program) {
+static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
     State state = {0};
     init_player(&state);
     Frame frame = {0};
@@ -391,13 +403,16 @@ static void loop(GLFWwindow* window, u32 program) {
         .view = glGetUniformLocation(program, "U_VIEW"),
     };
     printf("\n\n\n\n");
+    set_bounds(memory);
+    set_span(memory);
+    set_grid(memory);
     while (!glfwWindowShouldClose(window)) {
         state.time = (f32)glfwGetTime();
         frame.time = state.time * MICROSECONDS;
         frame.delta += frame.time - frame.prev;
         while (FRAME_UPDATE_STEP < frame.delta) {
             set_input(window, &state);
-            set_motion(&state);
+            set_motion(memory, &state);
             frame.delta -= FRAME_UPDATE_STEP;
         }
         set_uniforms(uniforms, &state);
@@ -457,24 +472,34 @@ i32 main(i32 n, const char** args) {
            "sizeof(Mat4)           : %zu\n"
            "sizeof(Instance)       : %zu\n"
            "sizeof(Cube)           : %zu\n"
+           "sizeof(Native)         : %zu\n"
+           "sizeof(BufferMemory)   : %zu\n"
+           "sizeof(Index)          : %zu\n"
+           "sizeof(Range)          : %zu\n"
+           "sizeof(List)           : %zu\n"
+           "sizeof(GridMemory)     : %zu\n"
            "sizeof(Player)         : %zu\n"
            "sizeof(Frame)          : %zu\n"
            "sizeof(Uniforms)       : %zu\n"
            "sizeof(State)          : %zu\n"
-           "sizeof(Memory)         : %zu\n"
-           "sizeof(memory->buffer) : %zu\n\n",
+           "sizeof(Memory)         : %zu\n\n",
            glfwGetVersionString(),
            sizeof(Bool_),
            sizeof(Vec3),
            sizeof(Mat4),
            sizeof(Instance),
            sizeof(Cube),
+           sizeof(Native),
+           sizeof(BufferMemory),
+           sizeof(Index),
+           sizeof(Range),
+           sizeof(List),
+           sizeof(GridMemory),
            sizeof(Player),
            sizeof(Frame),
            sizeof(Uniforms),
            sizeof(State),
-           sizeof(Memory),
-           sizeof(memory->buffer));
+           sizeof(Memory));
     EXIT_IF(n < 3);
     glfwSetErrorCallback(error_callback);
     EXIT_IF(!glfwInit());
@@ -482,9 +507,9 @@ i32 main(i32 n, const char** args) {
     glfwSetCursorPosCallback(window, init_cursor_callback);
     glfwSetInputMode(window, GLFW_STICKY_KEYS, TRUE);
     const u32 program =
-        get_program(memory,
-                    get_shader(memory, args[1], GL_VERTEX_SHADER),
-                    get_shader(memory, args[2], GL_FRAGMENT_SHADER));
+        get_program(&memory->buffer,
+                    get_shader(&memory->buffer, args[1], GL_VERTEX_SHADER),
+                    get_shader(&memory->buffer, args[2], GL_FRAGMENT_SHADER));
     set_buffers();
     {
         const Native native = {
@@ -492,7 +517,7 @@ i32 main(i32 n, const char** args) {
             .window = glfwGetX11Window(window),
         };
         hide_cursor(native);
-        loop(window, program);
+        loop(window, &memory->grid, program);
         show_cursor(native);
     }
     glDeleteVertexArrays(1, &VAO);
