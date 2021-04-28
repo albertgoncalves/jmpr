@@ -155,9 +155,6 @@ static void set_grid(GridMemory* memory) {
 }
 
 static Cube get_within_bounds(GridMemory* memory, Cube cube) {
-    EXIT_IF((cube.top_right_back.x < cube.bottom_left_front.x) ||
-            (cube.top_right_back.y < cube.bottom_left_front.y) ||
-            (cube.top_right_back.z < cube.bottom_left_front.z));
     Vec3 top_right_back = (Vec3){
         .x = memory->bounds.top_right_back.x - GRID_EPSILON,
         .y = memory->bounds.top_right_back.y - GRID_EPSILON,
@@ -204,7 +201,6 @@ static void set_intersects(GridMemory* memory, Cube cube) {
                             goto next;
                         }
                     }
-                    EXIT_IF(COUNT_PLATFORMS <= memory->len_intersects);
                     memory->intersects[memory->len_intersects++] = list->cube;
                 next:
                     list = list->next;
