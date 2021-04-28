@@ -405,7 +405,7 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
     printf("\n\n\n\n");
     set_bounds(memory);
     set_span(memory);
-    set_grid(memory);
+    init_grid(memory);
     while (!glfwWindowShouldClose(window)) {
         state.time = (f32)glfwGetTime();
         frame.time = state.time * MICROSECONDS;
