@@ -140,6 +140,8 @@ static void push_grid(GridMemory* memory, Index grid_index, Cube* cube) {
 }
 
 static void set_grid(GridMemory* memory) {
+    memset(memory->grid, 0, sizeof(memory->grid));
+    memory->len_lists = 0;
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
         Range range = get_range(memory, PLATFORMS[i]);
         for (u8 x = range.bottom.x; x <= range.top.x; ++x) {
