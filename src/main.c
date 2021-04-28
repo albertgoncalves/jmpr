@@ -247,14 +247,13 @@ static Cube get_cube_right(Player player) {
     };
 }
 
-static Bool_ intersect_player_platform(Cube player, Cube platform) {
-    return (player.bottom_left_front.x < platform.top_right_back.x) &&
-        (platform.bottom_left_front.x < player.top_right_back.x) &&
-        (player.bottom_left_front.y < platform.top_right_back.y) &&
-        (platform.bottom_left_front.y < player.top_right_back.y) &&
-        (player.bottom_left_front.z < platform.top_right_back.z) &&
-        (platform.bottom_left_front.z < player.top_right_back.z);
-}
+#define INTERSECT_PLAYER_PLATFORM(player, platform)              \
+    ((player.bottom_left_front.x < platform.top_right_back.x) && \
+     (platform.bottom_left_front.x < player.top_right_back.x) && \
+     (player.bottom_left_front.y < platform.top_right_back.y) && \
+     (platform.bottom_left_front.y < player.top_right_back.y) && \
+     (player.bottom_left_front.z < platform.top_right_back.z) && \
+     (platform.bottom_left_front.z < player.top_right_back.z))
 
 #define WITHIN_SPEED_EPSILON(x) \
     ((-SPEED_EPSILON < (x)) && ((x) < SPEED_EPSILON))
@@ -272,7 +271,7 @@ static void set_motion(State* state) {
         const Cube below = get_cube_below(state->player);
         state->player.position.y += state->player.speed.y;
         for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-            if (intersect_player_platform(below, PLATFORMS[i])) {
+            if (INTERSECT_PLAYER_PLATFORM(below, PLATFORMS[i])) {
                 state->player.position.y =
                     PLATFORMS[i].top_right_back.y + PLAYER_HEIGHT;
                 state->player.speed.y = 0.0f;
@@ -288,7 +287,7 @@ static void set_motion(State* state) {
         const Cube above = get_cube_above(state->player);
         state->player.position.y += state->player.speed.y;
         for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-            if (intersect_player_platform(above, PLATFORMS[i])) {
+            if (INTERSECT_PLAYER_PLATFORM(above, PLATFORMS[i])) {
                 state->player.position.y = PLATFORMS[i].bottom_left_front.y;
                 state->player.speed.y = 0.0f;
                 break;
@@ -322,11 +321,11 @@ static void set_motion(State* state) {
         state->player.position.z += state->player.speed.z;
     }
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-        if (intersect_player_platform(front_back, PLATFORMS[i])) {
+        if (INTERSECT_PLAYER_PLATFORM(front_back, PLATFORMS[i])) {
             state->player.position.z -= state->player.speed.z;
             state->player.speed.z = 0.0f;
         }
-        if (intersect_player_platform(left_right, PLATFORMS[i])) {
+        if (INTERSECT_PLAYER_PLATFORM(left_right, PLATFORMS[i])) {
             state->player.position.x -= state->player.speed.x;
             state->player.speed.x = 0.0f;
         }
