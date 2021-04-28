@@ -130,7 +130,6 @@ static void push_grid(GridMemory* memory, Index grid_index, Cube* cube) {
     List* list = alloc_list(memory);
     list->cube = cube;
     if (!grid->next) {
-        EXIT_IF(grid->last);
         grid->next = list;
         grid->last = list;
         return;
