@@ -56,25 +56,25 @@ static const u32 INDICES[] = {
     20, 21, 22,
     22, 23, 20,
 };
-// clang-format on
 
 #define VERTEX_OFFSET 0
 
 static const Vec3 PLATFORM_POSITIONS[] = {
-    {.x = 0.0f, .y = 4.0f, .z = 0.0f},
-    {.x = 0.0f, .y = 6.0f, .z = -10.0f},
-    {.x = 0.0f, .y = 8.0f, .z = -20.0f},
-    {.x = 10.0f, .y = 10.0f, .z = -20.0f},
-    {.x = 10.0f, .y = 12.0f, .z = -10.0f},
-    {.x = 10.0f, .y = 14.0f, .z = 0.0f},
-    {.x = 10.0f, .y = 4.0f, .z = 0.0f},
-    {.x = 10.0f, .y = 4.0f, .z = -10.0f},
-    {.x = 10.0f, .y = 4.0f, .z = -20.0f},
-    {.x = -20.0f, .y = 6.0f, .z = 0.0f},
-    {.x = -10.0f, .y = 0.0f, .z = -10.0f},
-    {.x = -20.0f, .y = 2.5f, .z = -10.0f},
-    {.x = -6.25f, .y = 4.125f, .z = -25.0f},
+    {.x =   0.0f, .y =  4.0f,   .z =   0.0f},
+    {.x =   0.0f, .y =  6.0f,   .z = -10.0f},
+    {.x =   0.0f, .y =  8.0f,   .z = -20.0f},
+    {.x =  10.0f, .y = 10.0f,   .z = -20.0f},
+    {.x =  10.0f, .y = 12.0f,   .z = -10.0f},
+    {.x =  10.0f, .y = 14.0f,   .z =   0.0f},
+    {.x =  10.0f, .y =  4.0f,   .z =   0.0f},
+    {.x =  10.0f, .y =  4.0f,   .z = -10.0f},
+    {.x =  10.0f, .y =  4.0f,   .z = -20.0f},
+    {.x = -20.0f, .y =  6.0f,   .z =   0.0f},
+    {.x = -10.0f, .y =  0.0f,   .z = -10.0f},
+    {.x = -20.0f, .y =  2.5f,   .z = -10.0f},
+    {.x = -6.25f, .y =  4.125f, .z = -25.0f},
 };
+// clang-format on
 
 #define COUNT_PLATFORMS \
     (sizeof(PLATFORM_POSITIONS) / sizeof(PLATFORM_POSITIONS[0]))
