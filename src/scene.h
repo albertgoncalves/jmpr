@@ -95,9 +95,9 @@ static u32 FBO;
 static u32 RBO;
 static u32 DBO;
 
-static const u32 INDEX_VERTEX = 0;
-static const u32 INDEX_NORMAL = 1;
-static const u32 INDEX_INSTANCE = 2;
+#define INDEX_VERTEX   0
+#define INDEX_NORMAL   1
+#define INDEX_INSTANCE 2
 
 static Cube get_cube_mat4(Mat4 m) {
     const f32 width_half = m.cell[0][0] / 2.0f;

@@ -42,8 +42,8 @@ typedef struct {
 #define PLAYER_HEIGHT 4.0f
 #define PLAYER_DEPTH  1.5f
 
-static const f32 PLAYER_WIDTH_HALF = PLAYER_WIDTH / 2.0f;
-static const f32 PLAYER_DEPTH_HALF = PLAYER_DEPTH / 2.0f;
+#define PLAYER_WIDTH_HALF (PLAYER_WIDTH / 2.0f)
+#define PLAYER_DEPTH_HALF (PLAYER_DEPTH / 2.0f)
 
 #define RUN      0.00325f
 #define FRICTION 0.96f
@@ -52,18 +52,19 @@ static const f32 PLAYER_DEPTH_HALF = PLAYER_DEPTH / 2.0f;
 #define SPEED_MAX     0.125f
 #define SPEED_EPSILON 0.0001f
 
-static const f32 SPEED_MAX_SQUARED = SPEED_MAX * SPEED_MAX;
+#define SPEED_MAX_SQUARED (SPEED_MAX * SPEED_MAX)
 
 #define WORLD_Y_MIN -20.0f
 
 #define JUMP    0.0585f
 #define GRAVITY 0.000345f
 
-static const Vec3 VIEW_UP = {
-    .x = 0.0f, // NOTE: `x`-axis is left/right.
-    .y = 1.0f, // NOTE: `y`-axis is down/up.
-    .z = 0.0f, // NOTE: `z`-axis is forward/back.
-};
+#define VIEW_UP                                          \
+    ((Vec3){                                             \
+        .x = 0.0f, /* NOTE: `x`-axis is left/right.   */ \
+        .y = 1.0f, /* NOTE: `y`-axis is down/up.      */ \
+        .z = 0.0f, /* NOTE: `z`-axis is forward/back. */ \
+    })
 
 static Vec3 VIEW_TARGET;
 
@@ -87,8 +88,8 @@ static f32 VIEW_PITCH = 0.0f;
 
 #define FRAME_UPDATE_COUNT 8
 
-static const f32 FRAME_DURATION = (1.0f / 60.0f) * MICROSECONDS;
-static const f32 FRAME_UPDATE_STEP = FRAME_DURATION / FRAME_UPDATE_COUNT;
+#define FRAME_DURATION    ((1.0f / 60.0f) * MICROSECONDS)
+#define FRAME_UPDATE_STEP (FRAME_DURATION / FRAME_UPDATE_COUNT)
 
 #define NORM_CROSS(a, b) norm_vec3(cross_vec3(a, b))
 

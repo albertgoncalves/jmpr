@@ -25,8 +25,8 @@ static i32 WINDOW_HEIGHT = INIT_WINDOW_HEIGHT;
 
 #define FBO_SCALE 4
 
-static const i32 FBO_WIDTH = INIT_WINDOW_WIDTH / FBO_SCALE;
-static const i32 FBO_HEIGHT = INIT_WINDOW_HEIGHT / FBO_SCALE;
+#define FBO_WIDTH  (INIT_WINDOW_WIDTH / FBO_SCALE)
+#define FBO_HEIGHT (INIT_WINDOW_HEIGHT / FBO_SCALE)
 
 typedef struct {
     Display* display;
