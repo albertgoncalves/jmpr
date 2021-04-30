@@ -9,7 +9,7 @@
 
 #define GRID_EPSILON 0.01f
 
-#define GRID_COUNT_LISTS 64
+#define GRID_CAP_LISTS 64
 
 typedef struct {
     u8 x;
@@ -34,14 +34,14 @@ typedef struct {
     List  grid[GRID_COUNT_X][GRID_COUNT_Y][GRID_COUNT_Z];
     Cube  bounds;
     Vec3  span;
-    List  lists[GRID_COUNT_LISTS];
+    List  lists[GRID_CAP_LISTS];
     u8    len_lists;
     Cube* intersects[COUNT_PLATFORMS];
     u8    len_intersects;
 } GridMemory;
 
 static List* alloc_list(GridMemory* memory) {
-    EXIT_IF(GRID_COUNT_LISTS <= memory->len_lists);
+    EXIT_IF(GRID_CAP_LISTS <= memory->len_lists);
     List* list = &memory->lists[memory->len_lists++];
     list->cube = NULL;
     list->next = NULL;
