@@ -313,11 +313,11 @@ static void set_motion(GridMemory* memory, State* state) {
     }
     state->player.position.y += GRAVITY;
     const Cube front_back = state->player.speed.z < 0.0f
-        ? get_cube_front(state->player)
-        : get_cube_back(state->player);
+                                ? get_cube_front(state->player)
+                                : get_cube_back(state->player);
     const Cube left_right = state->player.speed.x < 0.0f
-        ? get_cube_left(state->player)
-        : get_cube_right(state->player);
+                                ? get_cube_left(state->player)
+                                : get_cube_right(state->player);
     state->player.position.y -= GRAVITY;
     if (WITHIN_SPEED_EPSILON(state->player.speed.x)) {
         state->player.speed.x = 0.0f;

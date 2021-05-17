@@ -76,11 +76,11 @@ static void set_bounds(GridMemory* memory) {
 static void set_span(GridMemory* memory) {
     memory->span = (Vec3){
         .x = memory->bounds.top_right_back.x -
-            memory->bounds.bottom_left_front.x,
+             memory->bounds.bottom_left_front.x,
         .y = memory->bounds.top_right_back.y -
-            memory->bounds.bottom_left_front.y,
+             memory->bounds.bottom_left_front.y,
         .z = memory->bounds.top_right_back.z -
-            memory->bounds.bottom_left_front.z,
+             memory->bounds.bottom_left_front.z,
     };
 }
 
