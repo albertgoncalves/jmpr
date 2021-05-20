@@ -78,8 +78,8 @@ static Simd4f32 linear_combine(Simd4f32 l, Mat4 r) {
     Simd4f32 out;
     out = _mm_mul_ps(_mm_shuffle_ps(l, l, 0x00), r.column[0]);
     out = _mm_add_ps(out, _mm_mul_ps(_mm_shuffle_ps(l, l, 0x55), r.column[1]));
-    out = _mm_add_ps(out, _mm_mul_ps(_mm_shuffle_ps(l, l, 0xaa), r.column[2]));
-    out = _mm_add_ps(out, _mm_mul_ps(_mm_shuffle_ps(l, l, 0xff), r.column[3]));
+    out = _mm_add_ps(out, _mm_mul_ps(_mm_shuffle_ps(l, l, 0xAA), r.column[2]));
+    out = _mm_add_ps(out, _mm_mul_ps(_mm_shuffle_ps(l, l, 0xFF), r.column[3]));
     return out;
 }
 
