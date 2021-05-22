@@ -1,7 +1,7 @@
 with import <nixpkgs> {};
 mkShell {
     buildInputs = [
-        clang_10
+        clang_11
         cmake
         cppcheck
         doxygen

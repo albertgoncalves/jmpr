@@ -121,7 +121,7 @@ static Mat4 perspective_mat4(f32 fov_radians,
                              f32 aspect_ratio,
                              f32 near,
                              f32 far) {
-    const f32 cotangent = 1.0f / tanf(fov_radians / 2.0);
+    const f32 cotangent = 1.0f / tanf(fov_radians / 2.0f);
     return (Mat4){
         .cell[0][0] = cotangent / aspect_ratio,
         .cell[1][1] = cotangent,
