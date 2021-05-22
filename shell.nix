@@ -1,7 +1,6 @@
 with import <nixpkgs> {};
-mkShell {
+mkShell.override { stdenv = llvmPackages_11.stdenv; } {
     buildInputs = [
-        clang_11
         cmake
         cppcheck
         doxygen
