@@ -371,24 +371,23 @@ static void set_debug(Frame* frame, const State* state) {
         usleep((u32)(FRAME_DURATION - elapsed));
     }
     if (++frame->fps_count == 60) {
-        printf(
-            "\033[5A"
-            "elapsed ms :%8.2f\n"
-            "fps        :%8.2f\n"
-            "position   :%8.2f%8.2f%8.2f\n"
-            "speed      :%8.2f%8.2f%8.2f\n"
-            "target     :%8.2f%8.2f%8.2f\n",
-            (f64)(((now - frame->fps_time) / frame->fps_count) / MILLISECONDS),
-            (f64)((frame->fps_count / (now - frame->fps_time)) * MICROSECONDS),
-            (f64)state->player.position.x,
-            (f64)state->player.position.y,
-            (f64)state->player.position.z,
-            (f64)state->player.speed.x,
-            (f64)state->player.speed.y,
-            (f64)state->player.speed.z,
-            (f64)VIEW_TARGET.x,
-            (f64)VIEW_TARGET.y,
-            (f64)VIEW_TARGET.z);
+        printf("\033[5A"
+               "fps      %8.2f\n"
+               "mspf     %8.2f\n"
+               "position %8.2f%8.2f%8.2f\n"
+               "speed    %8.2f%8.2f%8.2f\n"
+               "target   %8.2f%8.2f%8.2f\n",
+               ((frame->fps_count / (now - frame->fps_time)) * MICROSECONDS),
+               (((now - frame->fps_time) / frame->fps_count) / MILLISECONDS),
+               state->player.position.x,
+               state->player.position.y,
+               state->player.position.z,
+               state->player.speed.x,
+               state->player.speed.y,
+               state->player.speed.z,
+               VIEW_TARGET.x,
+               VIEW_TARGET.y,
+               VIEW_TARGET.z);
         frame->fps_time = (f32)glfwGetTime() * MICROSECONDS;
         frame->fps_count = 0;
     }
