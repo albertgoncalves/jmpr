@@ -18,8 +18,6 @@ flags=(
     "-g"
     "-march=native"
     "-O1"
-    "-pedantic"
-    "-pedantic-errors"
     "-Werror"
     "-Weverything"
     "-Wno-disabled-macro-expansion"
