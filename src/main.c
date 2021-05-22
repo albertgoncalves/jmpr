@@ -49,9 +49,8 @@ typedef struct {
 #define FRICTION 0.96f
 #define DRAG     0.99f
 
-#define SPEED_MAX     0.125f
-#define SPEED_EPSILON 0.0001f
-
+#define SPEED_MAX         0.125f
+#define SPEED_EPSILON     0.0001f
 #define SPEED_MAX_SQUARED (SPEED_MAX * SPEED_MAX)
 
 #define WORLD_Y_MIN -20.0f
@@ -85,11 +84,11 @@ static f32 VIEW_PITCH = 0.0f;
 #define PITCH_LIMIT 89.0f
 
 #define MICROSECONDS 1000000.0f
+#define MILLISECONDS 1000.0f
 
-#define FRAME_UPDATE_COUNT 8
-
-#define FRAME_DURATION    ((1.0f / 60.0f) * MICROSECONDS)
-#define FRAME_UPDATE_STEP (FRAME_DURATION / FRAME_UPDATE_COUNT)
+#define FRAME_UPDATE_COUNT 8.0f
+#define FRAME_DURATION     ((1.0f / 60.0f) * MICROSECONDS)
+#define FRAME_UPDATE_STEP  (FRAME_DURATION / FRAME_UPDATE_COUNT)
 
 #define NORM_CROSS(a, b) norm_vec3(cross_vec3(a, b))
 
@@ -371,23 +370,26 @@ static void set_debug(Frame* frame, const State* state) {
     if (elapsed < FRAME_DURATION) {
         usleep((u32)(FRAME_DURATION - elapsed));
     }
-    if (++frame->fps_count == 30) {
-        printf("\033[4A"
-               "fps      :%8.2f\n"
-               "position :%8.2f%8.2f%8.2f\n"
-               "speed    :%8.2f%8.2f%8.2f\n"
-               "target   :%8.2f%8.2f%8.2f\n",
-               (frame->fps_count / (now - frame->fps_time)) * MICROSECONDS,
-               state->player.position.x,
-               state->player.position.y,
-               state->player.position.z,
-               state->player.speed.x,
-               state->player.speed.y,
-               state->player.speed.z,
-               VIEW_TARGET.x,
-               VIEW_TARGET.y,
-               VIEW_TARGET.z);
-        frame->fps_time = frame->time;
+    if (++frame->fps_count == 60) {
+        printf(
+            "\033[5A"
+            "elapsed ms :%8.2f\n"
+            "fps        :%8.2f\n"
+            "position   :%8.2f%8.2f%8.2f\n"
+            "speed      :%8.2f%8.2f%8.2f\n"
+            "target     :%8.2f%8.2f%8.2f\n",
+            (f64)(((now - frame->fps_time) / frame->fps_count) / MILLISECONDS),
+            (f64)((frame->fps_count / (now - frame->fps_time)) * MICROSECONDS),
+            (f64)state->player.position.x,
+            (f64)state->player.position.y,
+            (f64)state->player.position.z,
+            (f64)state->player.speed.x,
+            (f64)state->player.speed.y,
+            (f64)state->player.speed.z,
+            (f64)VIEW_TARGET.x,
+            (f64)VIEW_TARGET.y,
+            (f64)VIEW_TARGET.z);
+        frame->fps_time = (f32)glfwGetTime() * MICROSECONDS;
         frame->fps_count = 0;
     }
 }
@@ -403,7 +405,7 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
         .projection = glGetUniformLocation(program, "U_PROJECTION"),
         .view = glGetUniformLocation(program, "U_VIEW"),
     };
-    printf("\n\n\n\n");
+    printf("\n\n\n\n\n");
     set_bounds(memory);
     set_span(memory);
     init_grid(memory);

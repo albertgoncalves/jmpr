@@ -24,6 +24,7 @@ flags=(
     "-Wcast-qual"
     "-Wconversion"
     "-Wdate-time"
+    "-Wdouble-promotion"
     "-Wduplicated-branches"
     "-Wduplicated-cond"
     "-Werror"
