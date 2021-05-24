@@ -2,7 +2,6 @@ with import <nixpkgs> {};
 mkShell.override { stdenv = llvmPackages_11.stdenv; } {
     buildInputs = [
         cmake
-        cppcheck
         doxygen
         libGL
         linuxPackages.perf

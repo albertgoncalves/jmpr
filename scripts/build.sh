@@ -17,12 +17,13 @@ flags=(
     "-fshort-enums"
     "-g"
     "-march=native"
-    "-O1"
+    "-O0"
     "-Werror"
     "-Weverything"
     "-Wno-disabled-macro-expansion"
     "-Wno-documentation"
     "-Wno-documentation-unknown-command"
+    "-Wno-error=#warnings"
     "-Wno-extra-semi-stmt"
     "-Wno-missing-noreturn"
     "-Wno-padded"
@@ -46,8 +47,7 @@ now () {
 
 (
     start=$(now)
-    cppcheck --enable=all "$WD/src" \ | sed 's/\/.*\/\(.*\) \.\.\./\1/g'
-    clang-format -i -verbose "$WD/src"/* 2>&1 | sed 's/\/.*\///g'
+    clang-format -i -verbose "$WD/src"/*
     clang \
         "${paths[@]}" \
         "${libs[@]}" \
