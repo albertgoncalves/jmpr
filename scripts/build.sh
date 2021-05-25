@@ -28,7 +28,6 @@ flags=(
     "-Wno-disabled-macro-expansion"
     "-Wno-documentation"
     "-Wno-documentation-unknown-command"
-    "-Wno-error=deprecated"
     "-Wno-extra-semi-stmt"
     "-Wno-missing-noreturn"
     "-Wno-padded"
@@ -58,7 +57,7 @@ now () {
         "${libs[@]}" \
         "${flags[@]}" \
         -o "$WD/bin/main" \
-        "$WD/src/main.c"
+        "$WD/src/main.cpp"
     end=$(now)
     python3 -c "print(\"Compiled! ({:.3f}s)\n\".format(${end} - ${start}))"
 )
