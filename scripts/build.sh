@@ -14,16 +14,21 @@ fi
 
 flags=(
     "-ferror-limit=1"
+    "-fno-exceptions"
+    "-fno-math-errno"
+    "-fno-rtti"
+    "-fno-unwind-tables"
     "-fshort-enums"
     "-g"
     "-march=native"
-    "-O0"
     "-Werror"
     "-Weverything"
+    "-Wno-c++98-compat-pedantic"
+    "-Wno-c99-extensions"
     "-Wno-disabled-macro-expansion"
     "-Wno-documentation"
     "-Wno-documentation-unknown-command"
-    "-Wno-error=#warnings"
+    "-Wno-error=deprecated"
     "-Wno-extra-semi-stmt"
     "-Wno-missing-noreturn"
     "-Wno-padded"
@@ -48,7 +53,7 @@ now () {
 (
     start=$(now)
     clang-format -i -verbose "$WD/src"/*
-    clang \
+    clang++ \
         "${paths[@]}" \
         "${libs[@]}" \
         "${flags[@]}" \
