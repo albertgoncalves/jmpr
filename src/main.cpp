@@ -34,17 +34,6 @@ typedef struct {
     GridMemory   grid;
 } Memory;
 
-#define INIT_PLAYER_POSITION_X 0.0f
-#define INIT_PLAYER_POSITION_Y 15.0f
-#define INIT_PLAYER_POSITION_Z 5.0f
-
-#define PLAYER_WIDTH  1.5f
-#define PLAYER_HEIGHT 4.0f
-#define PLAYER_DEPTH  1.5f
-
-#define PLAYER_WIDTH_HALF (PLAYER_WIDTH / 2.0f)
-#define PLAYER_DEPTH_HALF (PLAYER_DEPTH / 2.0f)
-
 #define RUN      0.00325f
 #define FRICTION 0.96f
 #define DRAG     0.99f
@@ -58,6 +47,20 @@ typedef struct {
 #define JUMP    0.0585f
 #define GRAVITY 0.000345f
 
+#define INIT_PLAYER_POSITION \
+    ((Vec3){                 \
+        0.0f,                \
+        15.0f,               \
+        5.0f,                \
+    })
+
+#define PLAYER_WIDTH  1.5f
+#define PLAYER_HEIGHT 4.0f
+#define PLAYER_DEPTH  1.5f
+
+#define PLAYER_WIDTH_HALF (PLAYER_WIDTH / 2.0f)
+#define PLAYER_DEPTH_HALF (PLAYER_DEPTH / 2.0f)
+
 #define VIEW_UP                                     \
     ((Vec3){                                        \
         0.0f, /* NOTE: `x`-axis is left/right.   */ \
@@ -66,6 +69,13 @@ typedef struct {
     })
 
 static Vec3 VIEW_TARGET;
+
+#define INIT_VIEW_TARGET \
+    ((Vec3){             \
+        0.0f,            \
+        0.0f,            \
+        -1.0f,           \
+    })
 
 #define CURSOR_SENSITIVITY 0.1f
 
@@ -128,17 +138,11 @@ static void set_input(GLFWwindow* window, State* state) {
 }
 
 static void init_player(State* state) {
-    state->player.position.x = INIT_PLAYER_POSITION_X;
-    state->player.position.y = INIT_PLAYER_POSITION_Y;
-    state->player.position.z = INIT_PLAYER_POSITION_Z;
-    state->player.speed.x = 0.0f;
-    state->player.speed.y = 0.0f;
-    state->player.speed.z = 0.0f;
+    state->player.position = INIT_PLAYER_POSITION;
+    state->player.speed = {};
     state->player.can_jump = FALSE;
     state->player.jump_key_released = FALSE;
-    VIEW_TARGET.x = 0.0f;
-    VIEW_TARGET.y = 0.0f;
-    VIEW_TARGET.z = -1.0f;
+    VIEW_TARGET = INIT_VIEW_TARGET;
     CURSOR_X_DELTA = 0.0f;
     CURSOR_Y_DELTA = 0.0f;
     VIEW_YAW = -90.0f;
