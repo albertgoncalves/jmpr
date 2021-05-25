@@ -1,4 +1,4 @@
-#include "spatial_hash.h"
+#include "spatial_hash.hpp"
 
 #include <unistd.h>
 

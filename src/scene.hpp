@@ -1,8 +1,8 @@
 #ifndef __SCENE_H__
 #define __SCENE_H__
 
-#include "init.h"
-#include "math.h"
+#include "init.hpp"
+#include "math.hpp"
 
 typedef struct {
     Mat4 matrix;
