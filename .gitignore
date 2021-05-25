@@ -12,5 +12,3 @@
 !*.hpp
 !*.cpp
 !*.glsl
-!main
-!profile
