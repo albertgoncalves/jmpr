@@ -7,6 +7,13 @@
 #define GRID_COUNT_Y 10
 #define GRID_COUNT_Z 10
 
+#define GRID_COUNT_VEC3 \
+    ((Vec3){            \
+        GRID_COUNT_X,   \
+        GRID_COUNT_Y,   \
+        GRID_COUNT_Z,   \
+    })
+
 #define GRID_EPSILON 0.01f
 
 #define GRID_CAP_LISTS 64
@@ -52,70 +59,40 @@ static List* alloc_list(GridMemory* memory) {
 static void set_bounds(GridMemory* memory) {
     memory->bounds = PLATFORMS[0];
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-        memory->bounds.bottom_left_front.x =
-            MIN(memory->bounds.bottom_left_front.x,
-                PLATFORMS[i].bottom_left_front.x);
-        memory->bounds.bottom_left_front.y =
-            MIN(memory->bounds.bottom_left_front.y,
-                PLATFORMS[i].bottom_left_front.y);
-        memory->bounds.bottom_left_front.z =
-            MIN(memory->bounds.bottom_left_front.z,
-                PLATFORMS[i].bottom_left_front.z);
-        memory->bounds.top_right_back.x = MAX(memory->bounds.top_right_back.x,
-                                              PLATFORMS[i].top_right_back.x);
-        memory->bounds.top_right_back.y = MAX(memory->bounds.top_right_back.y,
-                                              PLATFORMS[i].top_right_back.y);
-        memory->bounds.top_right_back.z = MAX(memory->bounds.top_right_back.z,
-                                              PLATFORMS[i].top_right_back.z);
+        memory->bounds.bottom_left_front =
+            min(memory->bounds.bottom_left_front,
+                PLATFORMS[i].bottom_left_front);
+        memory->bounds.top_right_back =
+            max(memory->bounds.top_right_back, PLATFORMS[i].top_right_back);
     }
-    memory->bounds.top_right_back.x += GRID_EPSILON;
-    memory->bounds.top_right_back.y += GRID_EPSILON;
-    memory->bounds.top_right_back.z += GRID_EPSILON;
+    memory->bounds.top_right_back += GRID_EPSILON;
 }
 
 static void set_span(GridMemory* memory) {
-    memory->span = (Vec3){
-        .x = memory->bounds.top_right_back.x -
-             memory->bounds.bottom_left_front.x,
-        .y = memory->bounds.top_right_back.y -
-             memory->bounds.bottom_left_front.y,
-        .z = memory->bounds.top_right_back.z -
-             memory->bounds.bottom_left_front.z,
-    };
+    memory->span =
+        memory->bounds.top_right_back - memory->bounds.bottom_left_front;
 }
 
 static Range get_range(GridMemory* memory, Cube cube) {
-    return (Range){
-        .bottom =
-            (Index){
-                .x = (u8)(((cube.bottom_left_front.x -
-                            memory->bounds.bottom_left_front.x) /
-                           memory->span.x) *
-                          GRID_COUNT_X),
-                .y = (u8)(((cube.bottom_left_front.y -
-                            memory->bounds.bottom_left_front.y) /
-                           memory->span.y) *
-                          GRID_COUNT_Y),
-                .z = (u8)(((cube.bottom_left_front.z -
-                            memory->bounds.bottom_left_front.z) /
-                           memory->span.z) *
-                          GRID_COUNT_Z),
-            },
-        .top =
-            (Index){
-                .x = (u8)(((cube.top_right_back.x -
-                            memory->bounds.bottom_left_front.x) /
-                           memory->span.x) *
-                          GRID_COUNT_X),
-                .y = (u8)(((cube.top_right_back.y -
-                            memory->bounds.bottom_left_front.y) /
-                           memory->span.y) *
-                          GRID_COUNT_Y),
-                .z = (u8)(((cube.top_right_back.z -
-                            memory->bounds.bottom_left_front.z) /
-                           memory->span.z) *
-                          GRID_COUNT_Z),
-            },
+    const Vec3 bottom_left_front =
+        ((cube.bottom_left_front - memory->bounds.bottom_left_front) /
+         memory->span) *
+        GRID_COUNT_VEC3;
+    const Vec3 top_right_back =
+        ((cube.top_right_back - memory->bounds.bottom_left_front) /
+         memory->span) *
+        GRID_COUNT_VEC3;
+    return {
+        {
+            static_cast<u8>(bottom_left_front.x),
+            static_cast<u8>(bottom_left_front.y),
+            static_cast<u8>(bottom_left_front.z),
+        },
+        {
+            static_cast<u8>(top_right_back.x),
+            static_cast<u8>(top_right_back.y),
+            static_cast<u8>(top_right_back.z),
+        },
     };
 }
 
@@ -156,36 +133,14 @@ static void init_grid(GridMemory* memory) {
 }
 
 static Cube get_within_bounds(GridMemory* memory, Cube cube) {
-    Vec3 top_right_back = (Vec3){
-        .x = memory->bounds.top_right_back.x - GRID_EPSILON,
-        .y = memory->bounds.top_right_back.y - GRID_EPSILON,
-        .z = memory->bounds.top_right_back.z - GRID_EPSILON,
-    };
-    return (Cube){
-        .bottom_left_front =
-            {
-                .x = CLIP(cube.bottom_left_front.x,
-                          memory->bounds.bottom_left_front.x,
-                          top_right_back.x),
-                .y = CLIP(cube.bottom_left_front.y,
-                          memory->bounds.bottom_left_front.y,
-                          top_right_back.y),
-                .z = CLIP(cube.bottom_left_front.z,
-                          memory->bounds.bottom_left_front.z,
-                          top_right_back.z),
-            },
-        .top_right_back =
-            {
-                .x = CLIP(cube.top_right_back.x,
-                          memory->bounds.bottom_left_front.x,
-                          top_right_back.x),
-                .y = CLIP(cube.top_right_back.y,
-                          memory->bounds.bottom_left_front.y,
-                          top_right_back.y),
-                .z = CLIP(cube.top_right_back.z,
-                          memory->bounds.bottom_left_front.z,
-                          top_right_back.z),
-            },
+    const Vec3 top_right_back = memory->bounds.top_right_back - GRID_EPSILON;
+    return {
+        clip(cube.bottom_left_front,
+             memory->bounds.bottom_left_front,
+             top_right_back),
+        clip(cube.top_right_back,
+             memory->bounds.bottom_left_front,
+             top_right_back),
     };
 }
 

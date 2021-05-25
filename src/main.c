@@ -90,7 +90,7 @@ static f32 VIEW_PITCH = 0.0f;
 #define FRAME_DURATION     ((1.0f / 60.0f) * MICROSECONDS)
 #define FRAME_UPDATE_STEP  (FRAME_DURATION / FRAME_UPDATE_COUNT)
 
-#define NORM_CROSS(a, b) norm_vec3(cross_vec3(a, b))
+#define NORM_CROSS(a, b) norm(cross(a, b))
 
 static void set_input(GLFWwindow* window, State* state) {
     glfwPollEvents();
@@ -98,26 +98,22 @@ static void set_input(GLFWwindow* window, State* state) {
         glfwSetWindowShouldClose(window, TRUE);
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        state->player.speed = sub_vec3(
-            state->player.speed,
-            mul_vec3_f32(NORM_CROSS(cross_vec3(VIEW_TARGET, VIEW_UP), VIEW_UP),
-                         RUN));
+        state->player.speed =
+            state->player.speed -
+            (NORM_CROSS(cross(VIEW_TARGET, VIEW_UP), VIEW_UP) * RUN);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         state->player.speed =
-            add_vec3(state->player.speed,
-                     mul_vec3_f32(NORM_CROSS(VIEW_TARGET, VIEW_UP), RUN));
+            state->player.speed + (NORM_CROSS(VIEW_TARGET, VIEW_UP) * RUN);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        state->player.speed = add_vec3(
-            state->player.speed,
-            mul_vec3_f32(NORM_CROSS(cross_vec3(VIEW_TARGET, VIEW_UP), VIEW_UP),
-                         RUN));
+        state->player.speed =
+            state->player.speed +
+            (NORM_CROSS(cross(VIEW_TARGET, VIEW_UP), VIEW_UP) * RUN);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         state->player.speed =
-            sub_vec3(state->player.speed,
-                     mul_vec3_f32(NORM_CROSS(VIEW_TARGET, VIEW_UP), RUN));
+            state->player.speed - (NORM_CROSS(VIEW_TARGET, VIEW_UP) * RUN);
     }
     if ((glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) &&
         (state->player.can_jump))
@@ -350,16 +346,15 @@ static void set_uniforms(Uniforms uniforms, const State* state) {
                 state->player.position.x,
                 state->player.position.y,
                 state->player.position.z);
-    const Mat4 projection =
-        perspective_mat4(get_radians(45.0f),
-                         (f32)WINDOW_WIDTH / (f32)WINDOW_HEIGHT,
-                         VIEW_NEAR,
-                         VIEW_FAR);
+    const Mat4 projection = perspective(get_radians(45.0f),
+                                        static_cast<f32>(WINDOW_WIDTH) /
+                                            static_cast<f32>(WINDOW_HEIGHT),
+                                        VIEW_NEAR,
+                                        VIEW_FAR);
     glUniformMatrix4fv(uniforms.projection, 1, FALSE, &projection.cell[0][0]);
-    const Mat4 view =
-        look_at_mat4(state->player.position,
-                     add_vec3(state->player.position, VIEW_TARGET),
-                     VIEW_UP);
+    const Mat4 view = look_at(state->player.position,
+                              state->player.position + VIEW_TARGET,
+                              VIEW_UP);
     glUniformMatrix4fv(uniforms.view, 1, FALSE, &view.cell[0][0]);
     CHECK_GL_ERROR();
 }
@@ -451,7 +446,7 @@ static void error_callback(i32 code, const char* error) {
         VIEW_TARGET.y = sinf(get_radians(VIEW_PITCH));                   \
         VIEW_TARGET.z =                                                  \
             sinf(get_radians(VIEW_YAW)) * cosf(get_radians(VIEW_PITCH)); \
-        VIEW_TARGET = norm_vec3(VIEW_TARGET);                            \
+        VIEW_TARGET = norm(VIEW_TARGET);                                 \
     }
 
 static void cursor_callback(GLFWwindow* _, f64 x, f64 y) {

@@ -120,22 +120,15 @@ static Cube get_cube_mat4(Mat4 m) {
 }
 
 static void set_instances(void) {
-    Mat4 scale = scale_mat4((Vec3){
-        .x = 10.0f,
-        .y = 0.5f,
-        .z = 10.0f,
-    });
+    const Mat4 scale_ = scale({10.0f, 0.5f, 10.0f});
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-        INSTANCES[i].matrix =
-            mul_mat4(translate_mat4(PLATFORM_POSITIONS[i]), scale);
+        INSTANCES[i].matrix = translate(PLATFORM_POSITIONS[i]) * scale_;
         INSTANCES[i].color.x = cosf((f32)(i * 2));
         INSTANCES[i].color.y = sinf((f32)(i * 3));
         INSTANCES[i].color.z =
             (sinf((f32)(i * 5)) + cosf((f32)(i * 7))) / 2.0f;
-        INSTANCES[i].color.x *= INSTANCES[i].color.x;
-        INSTANCES[i].color.y *= INSTANCES[i].color.y;
-        INSTANCES[i].color.z *= INSTANCES[i].color.z;
-        PLATFORMS[i] = get_cube_mat4(INSTANCES[i].matrix);
+        INSTANCES[i].color *= INSTANCES[i].color;
+        PLATFORMS[i] = get_cube(INSTANCES[i].matrix);
     }
 }
 
