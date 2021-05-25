@@ -395,7 +395,6 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
     };
     printf("\n\n\n\n\n");
     set_bounds(memory);
-    set_span(memory);
     init_grid(memory);
     while (!glfwWindowShouldClose(window)) {
         state.time = static_cast<f32>(glfwGetTime());

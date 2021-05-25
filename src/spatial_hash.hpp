@@ -66,9 +66,6 @@ static void set_bounds(GridMemory* memory) {
             max(memory->bounds.top_right_back, PLATFORMS[i].top_right_back);
     }
     memory->bounds.top_right_back += GRID_EPSILON;
-}
-
-static void set_span(GridMemory* memory) {
     memory->span =
         memory->bounds.top_right_back - memory->bounds.bottom_left_front;
 }
