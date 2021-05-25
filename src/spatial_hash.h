@@ -119,7 +119,7 @@ static void init_grid(GridMemory* memory) {
     memset(memory->grid, 0, sizeof(memory->grid));
     memory->len_lists = 0;
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-        Range range = get_range(memory, PLATFORMS[i]);
+        const Range range = get_range(memory, PLATFORMS[i]);
         for (u8 x = range.bottom.x; x <= range.top.x; ++x) {
             for (u8 y = range.bottom.y; y <= range.top.y; ++y) {
                 for (u8 z = range.bottom.z; z <= range.top.z; ++z) {
@@ -144,7 +144,7 @@ static Cube get_within_bounds(GridMemory* memory, Cube cube) {
 
 static void set_intersects(GridMemory* memory, Cube cube) {
     memory->len_intersects = 0;
-    Range range = get_range(memory, get_within_bounds(memory, cube));
+    const Range range = get_range(memory, get_within_bounds(memory, cube));
     for (u8 x = range.bottom.x; x <= range.top.x; ++x) {
         for (u8 y = range.bottom.y; y <= range.top.y; ++y) {
             for (u8 z = range.bottom.z; z <= range.top.z; ++z) {

@@ -57,8 +57,6 @@ static const u32 INDICES[] = {
     22, 23, 20,
 };
 
-#define VERTEX_OFFSET 0
-
 static const Vec3 PLATFORM_POSITIONS[] = {
     {   0.0f,     4.0f,     0.0f },
     {   0.0f,     6.0f,   -10.0f },
@@ -79,6 +77,8 @@ static const Vec3 PLATFORM_POSITIONS[] = {
     { -17.5f,    20.0f,    17.5f },
 };
 // clang-format on
+
+#define VERTEX_OFFSET 0
 
 #define COUNT_PLATFORMS \
     (sizeof(PLATFORM_POSITIONS) / sizeof(PLATFORM_POSITIONS[0]))
@@ -117,10 +117,10 @@ static Cube get_cube(Mat4 matrix) {
     };
 }
 
-static void set_instances(void) {
-    const Mat4 scale_ = scale({10.0f, 0.5f, 10.0f});
+static void set_instances() {
+    const Mat4 matrix = scale({10.0f, 0.5f, 10.0f});
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-        INSTANCES[i].matrix = translate(PLATFORM_POSITIONS[i]) * scale_;
+        INSTANCES[i].matrix = translate(PLATFORM_POSITIONS[i]) * matrix;
         INSTANCES[i].color.x = cosf(static_cast<f32>(i * 2));
         INSTANCES[i].color.y = sinf(static_cast<f32>(i * 3));
         INSTANCES[i].color.z =
@@ -163,7 +163,7 @@ static void set_vertex_attrib(u32         index,
     glVertexAttribPointer(index, size, GL_FLOAT, FALSE, stride, offset);
 }
 
-static void set_buffers(void) {
+static void set_buffers() {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
     CHECK_GL_ERROR();
@@ -265,10 +265,6 @@ static void set_buffers(void) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glEnable(GL_DEPTH_TEST);
     CHECK_GL_ERROR();
-}
-
-static void set_program(u32 program) {
-    glUseProgram(program);
 }
 
 static void draw(GLFWwindow* window) {

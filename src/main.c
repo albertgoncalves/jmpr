@@ -386,7 +386,7 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
     State state = {};
     init_player(&state);
     Frame frame = {};
-    set_program(program);
+    glUseProgram(program);
     const Uniforms uniforms = {
         .time = glGetUniformLocation(program, "U_TIME"),
         .position = glGetUniformLocation(program, "U_POSITION"),
