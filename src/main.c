@@ -352,31 +352,32 @@ static void set_uniforms(Uniforms uniforms, const State* state) {
 }
 
 static void set_debug(Frame* frame, const State* state) {
-    const f32 now = (f32)glfwGetTime() * MICROSECONDS;
+    const f32 now = static_cast<f32>(glfwGetTime()) * MICROSECONDS;
     const f32 elapsed = (now - frame->time);
     if (elapsed < FRAME_DURATION) {
-        usleep((u32)(FRAME_DURATION - elapsed));
+        usleep(static_cast<u32>(FRAME_DURATION - elapsed));
     }
     if (++frame->fps_count == 60) {
-        printf(
-            "\033[5A"
-            "fps      %8.2f\n"
-            "mspf     %8.2f\n"
-            "position %8.2f%8.2f%8.2f\n"
-            "speed    %8.2f%8.2f%8.2f\n"
-            "target   %8.2f%8.2f%8.2f\n",
-            (f64)((frame->fps_count / (now - frame->fps_time)) * MICROSECONDS),
-            (f64)(((now - frame->fps_time) / frame->fps_count) / MILLISECONDS),
-            (f64)state->player.position.x,
-            (f64)state->player.position.y,
-            (f64)state->player.position.z,
-            (f64)state->player.speed.x,
-            (f64)state->player.speed.y,
-            (f64)state->player.speed.z,
-            (f64)VIEW_TARGET.x,
-            (f64)VIEW_TARGET.y,
-            (f64)VIEW_TARGET.z);
-        frame->fps_time = (f32)glfwGetTime() * MICROSECONDS;
+        printf("\033[5A"
+               "fps      %8.2f\n"
+               "mspf     %8.2f\n"
+               "position %8.2f%8.2f%8.2f\n"
+               "speed    %8.2f%8.2f%8.2f\n"
+               "target   %8.2f%8.2f%8.2f\n",
+               static_cast<f64>((frame->fps_count / (now - frame->fps_time)) *
+                                MICROSECONDS),
+               static_cast<f64>(((now - frame->fps_time) / frame->fps_count) /
+                                MILLISECONDS),
+               static_cast<f64>(state->player.position.x),
+               static_cast<f64>(state->player.position.y),
+               static_cast<f64>(state->player.position.z),
+               static_cast<f64>(state->player.speed.x),
+               static_cast<f64>(state->player.speed.y),
+               static_cast<f64>(state->player.speed.z),
+               static_cast<f64>(VIEW_TARGET.x),
+               static_cast<f64>(VIEW_TARGET.y),
+               static_cast<f64>(VIEW_TARGET.z));
+        frame->fps_time = static_cast<f32>(glfwGetTime()) * MICROSECONDS;
         frame->fps_count = 0;
     }
 }
@@ -397,7 +398,7 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
     set_span(memory);
     init_grid(memory);
     while (!glfwWindowShouldClose(window)) {
-        state.time = (f32)glfwGetTime();
+        state.time = static_cast<f32>(glfwGetTime());
         frame.time = state.time * MICROSECONDS;
         frame.delta += frame.time - frame.prev;
         while (FRAME_UPDATE_STEP < frame.delta) {
@@ -424,8 +425,8 @@ static void error_callback(i32 code, const char* error) {
 
 #define CURSOR_CALLBACK(x, y)                                            \
     {                                                                    \
-        CURSOR_X = (f32)x;                                               \
-        CURSOR_Y = (f32)y;                                               \
+        CURSOR_X = static_cast<f32>(x);                                  \
+        CURSOR_Y = static_cast<f32>(y);                                  \
         VIEW_YAW += CURSOR_X_DELTA;                                      \
         VIEW_PITCH += CURSOR_Y_DELTA;                                    \
         if (PITCH_LIMIT < VIEW_PITCH) {                                  \
@@ -443,8 +444,8 @@ static void error_callback(i32 code, const char* error) {
 
 static void cursor_callback(GLFWwindow* _, f64 x, f64 y) {
     (void)_;
-    CURSOR_X_DELTA = ((f32)x - CURSOR_X) * CURSOR_SENSITIVITY;
-    CURSOR_Y_DELTA = (CURSOR_Y - (f32)y) * CURSOR_SENSITIVITY;
+    CURSOR_X_DELTA = (static_cast<f32>(x) - CURSOR_X) * CURSOR_SENSITIVITY;
+    CURSOR_Y_DELTA = (CURSOR_Y - static_cast<f32>(y)) * CURSOR_SENSITIVITY;
     CURSOR_CALLBACK(x, y);
 }
 
@@ -454,7 +455,7 @@ static void init_cursor_callback(GLFWwindow* window, f64 x, f64 y) {
 }
 
 i32 main(i32 n, const char** args) {
-    Memory* memory = calloc(1, sizeof(Memory));
+    Memory* memory = reinterpret_cast<Memory*>(calloc(1, sizeof(Memory)));
     EXIT_IF(!memory);
     printf("GLFW version : %s\n\n"
            "sizeof(Bool_)          : %zu\n"

@@ -50,9 +50,9 @@ typedef struct {
 static List* alloc_list(GridMemory* memory) {
     EXIT_IF(GRID_CAP_LISTS <= memory->len_lists);
     List* list = &memory->lists[memory->len_lists++];
-    list->cube = NULL;
-    list->next = NULL;
-    list->last = NULL;
+    list->cube = nullptr;
+    list->next = nullptr;
+    list->last = nullptr;
     return list;
 }
 
@@ -100,8 +100,8 @@ static void push_grid(GridMemory* memory, Index grid_index, Cube* cube) {
     List* grid = &memory->grid[grid_index.x][grid_index.y][grid_index.z];
     if (!grid->cube) {
         grid->cube = cube;
-        grid->next = NULL;
-        grid->last = NULL;
+        grid->next = nullptr;
+        grid->last = nullptr;
         return;
     }
     List* list = alloc_list(memory);

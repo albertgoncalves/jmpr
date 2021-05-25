@@ -121,10 +121,11 @@ static void set_instances(void) {
     const Mat4 scale_ = scale({10.0f, 0.5f, 10.0f});
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
         INSTANCES[i].matrix = translate(PLATFORM_POSITIONS[i]) * scale_;
-        INSTANCES[i].color.x = cosf((f32)(i * 2));
-        INSTANCES[i].color.y = sinf((f32)(i * 3));
+        INSTANCES[i].color.x = cosf(static_cast<f32>(i * 2));
+        INSTANCES[i].color.y = sinf(static_cast<f32>(i * 3));
         INSTANCES[i].color.z =
-            (sinf((f32)(i * 5)) + cosf((f32)(i * 7))) / 2.0f;
+            (sinf(static_cast<f32>(i * 5)) + cosf(static_cast<f32>(i * 7))) /
+            2.0f;
         INSTANCES[i].color *= INSTANCES[i].color;
         PLATFORMS[i] = get_cube(INSTANCES[i].matrix);
     }
@@ -175,16 +176,20 @@ static void set_buffers(void) {
                      GL_STATIC_DRAW);
         const i32 position_width = 3;
         const i32 normal_width = 3;
-        const i32 stride =
-            ((i32)(sizeof(f32))) * (position_width + normal_width);
+        const i32 stride = sizeof(f32) * (position_width + normal_width);
+#if VERTEX_OFFSET == 0
+        set_vertex_attrib(INDEX_VERTEX, position_width, stride, nullptr);
+#else
         set_vertex_attrib(INDEX_VERTEX,
                           position_width,
                           stride,
-                          (void*)VERTEX_OFFSET);
-        set_vertex_attrib(INDEX_NORMAL,
-                          normal_width,
-                          stride,
-                          (void*)(sizeof(f32) * (usize)position_width));
+                          reinterpret_cast<void*>(VERTEX_OFFSET));
+#endif
+        set_vertex_attrib(
+            INDEX_NORMAL,
+            normal_width,
+            stride,
+            reinterpret_cast<void*>(sizeof(f32) * position_width));
         CHECK_GL_ERROR();
     }
     {
@@ -210,12 +215,18 @@ static void set_buffers(void) {
         const usize offset = sizeof(f32) * 4;
         for (u32 i = 0; i < 4; ++i) {
             const u32 index = INDEX_INSTANCE + i;
-            set_vertex_attrib(index, 4, stride, (void*)(i * offset));
+            set_vertex_attrib(index,
+                              4,
+                              stride,
+                              reinterpret_cast<void*>(i * offset));
             glVertexAttribDivisor(index, 1);
         }
         {
             const u32 index = INDEX_INSTANCE + 4;
-            set_vertex_attrib(index, 3, stride, (void*)(4 * offset));
+            set_vertex_attrib(index,
+                              3,
+                              stride,
+                              reinterpret_cast<void*>(4 * offset));
             glVertexAttribDivisor(index, 1);
         }
         CHECK_GL_ERROR();
@@ -274,7 +285,7 @@ static void draw(GLFWwindow* window) {
         glDrawElementsInstanced(GL_TRIANGLES,
                                 sizeof(INDICES) / sizeof(INDICES[0]),
                                 GL_UNSIGNED_INT,
-                                (void*)VERTEX_OFFSET,
+                                reinterpret_cast<void*>(VERTEX_OFFSET),
                                 COUNT_INSTANCES);
     }
     {

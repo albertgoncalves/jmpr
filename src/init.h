@@ -43,7 +43,7 @@ static void set_file(BufferMemory* memory, const char* filename) {
     File* file = fopen(filename, "r");
     EXIT_IF(!file);
     fseek(file, 0, SEEK_END);
-    const u32 file_size = (u32)ftell(file);
+    const u32 file_size = static_cast<u32>(ftell(file));
     EXIT_IF(sizeof(memory->buffer) <= file_size);
     rewind(file);
     EXIT_IF(fread(&memory->buffer, sizeof(char), file_size, file) !=
@@ -75,8 +75,8 @@ static GLFWwindow* get_window(const char* name) {
     GLFWwindow* window = glfwCreateWindow(INIT_WINDOW_WIDTH,
                                           INIT_WINDOW_HEIGHT,
                                           name,
-                                          NULL,
-                                          NULL);
+                                          nullptr,
+                                          nullptr);
     if (!window) {
         glfwTerminate();
         ERROR("!window");
@@ -97,7 +97,7 @@ static u32 get_shader(BufferMemory* memory, const char* filename, u32 type) {
     set_file(memory, filename);
     const u32   shader = glCreateShader(type);
     const char* source = memory->buffer;
-    glShaderSource(shader, 1, &source, NULL);
+    glShaderSource(shader, 1, &source, nullptr);
     glCompileShader(shader);
     i32 status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
@@ -105,7 +105,7 @@ static u32 get_shader(BufferMemory* memory, const char* filename, u32 type) {
         memset(memory->buffer, 0, sizeof(memory->buffer));
         glGetShaderInfoLog(shader,
                            sizeof(memory->buffer),
-                           NULL,
+                           nullptr,
                            memory->buffer);
         ERROR(memory->buffer);
     }
@@ -125,7 +125,7 @@ static u32 get_program(BufferMemory* memory,
         memset(memory->buffer, 0, sizeof(memory->buffer));
         glGetProgramInfoLog(program,
                             sizeof(memory->buffer),
-                            NULL,
+                            nullptr,
                             memory->buffer);
         ERROR(memory->buffer);
     }
