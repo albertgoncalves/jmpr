@@ -123,9 +123,7 @@ static void init_grid(GridMemory* memory) {
         for (u8 x = range.bottom.x; x <= range.top.x; ++x) {
             for (u8 y = range.bottom.y; y <= range.top.y; ++y) {
                 for (u8 z = range.bottom.z; z <= range.top.z; ++z) {
-                    push_grid(memory,
-                              ((Index){.x = x, .y = y, .z = z}),
-                              &PLATFORMS[i]);
+                    push_grid(memory, {x, y, z}, &PLATFORMS[i]);
                 }
             }
         }

@@ -58,11 +58,11 @@ typedef struct {
 #define JUMP    0.0585f
 #define GRAVITY 0.000345f
 
-#define VIEW_UP                                          \
-    ((Vec3){                                             \
-        .x = 0.0f, /* NOTE: `x`-axis is left/right.   */ \
-        .y = 1.0f, /* NOTE: `y`-axis is down/up.      */ \
-        .z = 0.0f, /* NOTE: `z`-axis is forward/back. */ \
+#define VIEW_UP                                     \
+    ((Vec3){                                        \
+        0.0f, /* NOTE: `x`-axis is left/right.   */ \
+        1.0f, /* NOTE: `y`-axis is down/up.      */ \
+        0.0f, /* NOTE: `z`-axis is forward/back. */ \
     })
 
 static Vec3 VIEW_TARGET;
@@ -147,104 +147,96 @@ static void init_player(State* state) {
 
 static Cube get_cube_below(Player player) {
     const f32 bottom = player.position.y - PLAYER_HEIGHT;
-    return (Cube){
-        .top_right_back =
-            {
-                .x = player.position.x + PLAYER_WIDTH_HALF,
-                .y = bottom,
-                .z = player.position.z + PLAYER_DEPTH_HALF,
-            },
-        .bottom_left_front =
-            {
-                .x = player.position.x - PLAYER_WIDTH_HALF,
-                .y = bottom + player.speed.y,
-                .z = player.position.z - PLAYER_DEPTH_HALF,
-            },
+    return {
+        {
+            player.position.x - PLAYER_WIDTH_HALF,
+            bottom + player.speed.y,
+            player.position.z - PLAYER_DEPTH_HALF,
+        },
+        {
+            player.position.x + PLAYER_WIDTH_HALF,
+            bottom,
+            player.position.z + PLAYER_DEPTH_HALF,
+        },
     };
 }
 
 static Cube get_cube_above(Player player) {
-    return (Cube){
-        .bottom_left_front =
-            {
-                .x = player.position.x - PLAYER_WIDTH_HALF,
-                .y = player.position.y,
-                .z = player.position.z - PLAYER_DEPTH_HALF,
-            },
-        .top_right_back =
-            {
-                .x = player.position.x + PLAYER_WIDTH_HALF,
-                .y = player.position.y + player.speed.y,
-                .z = player.position.z + PLAYER_DEPTH_HALF,
-            },
+    return {
+        {
+            player.position.x - PLAYER_WIDTH_HALF,
+            player.position.y,
+            player.position.z - PLAYER_DEPTH_HALF,
+        },
+        {
+            player.position.x + PLAYER_WIDTH_HALF,
+            player.position.y + player.speed.y,
+            player.position.z + PLAYER_DEPTH_HALF,
+        },
     };
 }
 
 static Cube get_cube_front(Player player) {
     const Vec3 top_right_back = {
-        .x = player.position.x + PLAYER_WIDTH_HALF,
-        .y = player.position.y,
-        .z = player.position.z - PLAYER_DEPTH_HALF,
+        player.position.x + PLAYER_WIDTH_HALF,
+        player.position.y,
+        player.position.z - PLAYER_DEPTH_HALF,
     };
-    return (Cube){
-        .top_right_back = top_right_back,
-        .bottom_left_front =
-            {
-                .x = player.position.x - PLAYER_WIDTH_HALF,
-                .y = player.position.y - PLAYER_HEIGHT,
-                .z = top_right_back.z + player.speed.z,
-            },
+    return {
+        {
+            player.position.x - PLAYER_WIDTH_HALF,
+            player.position.y - PLAYER_HEIGHT,
+            top_right_back.z + player.speed.z,
+        },
+        top_right_back,
     };
 }
 
 static Cube get_cube_back(Player player) {
     const Vec3 bottom_left_front = {
-        .x = player.position.x - PLAYER_WIDTH_HALF,
-        .y = player.position.y - PLAYER_HEIGHT,
-        .z = player.position.z + PLAYER_DEPTH_HALF,
+        player.position.x - PLAYER_WIDTH_HALF,
+        player.position.y - PLAYER_HEIGHT,
+        player.position.z + PLAYER_DEPTH_HALF,
     };
-    return (Cube){
-        .bottom_left_front = bottom_left_front,
-        .top_right_back =
-            {
-                .x = player.position.x + PLAYER_WIDTH_HALF,
-                .y = player.position.y,
-                .z = bottom_left_front.z + player.speed.z,
-            },
+    return {
+        bottom_left_front,
+        {
+            player.position.x + PLAYER_WIDTH_HALF,
+            player.position.y,
+            bottom_left_front.z + player.speed.z,
+        },
     };
 }
 
 static Cube get_cube_left(Player player) {
     const Vec3 top_right_back = {
-        .x = player.position.x - PLAYER_WIDTH_HALF,
-        .y = player.position.y,
-        .z = player.position.z + PLAYER_DEPTH_HALF,
+        player.position.x - PLAYER_WIDTH_HALF,
+        player.position.y,
+        player.position.z + PLAYER_DEPTH_HALF,
     };
-    return (Cube){
-        .top_right_back = top_right_back,
-        .bottom_left_front =
-            {
-                .x = top_right_back.x + player.speed.x,
-                .y = player.position.y - PLAYER_HEIGHT,
-                .z = player.position.z - PLAYER_DEPTH_HALF,
-            },
+    return {
+        {
+            top_right_back.x + player.speed.x,
+            player.position.y - PLAYER_HEIGHT,
+            player.position.z - PLAYER_DEPTH_HALF,
+        },
+        top_right_back,
     };
 }
 
 static Cube get_cube_right(Player player) {
     const Vec3 bottom_left_front = {
-        .x = player.position.x + PLAYER_WIDTH_HALF,
-        .y = player.position.y - PLAYER_HEIGHT,
-        .z = player.position.z - PLAYER_DEPTH_HALF,
+        player.position.x + PLAYER_WIDTH_HALF,
+        player.position.y - PLAYER_HEIGHT,
+        player.position.z - PLAYER_DEPTH_HALF,
     };
-    return (Cube){
-        .bottom_left_front = bottom_left_front,
-        .top_right_back =
-            {
-                .x = bottom_left_front.x + player.speed.x,
-                .y = player.position.y,
-                .z = player.position.z + PLAYER_DEPTH_HALF,
-            },
+    return {
+        bottom_left_front,
+        {
+            bottom_left_front.x + player.speed.x,
+            player.position.y,
+            player.position.z + PLAYER_DEPTH_HALF,
+        },
     };
 }
 
@@ -390,9 +382,9 @@ static void set_debug(Frame* frame, const State* state) {
 }
 
 static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
-    State state = {0};
+    State state = {};
     init_player(&state);
-    Frame frame = {0};
+    Frame frame = {};
     set_program(program);
     const Uniforms uniforms = {
         .time = glGetUniformLocation(program, "U_TIME"),
@@ -511,8 +503,8 @@ i32 main(i32 n, const char** args) {
     set_buffers();
     {
         const Native native = {
-            .display = glfwGetX11Display(),
-            .window = glfwGetX11Window(window),
+            glfwGetX11Display(),
+            glfwGetX11Window(window),
         };
         hide_cursor(native);
         loop(window, &memory->grid, program);
