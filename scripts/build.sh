@@ -21,6 +21,7 @@ flags=(
     "-fshort-enums"
     "-g"
     "-march=native"
+    "-std=c++11"
     "-Werror"
     "-Weverything"
     "-Wno-c++98-compat-pedantic"
