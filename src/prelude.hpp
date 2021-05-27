@@ -16,10 +16,10 @@ typedef double f64;
 
 typedef FILE File;
 
-typedef enum {
+enum Bool_ {
     FALSE = 0,
     TRUE,
-} Bool_;
+};
 
 #define ERROR(x)                     \
     {                                \

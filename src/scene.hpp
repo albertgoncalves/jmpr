@@ -4,15 +4,15 @@
 #include "init.hpp"
 #include "math.hpp"
 
-typedef struct {
+struct Instance {
     Mat4 matrix;
     Vec3 color;
-} Instance;
+};
 
-typedef struct {
+struct Cube {
     Vec3 bottom_left_front;
     Vec3 top_right_back;
-} Cube;
+};
 
 // clang-format off
 static const f32 VERTICES[] = {

@@ -28,16 +28,16 @@ static i32 WINDOW_HEIGHT = INIT_WINDOW_HEIGHT;
 #define FBO_WIDTH  (INIT_WINDOW_WIDTH / FBO_SCALE)
 #define FBO_HEIGHT (INIT_WINDOW_HEIGHT / FBO_SCALE)
 
-typedef struct {
+struct Native {
     Display* display;
     Window   window;
-} Native;
+};
 
 #define SIZE_BUFFER 1024
 
-typedef struct {
+struct BufferMemory {
     char buffer[SIZE_BUFFER];
-} BufferMemory;
+};
 
 static void set_file(BufferMemory* memory, const char* filename) {
     File* file = fopen(filename, "r");

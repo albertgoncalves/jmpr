@@ -18,18 +18,16 @@
 
 #define GRID_CAP_LISTS 64
 
-typedef struct {
+struct Index {
     u8 x;
     u8 y;
     u8 z;
-} Index;
+};
 
-typedef struct {
+struct Range {
     Index bottom;
     Index top;
-} Range;
-
-typedef struct List List;
+};
 
 struct List {
     Cube* cube;
@@ -37,7 +35,7 @@ struct List {
     List* last;
 };
 
-typedef struct {
+struct GridMemory {
     List  grid[GRID_COUNT_X][GRID_COUNT_Y][GRID_COUNT_Z];
     Cube  bounds;
     Vec3  span;
@@ -45,7 +43,7 @@ typedef struct {
     u8    len_lists;
     Cube* intersects[COUNT_PLATFORMS];
     u8    len_intersects;
-} GridMemory;
+};
 
 static List* alloc_list(GridMemory* memory) {
     EXIT_IF(GRID_CAP_LISTS <= memory->len_lists);

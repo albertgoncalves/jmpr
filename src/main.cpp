@@ -2,37 +2,37 @@
 
 #include <unistd.h>
 
-typedef struct {
+struct Uniforms {
     i32 time;
     i32 position;
     i32 projection;
     i32 view;
-} Uniforms;
+};
 
-typedef struct {
+struct Player {
     Vec3  position;
     Vec3  speed;
     Bool_ can_jump;
     Bool_ jump_key_released;
-} Player;
+};
 
-typedef struct {
+struct State {
     Player player;
     f32    time;
-} State;
+};
 
-typedef struct {
+struct Frame {
     f32 time;
     f32 prev;
     f32 delta;
     f32 fps_time;
     u8  fps_count;
-} Frame;
+};
 
-typedef struct {
+struct Memory {
     BufferMemory buffer;
     GridMemory   grid;
-} Memory;
+};
 
 #define RUN      0.00325f
 #define FRICTION 0.96f

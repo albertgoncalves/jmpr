@@ -8,18 +8,18 @@
 
 #define PI 3.1415926535897932385f
 
-typedef struct {
+struct Vec3 {
     f32 x;
     f32 y;
     f32 z;
-} Vec3;
+};
 
 typedef __m128 Simd4f32;
 
-typedef union {
+union Mat4 {
     f32      cell[4][4];
     Simd4f32 column[4];
-} Mat4;
+};
 
 #define MIN(l, r) ((l) < (r) ? (l) : (r))
 #define MAX(l, r) ((l) < (r) ? (r) : (l))
