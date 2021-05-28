@@ -14,16 +14,21 @@ fi
 
 flags=(
     "-ferror-limit=1"
+    "-fno-exceptions"
+    "-fno-math-errno"
+    "-fno-rtti"
+    "-fno-unwind-tables"
     "-fshort-enums"
     "-g"
     "-march=native"
-    "-O0"
+    "-std=c++11"
     "-Werror"
     "-Weverything"
+    "-Wno-c++98-compat-pedantic"
+    "-Wno-c99-extensions"
     "-Wno-disabled-macro-expansion"
     "-Wno-documentation"
     "-Wno-documentation-unknown-command"
-    "-Wno-error=#warnings"
     "-Wno-extra-semi-stmt"
     "-Wno-missing-noreturn"
     "-Wno-padded"
@@ -48,12 +53,12 @@ now () {
 (
     start=$(now)
     clang-format -i -verbose "$WD/src"/*
-    clang \
+    clang++ \
         "${paths[@]}" \
         "${libs[@]}" \
         "${flags[@]}" \
         -o "$WD/bin/main" \
-        "$WD/src/main.c"
+        "$WD/src/main.cpp"
     end=$(now)
     python3 -c "print(\"Compiled! ({:.3f}s)\n\".format(${end} - ${start}))"
 )

@@ -9,8 +9,6 @@
 !scripts/
 !*.sh
 !src/
-!*.h
-!*.c
+!*.hpp
+!*.cpp
 !*.glsl
-!main
-!profile

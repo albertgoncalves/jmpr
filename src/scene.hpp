@@ -1,18 +1,18 @@
 #ifndef __SCENE_H__
 #define __SCENE_H__
 
-#include "init.h"
-#include "math.h"
+#include "init.hpp"
+#include "math.hpp"
 
-typedef struct {
+struct Instance {
     Mat4 matrix;
     Vec3 color;
-} Instance;
+};
 
-typedef struct {
+struct Cube {
     Vec3 bottom_left_front;
     Vec3 top_right_back;
-} Cube;
+};
 
 // clang-format off
 static const f32 VERTICES[] = {
@@ -57,28 +57,28 @@ static const u32 INDICES[] = {
     22, 23, 20,
 };
 
-#define VERTEX_OFFSET 0
-
 static const Vec3 PLATFORM_POSITIONS[] = {
-    {.x =   0.0f,  .y =  4.0f,   .z =   0.0f},
-    {.x =   0.0f,  .y =  6.0f,   .z = -10.0f},
-    {.x =   0.0f,  .y =  8.0f,   .z = -20.0f},
-    {.x =  10.0f,  .y = 10.0f,   .z = -20.0f},
-    {.x =  10.0f,  .y = 12.0f,   .z = -10.0f},
-    {.x =  10.0f,  .y = 14.0f,   .z =   0.0f},
-    {.x =  10.0f,  .y =  4.0f,   .z =   0.0f},
-    {.x =  10.0f,  .y =  4.0f,   .z = -10.0f},
-    {.x =  10.0f,  .y =  4.0f,   .z = -20.0f},
-    {.x = -20.0f,  .y =  6.0f,   .z =   0.0f},
-    {.x = -10.0f,  .y =  0.0f,   .z = -10.0f},
-    {.x = -20.0f,  .y =  2.5f,   .z = -10.0f},
-    {.x =  -6.25f, .y =  4.125f, .z = -25.0f},
-    {.x =  -2.5f,  .y = 17.25f,  .z =  -7.5f},
-    {.x =  -7.5f,  .y = 20.0f,   .z =   7.5f},
-    {.x =  -7.5f,  .y = 20.0f,   .z =  17.5f},
-    {.x = -17.5f,  .y = 20.0f,   .z =  17.5f},
+    {   0.0f,     4.0f,     0.0f },
+    {   0.0f,     6.0f,   -10.0f },
+    {   0.0f,     8.0f,   -20.0f },
+    {  10.0f,    10.0f,   -20.0f },
+    {  10.0f,    12.0f,   -10.0f },
+    {  10.0f,    14.0f,     0.0f },
+    {  10.0f,     4.0f,     0.0f },
+    {  10.0f,     4.0f,   -10.0f },
+    {  10.0f,     4.0f,   -20.0f },
+    { -20.0f,     6.0f,     0.0f },
+    { -10.0f,     0.0f,   -10.0f },
+    { -20.0f,     2.5f,   -10.0f },
+    {  -6.25f,    4.125f, -25.0f },
+    {  -2.5f,    17.25f,   -7.5f },
+    {  -7.5f,    20.0f,     7.5f },
+    {  -7.5f,    20.0f,    17.5f },
+    { -17.5f,    20.0f,    17.5f },
 };
 // clang-format on
+
+#define VERTEX_OFFSET 0
 
 #define COUNT_PLATFORMS \
     (sizeof(PLATFORM_POSITIONS) / sizeof(PLATFORM_POSITIONS[0]))
@@ -99,43 +99,35 @@ static u32 DBO;
 #define INDEX_NORMAL   1
 #define INDEX_INSTANCE 2
 
-static Cube get_cube_mat4(Mat4 m) {
-    const f32 width_half = m.cell[0][0] / 2.0f;
-    const f32 height_half = m.cell[1][1] / 2.0f;
-    const f32 depth_half = m.cell[2][2] / 2.0f;
-    return (Cube){
-        .bottom_left_front =
-            {
-                .x = m.cell[3][0] - width_half,
-                .y = m.cell[3][1] - height_half,
-                .z = m.cell[3][2] - depth_half,
-            },
-        .top_right_back =
-            {
-                .x = m.cell[3][0] + width_half,
-                .y = m.cell[3][1] + height_half,
-                .z = m.cell[3][2] + depth_half,
-            },
+static Cube get_cube(Mat4 matrix) {
+    const f32 width_half = matrix.cell[0][0] / 2.0f;
+    const f32 height_half = matrix.cell[1][1] / 2.0f;
+    const f32 depth_half = matrix.cell[2][2] / 2.0f;
+    return {
+        {
+            matrix.cell[3][0] - width_half,
+            matrix.cell[3][1] - height_half,
+            matrix.cell[3][2] - depth_half,
+        },
+        {
+            matrix.cell[3][0] + width_half,
+            matrix.cell[3][1] + height_half,
+            matrix.cell[3][2] + depth_half,
+        },
     };
 }
 
-static void set_instances(void) {
-    Mat4 scale = scale_mat4((Vec3){
-        .x = 10.0f,
-        .y = 0.5f,
-        .z = 10.0f,
-    });
+static void set_instances() {
+    const Mat4 matrix = scale({10.0f, 0.5f, 10.0f});
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-        INSTANCES[i].matrix =
-            mul_mat4(translate_mat4(PLATFORM_POSITIONS[i]), scale);
-        INSTANCES[i].color.x = cosf((f32)(i * 2));
-        INSTANCES[i].color.y = sinf((f32)(i * 3));
+        INSTANCES[i].matrix = translate(PLATFORM_POSITIONS[i]) * matrix;
+        INSTANCES[i].color.x = cosf(static_cast<f32>(i * 2));
+        INSTANCES[i].color.y = sinf(static_cast<f32>(i * 3));
         INSTANCES[i].color.z =
-            (sinf((f32)(i * 5)) + cosf((f32)(i * 7))) / 2.0f;
-        INSTANCES[i].color.x *= INSTANCES[i].color.x;
-        INSTANCES[i].color.y *= INSTANCES[i].color.y;
-        INSTANCES[i].color.z *= INSTANCES[i].color.z;
-        PLATFORMS[i] = get_cube_mat4(INSTANCES[i].matrix);
+            (sinf(static_cast<f32>(i * 5)) + cosf(static_cast<f32>(i * 7))) /
+            2.0f;
+        INSTANCES[i].color *= INSTANCES[i].color;
+        PLATFORMS[i] = get_cube(INSTANCES[i].matrix);
     }
 }
 
@@ -171,7 +163,7 @@ static void set_vertex_attrib(u32         index,
     glVertexAttribPointer(index, size, GL_FLOAT, FALSE, stride, offset);
 }
 
-static void set_buffers(void) {
+static void set_buffers() {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
     CHECK_GL_ERROR();
@@ -184,16 +176,20 @@ static void set_buffers(void) {
                      GL_STATIC_DRAW);
         const i32 position_width = 3;
         const i32 normal_width = 3;
-        const i32 stride =
-            ((i32)(sizeof(f32))) * (position_width + normal_width);
+        const i32 stride = sizeof(f32) * (position_width + normal_width);
+#if VERTEX_OFFSET == 0
+        set_vertex_attrib(INDEX_VERTEX, position_width, stride, nullptr);
+#else
         set_vertex_attrib(INDEX_VERTEX,
                           position_width,
                           stride,
-                          (void*)VERTEX_OFFSET);
-        set_vertex_attrib(INDEX_NORMAL,
-                          normal_width,
-                          stride,
-                          (void*)(sizeof(f32) * (usize)position_width));
+                          reinterpret_cast<void*>(VERTEX_OFFSET));
+#endif
+        set_vertex_attrib(
+            INDEX_NORMAL,
+            normal_width,
+            stride,
+            reinterpret_cast<void*>(sizeof(f32) * position_width));
         CHECK_GL_ERROR();
     }
     {
@@ -219,12 +215,18 @@ static void set_buffers(void) {
         const usize offset = sizeof(f32) * 4;
         for (u32 i = 0; i < 4; ++i) {
             const u32 index = INDEX_INSTANCE + i;
-            set_vertex_attrib(index, 4, stride, (void*)(i * offset));
+            set_vertex_attrib(index,
+                              4,
+                              stride,
+                              reinterpret_cast<void*>(i * offset));
             glVertexAttribDivisor(index, 1);
         }
         {
             const u32 index = INDEX_INSTANCE + 4;
-            set_vertex_attrib(index, 3, stride, (void*)(4 * offset));
+            set_vertex_attrib(index,
+                              3,
+                              stride,
+                              reinterpret_cast<void*>(4 * offset));
             glVertexAttribDivisor(index, 1);
         }
         CHECK_GL_ERROR();
@@ -265,10 +267,6 @@ static void set_buffers(void) {
     CHECK_GL_ERROR();
 }
 
-static void set_program(u32 program) {
-    glUseProgram(program);
-}
-
 static void draw(GLFWwindow* window) {
     {
         // NOTE: Bind off-screen render target.
@@ -283,7 +281,7 @@ static void draw(GLFWwindow* window) {
         glDrawElementsInstanced(GL_TRIANGLES,
                                 sizeof(INDICES) / sizeof(INDICES[0]),
                                 GL_UNSIGNED_INT,
-                                (void*)VERTEX_OFFSET,
+                                reinterpret_cast<void*>(VERTEX_OFFSET),
                                 COUNT_INSTANCES);
     }
     {

@@ -16,10 +16,10 @@ typedef double f64;
 
 typedef FILE File;
 
-typedef enum {
+enum Bool_ {
     FALSE = 0,
     TRUE,
-} Bool_;
+};
 
 #define ERROR(x)                     \
     {                                \
@@ -36,9 +36,5 @@ typedef enum {
     if (condition) {       \
         ERROR(#condition)  \
     }
-
-#define MIN(a, b)     ((a) < (b) ? (a) : (b))
-#define MAX(a, b)     ((a) < (b) ? (b) : (a))
-#define CLIP(x, l, r) MIN((r), MAX((l), (x)))
 
 #endif
