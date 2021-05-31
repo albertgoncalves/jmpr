@@ -464,6 +464,7 @@ i32 main(i32 n, const char** args) {
            "sizeof(Bool_)          : %zu\n"
            "sizeof(Vec3)           : %zu\n"
            "sizeof(Mat4)           : %zu\n"
+           "sizeof(Object)         : %zu\n"
            "sizeof(Instance)       : %zu\n"
            "sizeof(Cube)           : %zu\n"
            "sizeof(Native)         : %zu\n"
@@ -481,6 +482,7 @@ i32 main(i32 n, const char** args) {
            sizeof(Bool_),
            sizeof(Vec3),
            sizeof(Mat4),
+           sizeof(Object),
            sizeof(Instance),
            sizeof(Cube),
            sizeof(Native),
