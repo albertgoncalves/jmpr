@@ -49,9 +49,9 @@ struct Memory {
 
 #define INIT_PLAYER_POSITION \
     ((Vec3){                 \
-        0.0f,                \
-        15.0f,               \
-        5.0f,                \
+        -7.5f,               \
+        25.0f,               \
+        17.5f,               \
     })
 
 #define PLAYER_WIDTH  1.5f
@@ -397,9 +397,9 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
         .projection = glGetUniformLocation(program, "U_PROJECTION"),
         .view = glGetUniformLocation(program, "U_VIEW"),
     };
-    printf("\n\n\n\n\n");
     hash_set_bounds(memory);
     hash_set_grid(memory);
+    printf("\n\n\n\n\n");
     while (!glfwWindowShouldClose(window)) {
         state.time = static_cast<f32>(glfwGetTime());
         frame.time = state.time * MICROSECONDS;

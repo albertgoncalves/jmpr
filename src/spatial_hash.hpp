@@ -16,7 +16,7 @@
 
 #define GRID_EPSILON 0.01f
 
-#define GRID_CAP_LISTS 64
+#define GRID_CAP_LISTS (2 << 6)
 
 struct Index {
     u8 x;
