@@ -16,7 +16,7 @@ struct Cube {
 
 // clang-format off
 static const f32 VERTICES[] = {
-    // NOTE: position       // NOTE: normal
+    // NOTE: Positions.     // NOTE: Normals.
     -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,  //  0
      0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,  //  1
      0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,  //  2
