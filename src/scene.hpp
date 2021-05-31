@@ -71,7 +71,6 @@ static const u32 INDICES[] = {
     20, 21, 22,
     22, 23, 20,
 };
-
 static const Vec3 PLATFORM_POSITIONS[] = {
     {   0.0f,     4.0f,     0.0f },
     {   0.0f,     6.0f,   -10.0f },
