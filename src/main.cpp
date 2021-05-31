@@ -50,7 +50,7 @@ struct Memory {
 #define INIT_PLAYER_POSITION \
     ((Vec3){                 \
         -7.5f,               \
-        25.0f,               \
+        35.0f,               \
         17.5f,               \
     })
 
@@ -411,8 +411,7 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
         }
         set_uniforms(uniforms, &state);
         {
-            const f32 sin_height =
-                sinf(fabsf(state.player.position.y) / 10.0f);
+            const f32 sin_height = sinf(state.player.position.y / 10.0f);
             glClearColor(sin_height, sin_height, sin_height, 1.0f);
         }
         scene_draw(window);
