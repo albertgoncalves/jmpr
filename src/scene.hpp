@@ -4,6 +4,21 @@
 #include "init.hpp"
 #include "math.hpp"
 
+#define FRAME_BUFFER_SCALE 4
+
+#define FRAME_BUFFER_WIDTH  (INIT_WINDOW_WIDTH / FRAME_BUFFER_SCALE)
+#define FRAME_BUFFER_HEIGHT (INIT_WINDOW_HEIGHT / FRAME_BUFFER_SCALE)
+
+struct Object {
+    u32 vertex_array;
+    u32 vertex_buffer;
+    u32 element_buffer;
+    u32 instance_buffer;
+    u32 frame_buffer;
+    u32 render_buffer_color;
+    u32 render_buffer_depth;
+};
+
 struct Instance {
     Mat4 matrix;
     Vec3 color;
@@ -78,26 +93,19 @@ static const Vec3 PLATFORM_POSITIONS[] = {
 };
 // clang-format on
 
+#define INDEX_VERTEX   0
+#define INDEX_NORMAL   1
+#define INDEX_INSTANCE 2
+
 #define VERTEX_OFFSET 0
 
 #define COUNT_PLATFORMS \
     (sizeof(PLATFORM_POSITIONS) / sizeof(PLATFORM_POSITIONS[0]))
 #define COUNT_INSTANCES COUNT_PLATFORMS
 
+static Object   OBJECT;
 static Instance INSTANCES[COUNT_INSTANCES];
 static Cube     PLATFORMS[COUNT_PLATFORMS];
-
-static u32 VAO;
-static u32 VBO;
-static u32 EBO;
-static u32 IBO;
-static u32 FBO;
-static u32 RBO;
-static u32 DBO;
-
-#define INDEX_VERTEX   0
-#define INDEX_NORMAL   1
-#define INDEX_INSTANCE 2
 
 static Cube get_cube(Mat4 matrix) {
     const f32 width_half = matrix.cell[0][0] / 2.0f;
@@ -164,12 +172,12 @@ static void set_vertex_attrib(u32         index,
 }
 
 static void set_buffers() {
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    glGenVertexArrays(1, &OBJECT.vertex_array);
+    glBindVertexArray(OBJECT.vertex_array);
     CHECK_GL_ERROR();
     {
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glGenBuffers(1, &OBJECT.vertex_buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, OBJECT.vertex_buffer);
         glBufferData(GL_ARRAY_BUFFER,
                      sizeof(VERTICES),
                      VERTICES,
@@ -193,8 +201,8 @@ static void set_buffers() {
         CHECK_GL_ERROR();
     }
     {
-        glGenBuffers(1, &EBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glGenBuffers(1, &OBJECT.element_buffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, OBJECT.element_buffer);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                      sizeof(INDICES),
                      INDICES,
@@ -203,8 +211,8 @@ static void set_buffers() {
     }
     {
         set_instances();
-        glGenBuffers(1, &IBO);
-        glBindBuffer(GL_ARRAY_BUFFER, IBO);
+        glGenBuffers(1, &OBJECT.instance_buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, OBJECT.instance_buffer);
         glBufferData(GL_ARRAY_BUFFER,
                      sizeof(INSTANCES),
                      &INSTANCES[0].matrix.cell[0][0],
@@ -232,31 +240,34 @@ static void set_buffers() {
         CHECK_GL_ERROR();
     }
     {
-        glGenRenderbuffers(1, &RBO);
-        glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB, FBO_WIDTH, FBO_HEIGHT);
+        glGenRenderbuffers(1, &OBJECT.render_buffer_color);
+        glBindRenderbuffer(GL_RENDERBUFFER, OBJECT.render_buffer_color);
+        glRenderbufferStorage(GL_RENDERBUFFER,
+                              GL_RGB,
+                              FRAME_BUFFER_WIDTH,
+                              FRAME_BUFFER_HEIGHT);
         CHECK_GL_ERROR();
     }
     {
-        glGenRenderbuffers(1, &DBO);
-        glBindRenderbuffer(GL_RENDERBUFFER, DBO);
+        glGenRenderbuffers(1, &OBJECT.render_buffer_depth);
+        glBindRenderbuffer(GL_RENDERBUFFER, OBJECT.render_buffer_depth);
         glRenderbufferStorage(GL_RENDERBUFFER,
                               GL_DEPTH_COMPONENT,
-                              FBO_WIDTH,
-                              FBO_HEIGHT);
+                              FRAME_BUFFER_WIDTH,
+                              FRAME_BUFFER_HEIGHT);
         CHECK_GL_ERROR();
     }
     {
-        glGenFramebuffers(1, &FBO);
-        glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+        glGenFramebuffers(1, &OBJECT.frame_buffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, OBJECT.frame_buffer);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER,
                                   GL_COLOR_ATTACHMENT0,
                                   GL_RENDERBUFFER,
-                                  RBO);
+                                  OBJECT.render_buffer_color);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER,
                                   GL_DEPTH_ATTACHMENT,
                                   GL_RENDERBUFFER,
-                                  DBO);
+                                  OBJECT.render_buffer_depth);
         CHECK_GL_ERROR();
     }
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -270,14 +281,14 @@ static void set_buffers() {
 static void draw(GLFWwindow* window) {
     {
         // NOTE: Bind off-screen render target.
-        glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, OBJECT.frame_buffer);
         glDrawBuffer(GL_COLOR_ATTACHMENT0);
-        glViewport(0, 0, FBO_WIDTH, FBO_HEIGHT);
+        glViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
     {
         // NOTE: Draw scene.
-        glBindVertexArray(VAO);
+        glBindVertexArray(OBJECT.vertex_array);
         glDrawElementsInstanced(GL_TRIANGLES,
                                 sizeof(INDICES) / sizeof(INDICES[0]),
                                 GL_UNSIGNED_INT,
@@ -286,13 +297,13 @@ static void draw(GLFWwindow* window) {
     }
     {
         // NOTE: Blit off-screen to on-screen.
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO);
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, OBJECT.frame_buffer);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
         glBlitFramebuffer(0,
                           0,
-                          FBO_WIDTH,
-                          FBO_HEIGHT,
+                          FRAME_BUFFER_WIDTH,
+                          FRAME_BUFFER_HEIGHT,
                           0,
                           0,
                           WINDOW_WIDTH,
@@ -301,6 +312,16 @@ static void draw(GLFWwindow* window) {
                           GL_NEAREST);
     }
     glfwSwapBuffers(window);
+}
+
+static void delete_buffers() {
+    glDeleteVertexArrays(1, &OBJECT.vertex_array);
+    glDeleteBuffers(1, &OBJECT.vertex_buffer);
+    glDeleteBuffers(1, &OBJECT.element_buffer);
+    glDeleteBuffers(1, &OBJECT.instance_buffer);
+    glDeleteFramebuffers(1, &OBJECT.frame_buffer);
+    glDeleteRenderbuffers(1, &OBJECT.render_buffer_color);
+    glDeleteRenderbuffers(1, &OBJECT.render_buffer_depth);
 }
 
 #endif

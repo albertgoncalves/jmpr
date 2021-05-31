@@ -23,11 +23,6 @@
 static i32 WINDOW_WIDTH = INIT_WINDOW_WIDTH;
 static i32 WINDOW_HEIGHT = INIT_WINDOW_HEIGHT;
 
-#define FBO_SCALE 4
-
-#define FBO_WIDTH  (INIT_WINDOW_WIDTH / FBO_SCALE)
-#define FBO_HEIGHT (INIT_WINDOW_HEIGHT / FBO_SCALE)
-
 struct Native {
     Display* display;
     Window   window;

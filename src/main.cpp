@@ -514,13 +514,7 @@ i32 main(i32 n, const char** args) {
         loop(window, &memory->grid, program);
         show_cursor(native);
     }
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    glDeleteBuffers(1, &IBO);
-    glDeleteFramebuffers(1, &FBO);
-    glDeleteRenderbuffers(1, &RBO);
-    glDeleteRenderbuffers(1, &DBO);
+    delete_buffers();
     glDeleteProgram(program);
     glfwTerminate();
     free(memory);
