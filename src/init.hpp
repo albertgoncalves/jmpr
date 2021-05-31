@@ -28,10 +28,8 @@ struct Native {
     Window   window;
 };
 
-#define SIZE_BUFFER 1024
-
 struct BufferMemory {
-    char buffer[SIZE_BUFFER];
+    char buffer[2 << 9];
 };
 
 static void init_set_file(BufferMemory* memory, const char* filename) {
