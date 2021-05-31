@@ -34,7 +34,7 @@ struct BufferMemory {
     char buffer[SIZE_BUFFER];
 };
 
-static void set_file(BufferMemory* memory, const char* filename) {
+static void init_set_file(BufferMemory* memory, const char* filename) {
     File* file = fopen(filename, "r");
     EXIT_IF(!file);
     fseek(file, 0, SEEK_END);
@@ -47,23 +47,25 @@ static void set_file(BufferMemory* memory, const char* filename) {
     fclose(file);
 }
 
-static void hide_cursor(Native native) {
+static void init_hide_cursor(Native native) {
     XFixesHideCursor(native.display, native.window);
     XFlush(native.display);
 }
 
-static void show_cursor(Native native) {
+static void init_show_cursor(Native native) {
     XFixesShowCursor(native.display, native.window);
     XFlush(native.display);
 }
 
-static void framebuffer_size_callback(GLFWwindow* _, i32 width, i32 height) {
+static void init_framebuffer_size_callback(GLFWwindow* _,
+                                           i32         width,
+                                           i32         height) {
     (void)_;
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
 }
 
-static GLFWwindow* get_window(const char* name) {
+static GLFWwindow* init_get_window(const char* name) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -77,7 +79,7 @@ static GLFWwindow* get_window(const char* name) {
         ERROR("!window");
     }
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(window, init_framebuffer_size_callback);
     glfwSetWindowAspectRatio(window, INIT_WINDOW_WIDTH, INIT_WINDOW_HEIGHT);
     // NOTE: While mouse *does* get locked to center of window, it remains
     // visible. See `https://github.com/glfw/glfw/issues/1790`.
@@ -88,8 +90,10 @@ static GLFWwindow* get_window(const char* name) {
     return window;
 }
 
-static u32 get_shader(BufferMemory* memory, const char* filename, u32 type) {
-    set_file(memory, filename);
+static u32 init_get_shader(BufferMemory* memory,
+                           const char*   filename,
+                           u32           type) {
+    init_set_file(memory, filename);
     const u32   shader = glCreateShader(type);
     const char* source = memory->buffer;
     glShaderSource(shader, 1, &source, nullptr);
@@ -107,9 +111,9 @@ static u32 get_shader(BufferMemory* memory, const char* filename, u32 type) {
     return shader;
 }
 
-static u32 get_program(BufferMemory* memory,
-                       u32           vertex_shader,
-                       u32           fragment_shader) {
+static u32 init_get_program(BufferMemory* memory,
+                            u32           vertex_shader,
+                            u32           fragment_shader) {
     const u32 program = glCreateProgram();
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);

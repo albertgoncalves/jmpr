@@ -107,7 +107,7 @@ static Object   OBJECT;
 static Instance INSTANCES[COUNT_INSTANCES];
 static Cube     PLATFORMS[COUNT_PLATFORMS];
 
-static Cube get_cube(Mat4 matrix) {
+static Cube scene_get_cube(Mat4 matrix) {
     const f32 width_half = matrix.cell[0][0] / 2.0f;
     const f32 height_half = matrix.cell[1][1] / 2.0f;
     const f32 depth_half = matrix.cell[2][2] / 2.0f;
@@ -125,7 +125,7 @@ static Cube get_cube(Mat4 matrix) {
     };
 }
 
-static void set_instances() {
+static void scene_set_instances() {
     const Mat4 matrix = scale({10.0f, 0.5f, 10.0f});
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
         INSTANCES[i].matrix = translate(PLATFORM_POSITIONS[i]) * matrix;
@@ -135,7 +135,7 @@ static void set_instances() {
             (sinf(static_cast<f32>(i * 5)) + cosf(static_cast<f32>(i * 7))) /
             2.0f;
         INSTANCES[i].color *= INSTANCES[i].color;
-        PLATFORMS[i] = get_cube(INSTANCES[i].matrix);
+        PLATFORMS[i] = scene_get_cube(INSTANCES[i].matrix);
     }
 }
 
@@ -163,15 +163,15 @@ static void set_instances() {
         }                                              \
     }
 
-static void set_vertex_attrib(u32         index,
-                              i32         size,
-                              i32         stride,
-                              const void* offset) {
+static void scene_set_vertex_attrib(u32         index,
+                                    i32         size,
+                                    i32         stride,
+                                    const void* offset) {
     glEnableVertexAttribArray(index);
     glVertexAttribPointer(index, size, GL_FLOAT, FALSE, stride, offset);
 }
 
-static void set_buffers() {
+static void scene_set_buffers() {
     glGenVertexArrays(1, &OBJECT.vertex_array);
     glBindVertexArray(OBJECT.vertex_array);
     CHECK_GL_ERROR();
@@ -186,14 +186,14 @@ static void set_buffers() {
         const i32 normal_width = 3;
         const i32 stride = sizeof(f32) * (position_width + normal_width);
 #if VERTEX_OFFSET == 0
-        set_vertex_attrib(INDEX_VERTEX, position_width, stride, nullptr);
+        scene_set_vertex_attrib(INDEX_VERTEX, position_width, stride, nullptr);
 #else
         set_vertex_attrib(INDEX_VERTEX,
                           position_width,
                           stride,
                           reinterpret_cast<void*>(VERTEX_OFFSET));
 #endif
-        set_vertex_attrib(
+        scene_set_vertex_attrib(
             INDEX_NORMAL,
             normal_width,
             stride,
@@ -210,7 +210,7 @@ static void set_buffers() {
         CHECK_GL_ERROR();
     }
     {
-        set_instances();
+        scene_set_instances();
         glGenBuffers(1, &OBJECT.instance_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, OBJECT.instance_buffer);
         glBufferData(GL_ARRAY_BUFFER,
@@ -223,18 +223,18 @@ static void set_buffers() {
         const usize offset = sizeof(f32) * 4;
         for (u32 i = 0; i < 4; ++i) {
             const u32 index = INDEX_INSTANCE + i;
-            set_vertex_attrib(index,
-                              4,
-                              stride,
-                              reinterpret_cast<void*>(i * offset));
+            scene_set_vertex_attrib(index,
+                                    4,
+                                    stride,
+                                    reinterpret_cast<void*>(i * offset));
             glVertexAttribDivisor(index, 1);
         }
         {
             const u32 index = INDEX_INSTANCE + 4;
-            set_vertex_attrib(index,
-                              3,
-                              stride,
-                              reinterpret_cast<void*>(4 * offset));
+            scene_set_vertex_attrib(index,
+                                    3,
+                                    stride,
+                                    reinterpret_cast<void*>(4 * offset));
             glVertexAttribDivisor(index, 1);
         }
         CHECK_GL_ERROR();
@@ -278,7 +278,7 @@ static void set_buffers() {
     CHECK_GL_ERROR();
 }
 
-static void draw(GLFWwindow* window) {
+static void scene_draw(GLFWwindow* window) {
     {
         // NOTE: Bind off-screen render target.
         glBindFramebuffer(GL_FRAMEBUFFER, OBJECT.frame_buffer);
@@ -314,7 +314,7 @@ static void draw(GLFWwindow* window) {
     glfwSwapBuffers(window);
 }
 
-static void delete_buffers() {
+static void scene_delete_buffers() {
     glDeleteVertexArrays(1, &OBJECT.vertex_array);
     glDeleteBuffers(1, &OBJECT.vertex_buffer);
     glDeleteBuffers(1, &OBJECT.element_buffer);

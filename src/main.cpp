@@ -267,7 +267,7 @@ static void set_motion(GridMemory* memory, State* state) {
     if (state->player.speed.y <= 0.0f) {
         const Cube below = get_cube_below(state->player);
         state->player.position.y += state->player.speed.y;
-        set_intersects(memory, below);
+        hash_set_intersects(memory, below);
         for (u8 i = 0; i < memory->len_intersects; ++i) {
             if (INTERSECT_PLAYER_PLATFORM(below, (*memory->intersects[i]))) {
                 state->player.position.y =
@@ -284,7 +284,7 @@ static void set_motion(GridMemory* memory, State* state) {
     } else {
         const Cube above = get_cube_above(state->player);
         state->player.position.y += state->player.speed.y;
-        set_intersects(memory, above);
+        hash_set_intersects(memory, above);
         for (u8 i = 0; i < memory->len_intersects; ++i) {
             if (INTERSECT_PLAYER_PLATFORM(above, (*memory->intersects[i]))) {
                 state->player.position.y =
@@ -320,14 +320,14 @@ static void set_motion(GridMemory* memory, State* state) {
     } else {
         state->player.position.z += state->player.speed.z;
     }
-    set_intersects(memory, front_back);
+    hash_set_intersects(memory, front_back);
     for (u8 i = 0; i < memory->len_intersects; ++i) {
         if (INTERSECT_PLAYER_PLATFORM(front_back, (*memory->intersects[i]))) {
             state->player.position.z -= state->player.speed.z;
             state->player.speed.z = 0.0f;
         }
     }
-    set_intersects(memory, left_right);
+    hash_set_intersects(memory, left_right);
     for (u8 i = 0; i < memory->len_intersects; ++i) {
         if (INTERSECT_PLAYER_PLATFORM(left_right, (*memory->intersects[i]))) {
             state->player.position.x -= state->player.speed.x;
@@ -398,8 +398,8 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
         .view = glGetUniformLocation(program, "U_VIEW"),
     };
     printf("\n\n\n\n\n");
-    set_bounds(memory);
-    init_grid(memory);
+    hash_set_bounds(memory);
+    hash_set_grid(memory);
     while (!glfwWindowShouldClose(window)) {
         state.time = static_cast<f32>(glfwGetTime());
         frame.time = state.time * MICROSECONDS;
@@ -415,7 +415,7 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
                 sinf(fabsf(state.player.position.y) / 10.0f);
             glClearColor(sin_height, sin_height, sin_height, 1.0f);
         }
-        draw(window);
+        scene_draw(window);
         set_debug(&frame, &state);
         frame.prev = frame.time;
     }
@@ -497,24 +497,24 @@ i32 main(i32 n, const char** args) {
     EXIT_IF(n < 3);
     glfwSetErrorCallback(error_callback);
     EXIT_IF(!glfwInit());
-    GLFWwindow* window = get_window("float");
+    GLFWwindow* window = init_get_window("float");
     glfwSetCursorPosCallback(window, init_cursor_callback);
     glfwSetInputMode(window, GLFW_STICKY_KEYS, TRUE);
-    const u32 program =
-        get_program(&memory->buffer,
-                    get_shader(&memory->buffer, args[1], GL_VERTEX_SHADER),
-                    get_shader(&memory->buffer, args[2], GL_FRAGMENT_SHADER));
-    set_buffers();
+    const u32 program = init_get_program(
+        &memory->buffer,
+        init_get_shader(&memory->buffer, args[1], GL_VERTEX_SHADER),
+        init_get_shader(&memory->buffer, args[2], GL_FRAGMENT_SHADER));
+    scene_set_buffers();
     {
         const Native native = {
             glfwGetX11Display(),
             glfwGetX11Window(window),
         };
-        hide_cursor(native);
+        init_hide_cursor(native);
         loop(window, &memory->grid, program);
-        show_cursor(native);
+        init_show_cursor(native);
     }
-    delete_buffers();
+    scene_delete_buffers();
     glDeleteProgram(program);
     glfwTerminate();
     free(memory);
