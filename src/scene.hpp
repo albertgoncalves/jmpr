@@ -107,6 +107,30 @@ static Object   OBJECT;
 static Instance INSTANCES[COUNT_INSTANCES];
 static Cube     PLATFORMS[COUNT_PLATFORMS];
 
+#define CHECK_GL_ERROR()                               \
+    {                                                  \
+        switch (glGetError()) {                        \
+        case GL_INVALID_ENUM: {                        \
+            ERROR("GL_INVALID_ENUM");                  \
+        }                                              \
+        case GL_INVALID_VALUE: {                       \
+            ERROR("GL_INVALID_VALUE");                 \
+        }                                              \
+        case GL_INVALID_OPERATION: {                   \
+            ERROR("GL_INVALID_OPERATION");             \
+        }                                              \
+        case GL_INVALID_FRAMEBUFFER_OPERATION: {       \
+            ERROR("GL_INVALID_FRAMEBUFFER_OPERATION"); \
+        }                                              \
+        case GL_OUT_OF_MEMORY: {                       \
+            ERROR("GL_OUT_OF_MEMORY");                 \
+        }                                              \
+        case GL_NO_ERROR: {                            \
+            break;                                     \
+        }                                              \
+        }                                              \
+    }
+
 static Cube scene_get_cube(Mat4 matrix) {
     const f32 width_half = matrix.cell[0][0] / 2.0f;
     const f32 height_half = matrix.cell[1][1] / 2.0f;
@@ -138,30 +162,6 @@ static void scene_set_instances() {
         PLATFORMS[i] = scene_get_cube(INSTANCES[i].matrix);
     }
 }
-
-#define CHECK_GL_ERROR()                               \
-    {                                                  \
-        switch (glGetError()) {                        \
-        case GL_INVALID_ENUM: {                        \
-            ERROR("GL_INVALID_ENUM");                  \
-        }                                              \
-        case GL_INVALID_VALUE: {                       \
-            ERROR("GL_INVALID_VALUE");                 \
-        }                                              \
-        case GL_INVALID_OPERATION: {                   \
-            ERROR("GL_INVALID_OPERATION");             \
-        }                                              \
-        case GL_INVALID_FRAMEBUFFER_OPERATION: {       \
-            ERROR("GL_INVALID_FRAMEBUFFER_OPERATION"); \
-        }                                              \
-        case GL_OUT_OF_MEMORY: {                       \
-            ERROR("GL_OUT_OF_MEMORY");                 \
-        }                                              \
-        case GL_NO_ERROR: {                            \
-            break;                                     \
-        }                                              \
-        }                                              \
-    }
 
 static void scene_set_vertex_attrib(u32         index,
                                     i32         size,
