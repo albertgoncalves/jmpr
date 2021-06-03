@@ -10,10 +10,10 @@ struct Uniforms {
 };
 
 struct Player {
-    Vec3  position;
-    Vec3  speed;
-    Bool_ can_jump;
-    Bool_ jump_key_released;
+    Vec3 position;
+    Vec3 speed;
+    bool can_jump;
+    bool jump_key_released;
 };
 
 struct State {
@@ -105,7 +105,7 @@ static f32 VIEW_PITCH = 0.0f;
 static void set_input(GLFWwindow* window, State* state) {
     glfwPollEvents();
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, TRUE);
+        glfwSetWindowShouldClose(window, true);
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         state->player.speed =
@@ -129,19 +129,19 @@ static void set_input(GLFWwindow* window, State* state) {
         (state->player.can_jump))
     {
         state->player.speed.y += JUMP;
-        state->player.can_jump = FALSE;
-        state->player.jump_key_released = FALSE;
+        state->player.can_jump = false;
+        state->player.jump_key_released = false;
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
-        state->player.jump_key_released = TRUE;
+        state->player.jump_key_released = true;
     }
 }
 
 static void init_player(State* state) {
     state->player.position = INIT_PLAYER_POSITION;
     state->player.speed = {};
-    state->player.can_jump = FALSE;
-    state->player.jump_key_released = FALSE;
+    state->player.can_jump = false;
+    state->player.jump_key_released = false;
     VIEW_TARGET = INIT_VIEW_TARGET;
     CURSOR_X_DELTA = 0.0f;
     CURSOR_Y_DELTA = 0.0f;
@@ -261,7 +261,7 @@ static void set_motion(GridMemory* memory, State* state) {
         return;
     }
     state->player.speed.y -= GRAVITY;
-    state->player.can_jump = FALSE;
+    state->player.can_jump = false;
     f32 x_speed = state->player.speed.x * DRAG;
     f32 z_speed = state->player.speed.z * DRAG;
     if (state->player.speed.y <= 0.0f) {
@@ -276,7 +276,7 @@ static void set_motion(GridMemory* memory, State* state) {
                 x_speed = state->player.speed.x * FRICTION;
                 z_speed = state->player.speed.z * FRICTION;
                 if (state->player.jump_key_released) {
-                    state->player.can_jump = TRUE;
+                    state->player.can_jump = true;
                 }
                 break;
             }
@@ -347,11 +347,11 @@ static void set_uniforms(Uniforms uniforms, const State* state) {
                                             static_cast<f32>(WINDOW_HEIGHT),
                                         VIEW_NEAR,
                                         VIEW_FAR);
-    glUniformMatrix4fv(uniforms.projection, 1, FALSE, &projection.cell[0][0]);
+    glUniformMatrix4fv(uniforms.projection, 1, false, &projection.cell[0][0]);
     const Mat4 view = look_at(state->player.position,
                               state->player.position + VIEW_TARGET,
                               VIEW_UP);
-    glUniformMatrix4fv(uniforms.view, 1, FALSE, &view.cell[0][0]);
+    glUniformMatrix4fv(uniforms.view, 1, false, &view.cell[0][0]);
     CHECK_GL_ERROR();
 }
 
@@ -460,7 +460,6 @@ i32 main(i32 n, const char** args) {
     Memory* memory = reinterpret_cast<Memory*>(calloc(1, sizeof(Memory)));
     EXIT_IF(!memory);
     printf("GLFW version : %s\n\n"
-           "sizeof(Bool_)          : %zu\n"
            "sizeof(Vec3)           : %zu\n"
            "sizeof(Mat4)           : %zu\n"
            "sizeof(Object)         : %zu\n"
@@ -478,7 +477,6 @@ i32 main(i32 n, const char** args) {
            "sizeof(State)          : %zu\n"
            "sizeof(Memory)         : %zu\n\n",
            glfwGetVersionString(),
-           sizeof(Bool_),
            sizeof(Vec3),
            sizeof(Mat4),
            sizeof(Object),
@@ -500,7 +498,7 @@ i32 main(i32 n, const char** args) {
     EXIT_IF(!glfwInit());
     GLFWwindow* window = init_get_window("float");
     glfwSetCursorPosCallback(window, init_cursor_callback);
-    glfwSetInputMode(window, GLFW_STICKY_KEYS, TRUE);
+    glfwSetInputMode(window, GLFW_STICKY_KEYS, true);
     const u32 program = init_get_program(
         &memory->buffer,
         init_get_shader(&memory->buffer, args[1], GL_VERTEX_SHADER),

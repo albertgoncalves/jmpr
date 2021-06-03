@@ -16,11 +16,6 @@ typedef double f64;
 
 typedef FILE File;
 
-enum Bool_ {
-    FALSE = 0,
-    TRUE,
-};
-
 #define ERROR(x)                     \
     {                                \
         fprintf(stderr,              \

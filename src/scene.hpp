@@ -175,7 +175,7 @@ static void scene_set_vertex_attrib(u32         index,
                                     i32         stride,
                                     const void* offset) {
     glEnableVertexAttribArray(index);
-    glVertexAttribPointer(index, size, GL_FLOAT, FALSE, stride, offset);
+    glVertexAttribPointer(index, size, GL_FLOAT, false, stride, offset);
 }
 
 static void scene_set_buffers() {
