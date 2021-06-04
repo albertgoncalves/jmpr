@@ -43,8 +43,8 @@ libs=(
     "-lXfixes"
 )
 paths=(
-    "-I${WD}/glfw/include"
-    "-L${WD}/glfw/src"
+    "-I$WD/glfw/include"
+    "-L$WD/glfw/src"
 )
 
 now () {
@@ -54,12 +54,8 @@ now () {
 (
     start=$(now)
     clang-format -i -verbose "$WD/src"/*
-    clang++ \
-        "${paths[@]}" \
-        "${libs[@]}" \
-        "${flags[@]}" \
-        -o "$WD/bin/main" \
+    clang++ "${paths[@]}" "${libs[@]}" "${flags[@]}" -o "$WD/bin/main" \
         "$WD/src/main.cpp"
     end=$(now)
-    python3 -c "print(\"Compiled! ({:.3f}s)\n\".format(${end} - ${start}))"
+    python3 -c "print(\"Compiled! ({:.3f}s)\n\".format($end - $start))"
 )
