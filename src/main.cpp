@@ -137,7 +137,7 @@ static void set_input(GLFWwindow* window, State* state) {
     }
 }
 
-static void init_player(State* state) {
+static void set_player(State* state) {
     state->player.position = INIT_PLAYER_POSITION;
     state->player.speed = {};
     state->player.can_jump = false;
@@ -257,7 +257,7 @@ static Cube get_cube_right(Player player) {
 
 static void set_motion(GridMemory* memory, State* state) {
     if (state->player.position.y < WORLD_Y_MIN) {
-        init_player(state);
+        set_player(state);
         return;
     }
     state->player.speed.y -= GRAVITY;
@@ -388,7 +388,7 @@ static void set_debug(Frame* frame, const State* state) {
 
 static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
     State state = {};
-    init_player(&state);
+    set_player(&state);
     Frame frame = {};
     glUseProgram(program);
     const Uniforms uniforms = {
@@ -451,7 +451,7 @@ static void cursor_callback(GLFWwindow* _, f64 x, f64 y) {
     CURSOR_CALLBACK(x, y);
 }
 
-static void init_cursor_callback(GLFWwindow* window, f64 x, f64 y) {
+static void set_cursor_callback(GLFWwindow* window, f64 x, f64 y) {
     CURSOR_CALLBACK(x, y);
     glfwSetCursorPosCallback(window, cursor_callback);
 }
@@ -497,7 +497,7 @@ i32 main(i32 n, const char** args) {
     glfwSetErrorCallback(error_callback);
     EXIT_IF(!glfwInit());
     GLFWwindow* window = init_get_window("float");
-    glfwSetCursorPosCallback(window, init_cursor_callback);
+    glfwSetCursorPosCallback(window, set_cursor_callback);
     glfwSetInputMode(window, GLFW_STICKY_KEYS, true);
     const u32 program = init_get_program(
         &memory->buffer,
