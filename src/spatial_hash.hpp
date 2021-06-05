@@ -48,9 +48,9 @@ struct GridMemory {
 static List* hash_alloc_list(GridMemory* memory) {
     EXIT_IF(CAP_LISTS <= memory->len_lists);
     List* list = &memory->lists[memory->len_lists++];
-    list->cube = nullptr;
-    list->next = nullptr;
-    list->last = nullptr;
+    list->cube = null;
+    list->next = null;
+    list->last = null;
     return list;
 }
 
@@ -95,8 +95,8 @@ static void hash_push_grid(GridMemory* memory, Index grid_index, Cube* cube) {
     List* grid = &memory->grid[grid_index.x][grid_index.y][grid_index.z];
     if (!grid->cube) {
         grid->cube = cube;
-        grid->next = nullptr;
-        grid->last = nullptr;
+        grid->next = null;
+        grid->last = null;
         return;
     }
     List* list = hash_alloc_list(memory);

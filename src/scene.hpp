@@ -193,7 +193,7 @@ static void scene_set_buffers() {
         const i32 normal_width = 3;
         const i32 stride = sizeof(f32) * (position_width + normal_width);
 #if VERTEX_OFFSET == 0
-        scene_set_vertex_attrib(INDEX_VERTEX, position_width, stride, nullptr);
+        scene_set_vertex_attrib(INDEX_VERTEX, position_width, stride, null);
 #else
         set_vertex_attrib(INDEX_VERTEX,
                           position_width,

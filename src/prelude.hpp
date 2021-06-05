@@ -16,6 +16,8 @@ typedef double f64;
 
 typedef FILE File;
 
+#define null nullptr
+
 #define ERROR(x)                     \
     {                                \
         fprintf(stderr,              \

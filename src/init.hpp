@@ -70,8 +70,8 @@ static GLFWwindow* init_get_window(const char* name) {
     GLFWwindow* window = glfwCreateWindow(INIT_WINDOW_WIDTH,
                                           INIT_WINDOW_HEIGHT,
                                           name,
-                                          nullptr,
-                                          nullptr);
+                                          null,
+                                          null);
     if (!window) {
         glfwTerminate();
         ERROR("!window");
@@ -94,7 +94,7 @@ static u32 init_get_shader(BufferMemory* memory,
     init_set_file(memory, filename);
     const u32   shader = glCreateShader(type);
     const char* source = memory->buffer;
-    glShaderSource(shader, 1, &source, nullptr);
+    glShaderSource(shader, 1, &source, null);
     glCompileShader(shader);
     i32 status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
@@ -102,7 +102,7 @@ static u32 init_get_shader(BufferMemory* memory,
         memset(memory->buffer, 0, sizeof(memory->buffer));
         glGetShaderInfoLog(shader,
                            sizeof(memory->buffer),
-                           nullptr,
+                           null,
                            memory->buffer);
         ERROR(memory->buffer);
     }
@@ -122,7 +122,7 @@ static u32 init_get_program(BufferMemory* memory,
         memset(memory->buffer, 0, sizeof(memory->buffer));
         glGetProgramInfoLog(program,
                             sizeof(memory->buffer),
-                            nullptr,
+                            null,
                             memory->buffer);
         ERROR(memory->buffer);
     }
