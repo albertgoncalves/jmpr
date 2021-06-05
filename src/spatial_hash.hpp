@@ -3,20 +3,20 @@
 
 #include "scene.hpp"
 
-#define GRID_COUNT_X 10
-#define GRID_COUNT_Y 10
-#define GRID_COUNT_Z 10
+#define GRID_X 10
+#define GRID_Y 10
+#define GRID_Z 10
 
-#define GRID_COUNT_VEC3 \
-    ((Vec3){            \
-        GRID_COUNT_X,   \
-        GRID_COUNT_Y,   \
-        GRID_COUNT_Z,   \
+#define GRID_VEC3 \
+    ((Vec3){      \
+        GRID_X,   \
+        GRID_Y,   \
+        GRID_Z,   \
     })
 
 #define GRID_EPSILON 0.01f
 
-#define GRID_CAP_LISTS (2 << 6)
+#define CAP_LISTS (2 << 6)
 
 struct Index {
     u8 x;
@@ -36,17 +36,17 @@ struct List {
 };
 
 struct GridMemory {
-    List  grid[GRID_COUNT_X][GRID_COUNT_Y][GRID_COUNT_Z];
+    List  grid[GRID_X][GRID_Y][GRID_Z];
     Cube  bounds;
     Vec3  span;
-    List  lists[GRID_CAP_LISTS];
+    List  lists[CAP_LISTS];
     u8    len_lists;
     Cube* intersects[COUNT_PLATFORMS];
     u8    len_intersects;
 };
 
 static List* hash_alloc_list(GridMemory* memory) {
-    EXIT_IF(GRID_CAP_LISTS <= memory->len_lists);
+    EXIT_IF(CAP_LISTS <= memory->len_lists);
     List* list = &memory->lists[memory->len_lists++];
     list->cube = nullptr;
     list->next = nullptr;
@@ -72,11 +72,11 @@ static Range hash_get_range(GridMemory* memory, Cube cube) {
     const Vec3 bottom_left_front =
         ((cube.bottom_left_front - memory->bounds.bottom_left_front) /
          memory->span) *
-        GRID_COUNT_VEC3;
+        GRID_VEC3;
     const Vec3 top_right_back =
         ((cube.top_right_back - memory->bounds.bottom_left_front) /
          memory->span) *
-        GRID_COUNT_VEC3;
+        GRID_VEC3;
     return {
         {
             static_cast<u8>(bottom_left_front.x),
