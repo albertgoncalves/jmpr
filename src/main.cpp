@@ -387,7 +387,7 @@ static void set_debug(Frame* frame, const State* state) {
 }
 
 static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
-    State state = {};
+    State state;
     set_player(&state);
     Frame frame = {};
     glUseProgram(program);
@@ -397,8 +397,6 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
         .projection = glGetUniformLocation(program, "U_PROJECTION"),
         .view = glGetUniformLocation(program, "U_VIEW"),
     };
-    hash_set_bounds(memory);
-    hash_set_grid(memory);
     printf("\n\n\n\n\n");
     while (!glfwWindowShouldClose(window)) {
         state.time = static_cast<f32>(glfwGetTime());
@@ -503,7 +501,10 @@ i32 main(i32 n, const char** args) {
         &memory->buffer,
         init_get_shader(&memory->buffer, args[1], GL_VERTEX_SHADER),
         init_get_shader(&memory->buffer, args[2], GL_FRAGMENT_SHADER));
+    scene_set_instances();
     scene_set_buffers();
+    hash_set_bounds(&memory->grid);
+    hash_set_grid(&memory->grid);
     {
         const Native native = {
             glfwGetX11Display(),

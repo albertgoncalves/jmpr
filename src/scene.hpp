@@ -108,10 +108,9 @@ static const Vec3 PLATFORM_POSITIONS[] = {
 
 #define COUNT_PLATFORMS \
     (sizeof(PLATFORM_POSITIONS) / sizeof(PLATFORM_POSITIONS[0]))
-#define COUNT_INSTANCES COUNT_PLATFORMS
 
 static Object   OBJECT;
-static Instance INSTANCES[COUNT_INSTANCES];
+static Instance INSTANCES[COUNT_PLATFORMS];
 static Cube     PLATFORMS[COUNT_PLATFORMS];
 
 #define CHECK_GL_ERROR()                               \
@@ -160,11 +159,12 @@ static void scene_set_instances() {
     const Mat4 matrix = scale({10.0f, 0.5f, 10.0f});
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
         INSTANCES[i].matrix = translate(PLATFORM_POSITIONS[i]) * matrix;
-        INSTANCES[i].color.x = cosf(static_cast<f32>(i * 2));
-        INSTANCES[i].color.y = sinf(static_cast<f32>(i * 3));
-        INSTANCES[i].color.z =
+        INSTANCES[i].color = {
+            cosf(static_cast<f32>(i * 2)),
+            sinf(static_cast<f32>(i * 3)),
             (sinf(static_cast<f32>(i * 5)) + cosf(static_cast<f32>(i * 7))) /
-            2.0f;
+                2.0f,
+        };
         INSTANCES[i].color *= INSTANCES[i].color;
         PLATFORMS[i] = scene_get_cube(INSTANCES[i].matrix);
     }
@@ -217,7 +217,6 @@ static void scene_set_buffers() {
         CHECK_GL_ERROR();
     }
     {
-        scene_set_instances();
         glGenBuffers(1, &OBJECT.instance_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, OBJECT.instance_buffer);
         glBufferData(GL_ARRAY_BUFFER,
@@ -300,7 +299,7 @@ static void scene_draw(GLFWwindow* window) {
                                 sizeof(INDICES) / sizeof(INDICES[0]),
                                 GL_UNSIGNED_INT,
                                 reinterpret_cast<void*>(VERTEX_OFFSET),
-                                COUNT_INSTANCES);
+                                COUNT_PLATFORMS);
     }
     {
         // NOTE: Blit off-screen to on-screen.
