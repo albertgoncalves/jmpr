@@ -355,12 +355,7 @@ static void set_uniforms(Uniforms uniforms, const State* state) {
     CHECK_GL_ERROR();
 }
 
-static void set_debug(Frame* frame, const State* state) {
-    const f32 now = static_cast<f32>(glfwGetTime()) * MICROSECONDS;
-    const f32 elapsed = (now - frame->time);
-    if (elapsed < FRAME_DURATION) {
-        usleep(static_cast<u32>(FRAME_DURATION - elapsed));
-    }
+static void set_debug(Frame* frame, const State* state, f32 now) {
     if (++frame->debug_count == 60) {
         printf(
             "\033[5A"
@@ -414,7 +409,14 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
             glClearColor(sin_height, sin_height, sin_height, 1.0f);
         }
         scene_draw(window);
-        set_debug(&frame, &state);
+        {
+            const f32 now = static_cast<f32>(glfwGetTime()) * MICROSECONDS;
+            const f32 elapsed = (now - frame.time);
+            if (elapsed < FRAME_DURATION) {
+                usleep(static_cast<u32>(FRAME_DURATION - elapsed));
+            }
+            set_debug(&frame, &state, now);
+        }
         frame.prev = frame.time;
     }
 }
