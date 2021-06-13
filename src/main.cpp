@@ -25,8 +25,8 @@ struct Frame {
     f32 time;
     f32 prev;
     f32 delta;
-    f32 fps_time;
-    u8  fps_count;
+    f32 debug_time;
+    u8  debug_count;
 };
 
 struct Memory {
@@ -361,28 +361,29 @@ static void set_debug(Frame* frame, const State* state) {
     if (elapsed < FRAME_DURATION) {
         usleep(static_cast<u32>(FRAME_DURATION - elapsed));
     }
-    if (++frame->fps_count == 60) {
-        printf("\033[5A"
-               "fps      %8.2f\n"
-               "mspf     %8.2f\n"
-               "position %8.2f%8.2f%8.2f\n"
-               "speed    %8.2f%8.2f%8.2f\n"
-               "target   %8.2f%8.2f%8.2f\n",
-               static_cast<f64>((frame->fps_count / (now - frame->fps_time)) *
-                                MICROSECONDS),
-               static_cast<f64>(((now - frame->fps_time) / frame->fps_count) /
-                                MILLISECONDS),
-               static_cast<f64>(state->player.position.x),
-               static_cast<f64>(state->player.position.y),
-               static_cast<f64>(state->player.position.z),
-               static_cast<f64>(state->player.speed.x),
-               static_cast<f64>(state->player.speed.y),
-               static_cast<f64>(state->player.speed.z),
-               static_cast<f64>(VIEW_TARGET.x),
-               static_cast<f64>(VIEW_TARGET.y),
-               static_cast<f64>(VIEW_TARGET.z));
-        frame->fps_time = static_cast<f32>(glfwGetTime()) * MICROSECONDS;
-        frame->fps_count = 0;
+    if (++frame->debug_count == 60) {
+        printf(
+            "\033[5A"
+            "fps      %8.2f\n"
+            "mspf     %8.2f\n"
+            "position %8.2f%8.2f%8.2f\n"
+            "speed    %8.2f%8.2f%8.2f\n"
+            "target   %8.2f%8.2f%8.2f\n",
+            static_cast<f64>((frame->debug_count / (now - frame->debug_time)) *
+                             MICROSECONDS),
+            static_cast<f64>(((now - frame->debug_time) / frame->debug_count) /
+                             MILLISECONDS),
+            static_cast<f64>(state->player.position.x),
+            static_cast<f64>(state->player.position.y),
+            static_cast<f64>(state->player.position.z),
+            static_cast<f64>(state->player.speed.x),
+            static_cast<f64>(state->player.speed.y),
+            static_cast<f64>(state->player.speed.z),
+            static_cast<f64>(VIEW_TARGET.x),
+            static_cast<f64>(VIEW_TARGET.y),
+            static_cast<f64>(VIEW_TARGET.z));
+        frame->debug_time = static_cast<f32>(glfwGetTime()) * MICROSECONDS;
+        frame->debug_count = 0;
     }
 }
 
