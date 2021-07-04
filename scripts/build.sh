@@ -38,7 +38,6 @@ flags=(
     "-Wno-reserved-id-macro"
 )
 libs=(
-    "-lm"
     "-lglfw"
     "-lGL"
     "-lX11"
