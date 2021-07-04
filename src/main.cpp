@@ -504,7 +504,6 @@ i32 main(i32 n, const char** args) {
         &memory->buffer,
         init_get_shader(&memory->buffer, args[1], GL_VERTEX_SHADER),
         init_get_shader(&memory->buffer, args[2], GL_FRAGMENT_SHADER));
-    scene_set_instances();
     scene_set_buffers();
     hash_set_bounds(&memory->grid);
     hash_set_grid(&memory->grid);

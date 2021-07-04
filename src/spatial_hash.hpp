@@ -1,6 +1,7 @@
 #ifndef __SPATIAL_HASH_H__
 #define __SPATIAL_HASH_H__
 
+#include "math.hpp"
 #include "scene.hpp"
 
 #define GRID_X 10

@@ -21,7 +21,6 @@ flags=(
     "-fshort-enums"
     "-g"
     "-march=native"
-    "-O1"
     "-std=c++11"
     "-Werror"
     "-Weverything"
@@ -53,8 +52,10 @@ now () {
 
 (
     start=$(now)
+    clang++ -O1 "${flags[@]}" -o "$WD/bin/codegen" "$WD/src/codegen.cpp"
+    "$WD/bin/codegen" > "$WD/src/scene_assets_codegen.hpp"
     clang-format -i -verbose "$WD/src"/*
-    clang++ "${paths[@]}" "${libs[@]}" "${flags[@]}" -o "$WD/bin/main" \
+    clang++ -O3 "${paths[@]}" "${libs[@]}" "${flags[@]}" -o "$WD/bin/main" \
         "$WD/src/main.cpp"
     end=$(now)
     python3 -c "print(\"Compiled! ({:.3f}s)\n\".format($end - $start))"
