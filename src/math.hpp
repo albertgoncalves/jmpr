@@ -6,10 +6,6 @@
 #define MIN(l, r) ((l) < (r) ? (l) : (r))
 #define MAX(l, r) ((l) < (r) ? (r) : (l))
 
-static f32 get_radians(f32 degrees) {
-    return (degrees * PI) / 180.0f;
-}
-
 static Vec3 min(Vec3 l, Vec3 r) {
     return {
         MIN(l.x, r.x),
@@ -28,6 +24,10 @@ static Vec3 max(Vec3 l, Vec3 r) {
 
 static Vec3 clip(Vec3 x, Vec3 l, Vec3 r) {
     return min(r, max(l, x));
+}
+
+static f32 get_radians(f32 degrees) {
+    return (degrees * PI) / 180.0f;
 }
 
 static Vec3 operator+(Vec3 l, Vec3 r) {
