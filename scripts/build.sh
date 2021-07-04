@@ -14,6 +14,8 @@ fi
 
 flags=(
     "-ferror-limit=1"
+    "-ffast-math"
+    "-fno-autolink"
     "-fno-exceptions"
     "-fno-math-errno"
     "-fno-rtti"
@@ -21,6 +23,7 @@ flags=(
     "-fshort-enums"
     "-g"
     "-march=native"
+    "-nostdlib++"
     "-std=c++11"
     "-Werror"
     "-Weverything"
