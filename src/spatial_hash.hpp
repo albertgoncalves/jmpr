@@ -4,6 +4,8 @@
 #include "math.hpp"
 #include "scene.hpp"
 
+#include <string.h>
+
 #define GRID_X 10
 #define GRID_Y 10
 #define GRID_Z 10

@@ -1,3 +1,4 @@
+#include "init_assets_codegen.hpp"
 #include "spatial_hash.hpp"
 
 #include <unistd.h>
@@ -457,7 +458,7 @@ static void set_cursor_callback(GLFWwindow* window, f64 x, f64 y) {
     glfwSetCursorPosCallback(window, cursor_callback);
 }
 
-i32 main(i32 n, const char** args) {
+i32 main() {
     Memory* memory = reinterpret_cast<Memory*>(calloc(1, sizeof(Memory)));
     EXIT_IF(!memory);
     printf("GLFW version : %s\n\n"
@@ -494,7 +495,6 @@ i32 main(i32 n, const char** args) {
            sizeof(Uniforms),
            sizeof(State),
            sizeof(Memory));
-    EXIT_IF(n < 3);
     glfwSetErrorCallback(error_callback);
     EXIT_IF(!glfwInit());
     GLFWwindow* window = init_get_window("float");
@@ -502,8 +502,8 @@ i32 main(i32 n, const char** args) {
     glfwSetInputMode(window, GLFW_STICKY_KEYS, true);
     const u32 program = init_get_program(
         &memory->buffer,
-        init_get_shader(&memory->buffer, args[1], GL_VERTEX_SHADER),
-        init_get_shader(&memory->buffer, args[2], GL_FRAGMENT_SHADER));
+        init_get_shader(&memory->buffer, SHADER_VERT, GL_VERTEX_SHADER),
+        init_get_shader(&memory->buffer, SHADER_FRAG, GL_FRAGMENT_SHADER));
     scene_set_buffers();
     hash_set_bounds(&memory->grid);
     hash_set_grid(&memory->grid);

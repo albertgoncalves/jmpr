@@ -3,8 +3,6 @@
 
 #include "prelude.hpp"
 
-#include <string.h>
-
 #define GL_GLEXT_PROTOTYPES
 
 #include <GLFW/glfw3.h>
@@ -31,19 +29,6 @@ struct Native {
 struct BufferMemory {
     char buffer[2 << 9];
 };
-
-static void init_set_file(BufferMemory* memory, const char* filename) {
-    File* file = fopen(filename, "r");
-    EXIT_IF(!file);
-    fseek(file, 0, SEEK_END);
-    const u32 file_size = static_cast<u32>(ftell(file));
-    EXIT_IF(sizeof(memory->buffer) <= file_size);
-    rewind(file);
-    EXIT_IF(fread(&memory->buffer, sizeof(char), file_size, file) !=
-            file_size);
-    memory->buffer[file_size] = '\0';
-    fclose(file);
-}
 
 static void init_hide_cursor(Native native) {
     XFixesHideCursor(native.display, native.window);
@@ -87,17 +72,14 @@ static GLFWwindow* init_get_window(const char* name) {
 }
 
 static u32 init_get_shader(BufferMemory* memory,
-                           const char*   filename,
+                           const char*   source,
                            u32           type) {
-    init_set_file(memory, filename);
-    const u32   shader = glCreateShader(type);
-    const char* source = memory->buffer;
+    const u32 shader = glCreateShader(type);
     glShaderSource(shader, 1, &source, null);
     glCompileShader(shader);
     i32 status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
     if (!status) {
-        memset(memory->buffer, 0, sizeof(memory->buffer));
         glGetShaderInfoLog(shader,
                            sizeof(memory->buffer),
                            null,
@@ -117,7 +99,6 @@ static u32 init_get_program(BufferMemory* memory,
     i32 status;
     glGetProgramiv(program, GL_LINK_STATUS, &status);
     if (!status) {
-        memset(memory->buffer, 0, sizeof(memory->buffer));
         glGetProgramInfoLog(program,
                             sizeof(memory->buffer),
                             null,

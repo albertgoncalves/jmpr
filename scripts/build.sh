@@ -56,6 +56,7 @@ now () {
     start=$(now)
     clang++ -O1 "${flags[@]}" -o "$WD/bin/codegen" "$WD/src/codegen.cpp"
     "$WD/bin/codegen" > "$WD/src/scene_assets_codegen.hpp"
+    "$WD/scripts/codegen.py" > "$WD/src/init_assets_codegen.hpp"
     clang-format -i -verbose "$WD/src"/*
     clang++ -O3 "${paths[@]}" "${libs[@]}" "${flags[@]}" -o "$WD/bin/main" \
         "$WD/src/main.cpp"

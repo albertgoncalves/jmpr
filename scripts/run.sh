@@ -3,4 +3,4 @@
 set -euo pipefail
 
 "$WD/scripts/build.sh"
-"$WD/bin/main" "$WD/src/vert.glsl" "$WD/src/frag.glsl" || echo $?
+"$WD/bin/main" || echo $?

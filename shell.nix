@@ -7,6 +7,7 @@ mkShell.override { stdenv = llvmPackages_12.stdenv; } {
         linuxPackages.perf
         pkg-config
         python3
+        python3Packages.flake8
         shellcheck
         simplescreenrecorder
         valgrind
