@@ -35,15 +35,10 @@ union Mat4 {
     Simd4f32 column[4];
 };
 
-#define ERROR(x)                     \
-    {                                \
-        fprintf(stderr,              \
-                "%s:%s:%d \"%s\"\n", \
-                __FILE__,            \
-                __func__,            \
-                __LINE__,            \
-                x);                  \
-        exit(EXIT_FAILURE);          \
+#define ERROR(x)                                                            \
+    {                                                                       \
+        fprintf(stderr, "%s:%s:%d\n%s\n", __FILE__, __func__, __LINE__, x); \
+        exit(EXIT_FAILURE);                                                 \
     }
 
 #define EXIT_IF(condition) \
