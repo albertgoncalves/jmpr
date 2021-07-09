@@ -1,6 +1,6 @@
 #ifndef __SCENE_ASSETS_CODEGEN_H__
 #define __SCENE_ASSETS_CODEGEN_H__
-static Instance INSTANCES[COUNT_PLATFORMS] = {
+static const Instance INSTANCES[COUNT_PLATFORMS] = {
     {
         {
             .cell =
@@ -302,7 +302,7 @@ static Instance INSTANCES[COUNT_PLATFORMS] = {
         {0.409785f, 0.064426f, 0.063876f},
     },
 };
-static Cube PLATFORMS[COUNT_PLATFORMS] = {
+static const Cube PLATFORMS[COUNT_PLATFORMS] = {
     {
         {-5.000000f, 3.750000f, -5.000000f},
         {5.000000f, 4.250000f, 5.000000f},

@@ -111,7 +111,7 @@ i32 main() {
     printf("#ifndef __SCENE_ASSETS_CODEGEN_H__\n"
            "#define __SCENE_ASSETS_CODEGEN_H__\n");
     {
-        printf("static Instance INSTANCES[COUNT_PLATFORMS] = {");
+        printf("static const Instance INSTANCES[COUNT_PLATFORMS] = {");
         for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
             printf("{");
             show(INSTANCES[i].matrix);
@@ -122,7 +122,7 @@ i32 main() {
         printf("};\n");
     }
     {
-        printf("static Cube PLATFORMS[COUNT_PLATFORMS] = {");
+        printf("static const Cube PLATFORMS[COUNT_PLATFORMS] = {");
         for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
             printf("{");
             show(PLATFORMS[i].bottom_left_front);

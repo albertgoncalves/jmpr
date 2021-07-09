@@ -33,19 +33,19 @@ struct Range {
 };
 
 struct List {
-    Cube* cube;
-    List* next;
-    List* last;
+    const Cube* cube;
+    List*       next;
+    List*       last;
 };
 
 struct GridMemory {
-    List  grid[GRID_X][GRID_Y][GRID_Z];
-    Cube  bounds;
-    Vec3  span;
-    List  lists[CAP_LISTS];
-    u8    len_lists;
-    Cube* intersects[COUNT_PLATFORMS];
-    u8    len_intersects;
+    List        grid[GRID_X][GRID_Y][GRID_Z];
+    Cube        bounds;
+    Vec3        span;
+    List        lists[CAP_LISTS];
+    u8          len_lists;
+    const Cube* intersects[COUNT_PLATFORMS];
+    u8          len_intersects;
 };
 
 static List* hash_alloc_list(GridMemory* memory) {
@@ -94,7 +94,9 @@ static Range hash_get_range(GridMemory* memory, Cube cube) {
     };
 }
 
-static void hash_push_grid(GridMemory* memory, Index grid_index, Cube* cube) {
+static void hash_push_grid(GridMemory* memory,
+                           Index       grid_index,
+                           const Cube* cube) {
     List* grid = &memory->grid[grid_index.x][grid_index.y][grid_index.z];
     if (!grid->cube) {
         grid->cube = cube;

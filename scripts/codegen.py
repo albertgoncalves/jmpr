@@ -8,7 +8,7 @@ WD = environ["WD"]
 
 def codegen(var, path):
     with open(path, "r") as file:
-        return "static char {}[] = {{ {}, }};".format(
+        return "static const char {}[] = {{ {}, }};".format(
             var,
             ", ".join(map(str, map(ord, file.read())))
         )
