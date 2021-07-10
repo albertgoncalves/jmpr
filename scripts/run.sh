@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eu
 
 "$WD/scripts/build.sh"
 "$WD/bin/main" || echo $?

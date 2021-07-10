@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eu
 
 if [ ! -d "$WD/glfw" ]; then
     (
