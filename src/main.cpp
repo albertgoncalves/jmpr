@@ -3,7 +3,7 @@
 
 #include <unistd.h>
 
-struct Uniforms {
+struct Uniform {
     i32 time;
     i32 position;
     i32 projection;
@@ -337,9 +337,9 @@ static void set_motion(GridMemory* memory, State* state) {
     }
 }
 
-static void set_uniforms(Uniforms uniforms, const State* state) {
-    glUniform1f(uniforms.time, state->time);
-    glUniform3f(uniforms.position,
+static void set_uniforms(Uniform uniform, const State* state) {
+    glUniform1f(uniform.time, state->time);
+    glUniform3f(uniform.position,
                 state->player.position.x,
                 state->player.position.y,
                 state->player.position.z);
@@ -348,11 +348,11 @@ static void set_uniforms(Uniforms uniforms, const State* state) {
                                             static_cast<f32>(WINDOW_HEIGHT),
                                         VIEW_NEAR,
                                         VIEW_FAR);
-    glUniformMatrix4fv(uniforms.projection, 1, false, &projection.cell[0][0]);
+    glUniformMatrix4fv(uniform.projection, 1, false, &projection.cell[0][0]);
     const Mat4 view = look_at(state->player.position,
                               state->player.position + VIEW_TARGET,
                               VIEW_UP);
-    glUniformMatrix4fv(uniforms.view, 1, false, &view.cell[0][0]);
+    glUniformMatrix4fv(uniform.view, 1, false, &view.cell[0][0]);
     CHECK_GL_ERROR();
 }
 
@@ -388,11 +388,11 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
     set_player(&state);
     Frame frame = {};
     glUseProgram(program);
-    const Uniforms uniforms = {
-        .time = glGetUniformLocation(program, "U_TIME"),
-        .position = glGetUniformLocation(program, "U_POSITION"),
-        .projection = glGetUniformLocation(program, "U_PROJECTION"),
-        .view = glGetUniformLocation(program, "U_VIEW"),
+    const Uniform uniform = {
+        glGetUniformLocation(program, "U_TIME"),
+        glGetUniformLocation(program, "U_POSITION"),
+        glGetUniformLocation(program, "U_PROJECTION"),
+        glGetUniformLocation(program, "U_VIEW"),
     };
     printf("\n\n\n\n\n");
     while (!glfwWindowShouldClose(window)) {
@@ -404,7 +404,7 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
             set_motion(memory, &state);
             frame.delta -= FRAME_UPDATE_STEP;
         }
-        set_uniforms(uniforms, &state);
+        set_uniforms(uniform, &state);
         {
             const f32 sin_height = sinf(state.player.position.y / 10.0f);
             glClearColor(sin_height, sin_height, sin_height, 1.0f);
@@ -481,7 +481,7 @@ i32 main() {
            "sizeof(GridMemory)     : %zu\n"
            "sizeof(Player)         : %zu\n"
            "sizeof(Frame)          : %zu\n"
-           "sizeof(Uniforms)       : %zu\n"
+           "sizeof(Uniform)        : %zu\n"
            "sizeof(State)          : %zu\n"
            "sizeof(Memory)         : %zu\n\n",
            glfwGetVersionString(),
@@ -498,7 +498,7 @@ i32 main() {
            sizeof(GridMemory),
            sizeof(Player),
            sizeof(Frame),
-           sizeof(Uniforms),
+           sizeof(Uniform),
            sizeof(State),
            sizeof(Memory));
     glfwSetErrorCallback(error_callback);
