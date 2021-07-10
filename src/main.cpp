@@ -505,7 +505,6 @@ i32 main() {
     EXIT_IF(!glfwInit());
     GLFWwindow* window = init_get_window("float");
     glfwSetCursorPosCallback(window, set_cursor_callback);
-    glfwSetInputMode(window, GLFW_STICKY_KEYS, true);
     const u32 program = init_get_program(
         &memory->buffer,
         init_get_shader(&memory->buffer, SHADER_VERT, GL_VERTEX_SHADER),
