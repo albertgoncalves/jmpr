@@ -30,10 +30,7 @@ flags=(
     "-Wno-c++98-compat-pedantic"
     "-Wno-c99-extensions"
     "-Wno-disabled-macro-expansion"
-    "-Wno-documentation"
-    "-Wno-documentation-unknown-command"
     "-Wno-extra-semi-stmt"
-    "-Wno-missing-noreturn"
     "-Wno-padded"
     "-Wno-reserved-id-macro"
 )

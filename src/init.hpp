@@ -5,6 +5,11 @@
 
 #define GL_GLEXT_PROTOTYPES
 
+#pragma GCC diagnostic push
+
+#pragma GCC diagnostic ignored "-Wdocumentation"
+#pragma GCC diagnostic ignored "-Wdocumentation-unknown-command"
+
 #include <GLFW/glfw3.h>
 
 // NOTE: This is a hack to hide the mouse cursor; at the moment, seems like
@@ -13,6 +18,9 @@
 #define GLFW_EXPOSE_NATIVE_X11
 
 #include <GLFW/glfw3native.h>
+
+#pragma GCC diagnostic pop
+
 #include <X11/extensions/Xfixes.h>
 
 #define INIT_WINDOW_WIDTH  1024
