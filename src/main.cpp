@@ -412,7 +412,7 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
         scene_draw(window);
         {
             const f32 now = static_cast<f32>(glfwGetTime()) * MICROSECONDS;
-            const f32 elapsed = (now - frame.time);
+            const f32 elapsed = now - frame.time;
             if (elapsed < FRAME_DURATION) {
                 usleep(static_cast<u32>(FRAME_DURATION - elapsed));
             }
