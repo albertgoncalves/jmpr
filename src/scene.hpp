@@ -123,10 +123,11 @@ static void scene_set_buffers() {
         }
         {
             const u32 index = INDEX_INSTANCE + 4;
-            scene_set_vertex_attrib(index,
-                                    3,
-                                    stride,
-                                    reinterpret_cast<void*>(4 * offset));
+            scene_set_vertex_attrib(
+                index,
+                3,
+                stride,
+                reinterpret_cast<void*>(offsetof(Instance, color)));
             glVertexAttribDivisor(index, 1);
         }
         CHECK_GL_ERROR();
