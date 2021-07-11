@@ -389,10 +389,10 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
     Frame frame = {};
     glUseProgram(program);
     const Uniform uniform = {
-        glGetUniformLocation(program, "U_TIME"),
-        glGetUniformLocation(program, "U_POSITION"),
-        glGetUniformLocation(program, "U_PROJECTION"),
-        glGetUniformLocation(program, "U_VIEW"),
+        glGetUniformLocation(program, "TIME"),
+        glGetUniformLocation(program, "POSITION"),
+        glGetUniformLocation(program, "PROJECTION"),
+        glGetUniformLocation(program, "VIEW"),
     };
     printf("\n\n\n\n\n");
     while (!glfwWindowShouldClose(window)) {
