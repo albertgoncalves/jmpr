@@ -356,29 +356,30 @@ static void set_uniforms(Uniform uniform, const State* state) {
     CHECK_GL_ERROR();
 }
 
-static void set_debug(Frame* frame, const State* state, f32 now) {
-    if (++frame->debug_count == 60) {
-        printf(
-            "\033[5A"
-            "fps      %8.2f\n"
-            "mspf     %8.2f\n"
-            "position %8.2f%8.2f%8.2f\n"
-            "speed    %8.2f%8.2f%8.2f\n"
-            "target   %8.2f%8.2f%8.2f\n",
-            static_cast<f64>((frame->debug_count / (now - frame->debug_time)) *
-                             MICROSECONDS),
-            static_cast<f64>(((now - frame->debug_time) / frame->debug_count) /
-                             MILLISECONDS),
-            static_cast<f64>(state->player.position.x),
-            static_cast<f64>(state->player.position.y),
-            static_cast<f64>(state->player.position.z),
-            static_cast<f64>(state->player.speed.x),
-            static_cast<f64>(state->player.speed.y),
-            static_cast<f64>(state->player.speed.z),
-            static_cast<f64>(VIEW_TARGET.x),
-            static_cast<f64>(VIEW_TARGET.y),
-            static_cast<f64>(VIEW_TARGET.z));
-        frame->debug_time = static_cast<f32>(glfwGetTime()) * MICROSECONDS;
+static void set_debug(Frame* frame, const State* state) {
+    if (++frame->debug_count == 30) {
+        printf("\033[5A"
+               "fps      %8.2f\n"
+               "mspf     %8.2f\n"
+               "position %8.2f%8.2f%8.2f\n"
+               "speed    %8.2f%8.2f%8.2f\n"
+               "target   %8.2f%8.2f%8.2f\n",
+               static_cast<f64>(
+                   (frame->debug_count / (frame->time - frame->debug_time)) *
+                   MICROSECONDS),
+               static_cast<f64>(
+                   ((frame->time - frame->debug_time) / frame->debug_count) /
+                   MILLISECONDS),
+               static_cast<f64>(state->player.position.x),
+               static_cast<f64>(state->player.position.y),
+               static_cast<f64>(state->player.position.z),
+               static_cast<f64>(state->player.speed.x),
+               static_cast<f64>(state->player.speed.y),
+               static_cast<f64>(state->player.speed.z),
+               static_cast<f64>(VIEW_TARGET.x),
+               static_cast<f64>(VIEW_TARGET.y),
+               static_cast<f64>(VIEW_TARGET.z));
+        frame->debug_time = frame->time;
         frame->debug_count = 0;
     }
 }
@@ -411,12 +412,12 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
         }
         scene_draw(window);
         {
-            const f32 now = static_cast<f32>(glfwGetTime()) * MICROSECONDS;
-            const f32 elapsed = now - frame.time;
+            const f32 elapsed =
+                (static_cast<f32>(glfwGetTime()) * MICROSECONDS) - frame.time;
             if (elapsed < FRAME_DURATION) {
                 usleep(static_cast<u32>(FRAME_DURATION - elapsed));
             }
-            set_debug(&frame, &state, now);
+            set_debug(&frame, &state);
         }
         frame.prev = frame.time;
     }
