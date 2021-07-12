@@ -23,8 +23,8 @@
 
 #include <X11/extensions/Xfixes.h>
 
-#define INIT_WINDOW_WIDTH  1024
-#define INIT_WINDOW_HEIGHT 768
+#define INIT_WINDOW_WIDTH  (1 << 10)
+#define INIT_WINDOW_HEIGHT ((1 << 9) + (1 << 8))
 
 static i32 WINDOW_WIDTH = INIT_WINDOW_WIDTH;
 static i32 WINDOW_HEIGHT = INIT_WINDOW_HEIGHT;
