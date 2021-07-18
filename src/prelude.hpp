@@ -1,11 +1,11 @@
 #ifndef __PRELUDE_H__
 #define __PRELUDE_H__
 
-#include <immintrin.h>
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <xmmintrin.h>
 
 #define PI 3.1415926535897932385f
 
