@@ -21,11 +21,6 @@ struct Object {
 
 static Object OBJECT;
 
-#define FRAME_BUFFER_SCALE 4
-
-#define FRAME_BUFFER_WIDTH  (INIT_WINDOW_WIDTH / FRAME_BUFFER_SCALE)
-#define FRAME_BUFFER_HEIGHT (INIT_WINDOW_HEIGHT / FRAME_BUFFER_SCALE)
-
 #define INDEX_VERTEX   0
 #define INDEX_NORMAL   1
 #define INDEX_INSTANCE 2
@@ -64,6 +59,7 @@ static void scene_set_vertex_attrib(u32         index,
     glVertexAttribPointer(index, size, GL_FLOAT, false, stride, offset);
 }
 
+template <usize W, usize H>
 static void scene_set_buffers() {
     glGenVertexArrays(1, &OBJECT.vertex_array);
     glBindVertexArray(OBJECT.vertex_array);
@@ -135,19 +131,13 @@ static void scene_set_buffers() {
     {
         glGenRenderbuffers(1, &OBJECT.render_buffer_color);
         glBindRenderbuffer(GL_RENDERBUFFER, OBJECT.render_buffer_color);
-        glRenderbufferStorage(GL_RENDERBUFFER,
-                              GL_RGB,
-                              FRAME_BUFFER_WIDTH,
-                              FRAME_BUFFER_HEIGHT);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB, W, H);
         CHECK_GL_ERROR();
     }
     {
         glGenRenderbuffers(1, &OBJECT.render_buffer_depth);
         glBindRenderbuffer(GL_RENDERBUFFER, OBJECT.render_buffer_depth);
-        glRenderbufferStorage(GL_RENDERBUFFER,
-                              GL_DEPTH_COMPONENT,
-                              FRAME_BUFFER_WIDTH,
-                              FRAME_BUFFER_HEIGHT);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, W, H);
         CHECK_GL_ERROR();
     }
     {
@@ -171,12 +161,13 @@ static void scene_set_buffers() {
     CHECK_GL_ERROR();
 }
 
-static void scene_draw(GLFWwindow* window) {
+template <usize W, usize H>
+static void scene_draw(GLFWwindow* window, i32 width, i32 height) {
     {
         // NOTE: Bind off-screen render target.
         glBindFramebuffer(GL_FRAMEBUFFER, OBJECT.frame_buffer);
         glDrawBuffer(GL_COLOR_ATTACHMENT0);
-        glViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+        glViewport(0, 0, W, H);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
     {
@@ -192,15 +183,15 @@ static void scene_draw(GLFWwindow* window) {
         // NOTE: Blit off-screen to on-screen.
         glBindFramebuffer(GL_READ_FRAMEBUFFER, OBJECT.frame_buffer);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+        glViewport(0, 0, width, height);
         glBlitFramebuffer(0,
                           0,
-                          FRAME_BUFFER_WIDTH,
-                          FRAME_BUFFER_HEIGHT,
+                          W,
+                          H,
                           0,
                           0,
-                          WINDOW_WIDTH,
-                          WINDOW_HEIGHT,
+                          width,
+                          height,
                           GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT,
                           GL_NEAREST);
     }

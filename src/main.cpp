@@ -3,6 +3,20 @@
 
 #include <unistd.h>
 
+#define CAP_CHARS (1 << 10)
+#define CAP_LISTS (1 << 7)
+
+#define INIT_WINDOW_WIDTH  (1 << 10)
+#define INIT_WINDOW_HEIGHT ((1 << 9) + (1 << 8))
+
+static i32 WINDOW_WIDTH = INIT_WINDOW_WIDTH;
+static i32 WINDOW_HEIGHT = INIT_WINDOW_HEIGHT;
+
+#define FRAME_BUFFER_SCALE 4
+
+#define FRAME_BUFFER_WIDTH  (INIT_WINDOW_WIDTH / FRAME_BUFFER_SCALE)
+#define FRAME_BUFFER_HEIGHT (INIT_WINDOW_HEIGHT / FRAME_BUFFER_SCALE)
+
 struct Uniform {
     i32 time;
     i32 position;
@@ -31,8 +45,8 @@ struct Frame {
 };
 
 struct Memory {
-    BufferMemory buffer;
-    GridMemory   grid;
+    BufferMemory<CAP_CHARS> buffer;
+    GridMemory<CAP_LISTS>   grid;
 };
 
 #define RUN      0.00325f
@@ -256,7 +270,8 @@ static Cube get_cube_right(Player player) {
 #define WITHIN_SPEED_EPSILON(x) \
     ((-SPEED_EPSILON < (x)) && ((x) < SPEED_EPSILON))
 
-static void set_motion(GridMemory* memory, State* state) {
+template <usize N>
+static void set_motion(GridMemory<N>* memory, State* state) {
     if (state->player.position.y < WORLD_Y_MIN) {
         set_player(state);
         return;
@@ -384,7 +399,8 @@ static void set_debug(Frame* frame, const State* state) {
     }
 }
 
-static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
+template <usize N>
+static void loop(GLFWwindow* window, GridMemory<N>* memory, u32 program) {
     State state;
     set_player(&state);
     Frame frame = {};
@@ -410,7 +426,9 @@ static void loop(GLFWwindow* window, GridMemory* memory, u32 program) {
             const f32 sin_height = sinf(state.player.position.y / 10.0f);
             glClearColor(sin_height, sin_height, sin_height, 1.0f);
         }
-        scene_draw(window);
+        scene_draw<FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT>(window,
+                                                            WINDOW_WIDTH,
+                                                            WINDOW_HEIGHT);
         {
             const f32 elapsed =
                 (static_cast<f32>(glfwGetTime()) * MICROSECONDS) - frame.time;
@@ -465,26 +483,34 @@ static void set_cursor_callback(GLFWwindow* window, f64 x, f64 y) {
     glfwSetCursorPosCallback(window, cursor_callback);
 }
 
+static void framebuffer_size_callback(GLFWwindow* window,
+                                      i32         width,
+                                      i32         height) {
+    (void)window;
+    WINDOW_WIDTH = width;
+    WINDOW_HEIGHT = height;
+}
+
 i32 main() {
     Memory* memory = reinterpret_cast<Memory*>(calloc(1, sizeof(Memory)));
     EXIT_IF(!memory);
     printf("GLFW version : %s\n\n"
-           "sizeof(Vec3)           : %zu\n"
-           "sizeof(Mat4)           : %zu\n"
-           "sizeof(Object)         : %zu\n"
-           "sizeof(Instance)       : %zu\n"
-           "sizeof(Cube)           : %zu\n"
-           "sizeof(Native)         : %zu\n"
-           "sizeof(BufferMemory)   : %zu\n"
-           "sizeof(Index)          : %zu\n"
-           "sizeof(Range)          : %zu\n"
-           "sizeof(List)           : %zu\n"
-           "sizeof(GridMemory)     : %zu\n"
-           "sizeof(Player)         : %zu\n"
-           "sizeof(Frame)          : %zu\n"
-           "sizeof(Uniform)        : %zu\n"
-           "sizeof(State)          : %zu\n"
-           "sizeof(Memory)         : %zu\n\n",
+           "sizeof(Vec3)                    : %zu\n"
+           "sizeof(Mat4)                    : %zu\n"
+           "sizeof(Object)                  : %zu\n"
+           "sizeof(Instance)                : %zu\n"
+           "sizeof(Cube)                    : %zu\n"
+           "sizeof(Native)                  : %zu\n"
+           "sizeof(BufferMemory<CAP_CHARS>) : %zu\n"
+           "sizeof(Index)                   : %zu\n"
+           "sizeof(Range)                   : %zu\n"
+           "sizeof(List)                    : %zu\n"
+           "sizeof(GridMemory<CAP_LISTS>)   : %zu\n"
+           "sizeof(Player)                  : %zu\n"
+           "sizeof(Frame)                   : %zu\n"
+           "sizeof(Uniform)                 : %zu\n"
+           "sizeof(State)                   : %zu\n"
+           "sizeof(Memory)                  : %zu\n\n",
            glfwGetVersionString(),
            sizeof(Vec3),
            sizeof(Mat4),
@@ -492,11 +518,11 @@ i32 main() {
            sizeof(Instance),
            sizeof(Cube),
            sizeof(Native),
-           sizeof(BufferMemory),
+           sizeof(BufferMemory<CAP_CHARS>),
            sizeof(Index),
            sizeof(Range),
            sizeof(List),
-           sizeof(GridMemory),
+           sizeof(GridMemory<CAP_LISTS>),
            sizeof(Player),
            sizeof(Frame),
            sizeof(Uniform),
@@ -504,13 +530,15 @@ i32 main() {
            sizeof(Memory));
     glfwSetErrorCallback(error_callback);
     EXIT_IF(!glfwInit());
-    GLFWwindow* window = init_get_window("float");
+    GLFWwindow* window =
+        init_get_window<INIT_WINDOW_WIDTH, INIT_WINDOW_HEIGHT>("float");
     glfwSetCursorPosCallback(window, set_cursor_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     const u32 program = init_get_program(
         &memory->buffer,
         init_get_shader(&memory->buffer, SHADER_VERT, GL_VERTEX_SHADER),
         init_get_shader(&memory->buffer, SHADER_FRAG, GL_FRAGMENT_SHADER));
-    scene_set_buffers();
+    scene_set_buffers<FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT>();
     hash_set_bounds(&memory->grid);
     hash_set_grid(&memory->grid);
     {

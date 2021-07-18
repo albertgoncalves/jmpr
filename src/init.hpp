@@ -23,19 +23,14 @@
 
 #include <X11/extensions/Xfixes.h>
 
-#define INIT_WINDOW_WIDTH  (1 << 10)
-#define INIT_WINDOW_HEIGHT ((1 << 9) + (1 << 8))
-
-static i32 WINDOW_WIDTH = INIT_WINDOW_WIDTH;
-static i32 WINDOW_HEIGHT = INIT_WINDOW_HEIGHT;
-
 struct Native {
     Display* display;
     Window   window;
 };
 
+template <usize N>
 struct BufferMemory {
-    char buffer[2 << 9];
+    char buffer[N];
 };
 
 static void init_hide_cursor(Native native) {
@@ -48,30 +43,18 @@ static void init_show_cursor(Native native) {
     XFlush(native.display);
 }
 
-static void init_framebuffer_size_callback(GLFWwindow* window,
-                                           i32         width,
-                                           i32         height) {
-    (void)window;
-    WINDOW_WIDTH = width;
-    WINDOW_HEIGHT = height;
-}
-
+template <usize W, usize H>
 static GLFWwindow* init_get_window(const char* name) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    GLFWwindow* window = glfwCreateWindow(INIT_WINDOW_WIDTH,
-                                          INIT_WINDOW_HEIGHT,
-                                          name,
-                                          null,
-                                          null);
+    GLFWwindow* window = glfwCreateWindow(W, H, name, null, null);
     if (!window) {
         glfwTerminate();
         ERROR("!window");
     }
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, init_framebuffer_size_callback);
-    glfwSetWindowAspectRatio(window, INIT_WINDOW_WIDTH, INIT_WINDOW_HEIGHT);
+    glfwSetWindowAspectRatio(window, W, H);
     // NOTE: While the mouse *does* get locked to center of window, it remains
     // visible. See `https://github.com/glfw/glfw/issues/1790`.
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -80,9 +63,10 @@ static GLFWwindow* init_get_window(const char* name) {
     return window;
 }
 
-static u32 init_get_shader(BufferMemory* memory,
-                           const char*   source,
-                           u32           type) {
+template <usize N>
+static u32 init_get_shader(BufferMemory<N>* memory,
+                           const char*      source,
+                           u32              type) {
     const u32 shader = glCreateShader(type);
     glShaderSource(shader, 1, &source, null);
     glCompileShader(shader);
@@ -98,9 +82,10 @@ static u32 init_get_shader(BufferMemory* memory,
     return shader;
 }
 
-static u32 init_get_program(BufferMemory* memory,
-                            u32           vertex_shader,
-                            u32           fragment_shader) {
+template <usize N>
+static u32 init_get_program(BufferMemory<N>* memory,
+                            u32              vertex_shader,
+                            u32              fragment_shader) {
     const u32 program = glCreateProgram();
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
