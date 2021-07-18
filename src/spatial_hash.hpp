@@ -36,19 +36,19 @@ struct List {
     List*       last;
 };
 
-template <usize N>
+template <usize N, usize M>
 struct GridMemory {
     List        grid[GRID_X][GRID_Y][GRID_Z];
     Cube        bounds;
     Vec3        span;
     List        lists[N];
     u8          len_lists;
-    const Cube* intersects[COUNT_PLATFORMS];
+    const Cube* intersects[M];
     u8          len_intersects;
 };
 
-template <usize N>
-static List* hash_alloc_list(GridMemory<N>* memory) {
+template <usize N, usize M>
+static List* hash_alloc_list(GridMemory<N, M>* memory) {
     EXIT_IF(N <= memory->len_lists);
     List* list = &memory->lists[memory->len_lists++];
     list->cube = null;
@@ -57,29 +57,28 @@ static List* hash_alloc_list(GridMemory<N>* memory) {
     return list;
 }
 
-template <usize N>
-static void hash_set_bounds(GridMemory<N>* memory) {
-    memory->bounds = PLATFORMS[0];
-    for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
+template <usize N, usize M, const Cube* C>
+static void hash_set_bounds(GridMemory<N, M>* memory) {
+    memory->bounds = C[0];
+    for (u8 i = 0; i < M; ++i) {
         memory->bounds.bottom_left_front =
-            min(memory->bounds.bottom_left_front,
-                PLATFORMS[i].bottom_left_front);
+            min(memory->bounds.bottom_left_front, C[i].bottom_left_front);
         memory->bounds.top_right_back =
-            max(memory->bounds.top_right_back, PLATFORMS[i].top_right_back);
+            max(memory->bounds.top_right_back, C[i].top_right_back);
     }
     memory->bounds.top_right_back += GRID_EPSILON;
     memory->span =
         memory->bounds.top_right_back - memory->bounds.bottom_left_front;
 }
 
-template <usize N>
-static Range hash_get_range(GridMemory<N>* memory, Cube cube) {
+template <usize N, usize M>
+static Range hash_get_range(GridMemory<N, M>* memory, const Cube* cube) {
     const Vec3 bottom_left_front =
-        ((cube.bottom_left_front - memory->bounds.bottom_left_front) /
+        ((cube->bottom_left_front - memory->bounds.bottom_left_front) /
          memory->span) *
         GRID_VEC3;
     const Vec3 top_right_back =
-        ((cube.top_right_back - memory->bounds.bottom_left_front) /
+        ((cube->top_right_back - memory->bounds.bottom_left_front) /
          memory->span) *
         GRID_VEC3;
     return {
@@ -96,10 +95,10 @@ static Range hash_get_range(GridMemory<N>* memory, Cube cube) {
     };
 }
 
-template <usize N>
-static void hash_push_grid(GridMemory<N>* memory,
-                           Index          grid_index,
-                           const Cube*    cube) {
+template <usize N, usize M>
+static void hash_push_grid(GridMemory<N, M>* memory,
+                           Index             grid_index,
+                           const Cube*       cube) {
     List* grid = &memory->grid[grid_index.x][grid_index.y][grid_index.z];
     if (!grid->cube) {
         grid->cube = cube;
@@ -118,40 +117,41 @@ static void hash_push_grid(GridMemory<N>* memory,
     grid->last = list;
 }
 
-template <usize N>
-static void hash_set_grid(GridMemory<N>* memory) {
+template <usize N, usize M, const Cube* C>
+static void hash_set_grid(GridMemory<N, M>* memory) {
     memset(memory->grid, 0, sizeof(memory->grid));
     memory->len_lists = 0;
-    for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
-        const Range range = hash_get_range(memory, PLATFORMS[i]);
+    for (u8 i = 0; i < M; ++i) {
+        const Range range = hash_get_range(memory, &C[i]);
         for (u8 x = range.bottom.x; x <= range.top.x; ++x) {
             for (u8 y = range.bottom.y; y <= range.top.y; ++y) {
                 for (u8 z = range.bottom.z; z <= range.top.z; ++z) {
-                    hash_push_grid(memory, {x, y, z}, &PLATFORMS[i]);
+                    hash_push_grid(memory, {x, y, z}, &C[i]);
                 }
             }
         }
     }
 }
 
-template <usize N>
-static Cube hash_get_within_bounds(GridMemory<N>* memory, Cube cube) {
+template <usize N, usize M>
+static Cube hash_get_within_bounds(GridMemory<N, M>* memory,
+                                   const Cube*       cube) {
     const Vec3 top_right_back = memory->bounds.top_right_back - GRID_EPSILON;
     return {
-        clip(cube.bottom_left_front,
+        clip(cube->bottom_left_front,
              memory->bounds.bottom_left_front,
              top_right_back),
-        clip(cube.top_right_back,
+        clip(cube->top_right_back,
              memory->bounds.bottom_left_front,
              top_right_back),
     };
 }
 
-template <usize N>
-static void hash_set_intersects(GridMemory<N>* memory, Cube cube) {
+template <usize N, usize M>
+static void hash_set_intersects(GridMemory<N, M>* memory, const Cube* cube) {
     memory->len_intersects = 0;
-    const Range range =
-        hash_get_range(memory, hash_get_within_bounds(memory, cube));
+    const Cube  bounds = hash_get_within_bounds(memory, cube);
+    const Range range = hash_get_range(memory, &bounds);
     for (u8 x = range.bottom.x; x <= range.top.x; ++x) {
         for (u8 y = range.bottom.y; y <= range.top.y; ++y) {
             for (u8 z = range.bottom.z; z <= range.top.z; ++z) {

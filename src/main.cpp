@@ -45,8 +45,8 @@ struct Frame {
 };
 
 struct Memory {
-    BufferMemory<CAP_CHARS> buffer;
-    GridMemory<CAP_LISTS>   grid;
+    BufferMemory<CAP_CHARS>                buffer;
+    GridMemory<CAP_LISTS, COUNT_PLATFORMS> grid;
 };
 
 #define RUN      0.00325f
@@ -266,8 +266,8 @@ static Cube get_cube_right(Player player) {
 #define WITHIN_SPEED_EPSILON(x) \
     ((-SPEED_EPSILON < (x)) && ((x) < SPEED_EPSILON))
 
-template <usize N>
-static void set_motion(GridMemory<N>* memory, State* state) {
+template <usize N, usize M>
+static void set_motion(GridMemory<N, M>* memory, State* state) {
     if (state->player.position.y < WORLD_Y_MIN) {
         set_player(state);
         return;
@@ -279,7 +279,7 @@ static void set_motion(GridMemory<N>* memory, State* state) {
     if (state->player.speed.y <= 0.0f) {
         const Cube below = get_cube_below(state->player);
         state->player.position.y += state->player.speed.y;
-        hash_set_intersects(memory, below);
+        hash_set_intersects(memory, &below);
         for (u8 i = 0; i < memory->len_intersects; ++i) {
             if (INTERSECT_PLAYER_PLATFORM(below, (*memory->intersects[i]))) {
                 state->player.position.y =
@@ -296,7 +296,7 @@ static void set_motion(GridMemory<N>* memory, State* state) {
     } else {
         const Cube above = get_cube_above(state->player);
         state->player.position.y += state->player.speed.y;
-        hash_set_intersects(memory, above);
+        hash_set_intersects(memory, &above);
         for (u8 i = 0; i < memory->len_intersects; ++i) {
             if (INTERSECT_PLAYER_PLATFORM(above, (*memory->intersects[i]))) {
                 state->player.position.y =
@@ -332,14 +332,14 @@ static void set_motion(GridMemory<N>* memory, State* state) {
     } else {
         state->player.position.z += state->player.speed.z;
     }
-    hash_set_intersects(memory, front_back);
+    hash_set_intersects(memory, &front_back);
     for (u8 i = 0; i < memory->len_intersects; ++i) {
         if (INTERSECT_PLAYER_PLATFORM(front_back, (*memory->intersects[i]))) {
             state->player.position.z -= state->player.speed.z;
             state->player.speed.z = 0.0f;
         }
     }
-    hash_set_intersects(memory, left_right);
+    hash_set_intersects(memory, &left_right);
     for (u8 i = 0; i < memory->len_intersects; ++i) {
         if (INTERSECT_PLAYER_PLATFORM(left_right, (*memory->intersects[i]))) {
             state->player.position.x -= state->player.speed.x;
@@ -395,8 +395,8 @@ static void set_debug(Frame* frame, const State* state) {
     }
 }
 
-template <usize N>
-static void loop(GLFWwindow* window, GridMemory<N>* memory, u32 program) {
+template <usize N, usize M>
+static void loop(GLFWwindow* window, GridMemory<N, M>* memory, u32 program) {
     State state;
     set_player(&state);
     Frame frame = {};
@@ -491,22 +491,22 @@ i32 main() {
     Memory* memory = reinterpret_cast<Memory*>(calloc(1, sizeof(Memory)));
     EXIT_IF(!memory);
     printf("GLFW version : %s\n\n"
-           "sizeof(Vec3)                    : %zu\n"
-           "sizeof(Mat4)                    : %zu\n"
-           "sizeof(Object)                  : %zu\n"
-           "sizeof(Instance)                : %zu\n"
-           "sizeof(Cube)                    : %zu\n"
-           "sizeof(Native)                  : %zu\n"
-           "sizeof(BufferMemory<CAP_CHARS>) : %zu\n"
-           "sizeof(Index)                   : %zu\n"
-           "sizeof(Range)                   : %zu\n"
-           "sizeof(List)                    : %zu\n"
-           "sizeof(GridMemory<CAP_LISTS>)   : %zu\n"
-           "sizeof(Player)                  : %zu\n"
-           "sizeof(Frame)                   : %zu\n"
-           "sizeof(Uniform)                 : %zu\n"
-           "sizeof(State)                   : %zu\n"
-           "sizeof(Memory)                  : %zu\n\n",
+           "sizeof(Vec3)                                   : %zu\n"
+           "sizeof(Mat4)                                   : %zu\n"
+           "sizeof(Object)                                 : %zu\n"
+           "sizeof(Instance)                               : %zu\n"
+           "sizeof(Cube)                                   : %zu\n"
+           "sizeof(Native)                                 : %zu\n"
+           "sizeof(BufferMemory<CAP_CHARS>)                : %zu\n"
+           "sizeof(Index)                                  : %zu\n"
+           "sizeof(Range)                                  : %zu\n"
+           "sizeof(List)                                   : %zu\n"
+           "sizeof(GridMemory<CAP_LISTS, COUNT_PLATFORMS>) : %zu\n"
+           "sizeof(Player)                                 : %zu\n"
+           "sizeof(Frame)                                  : %zu\n"
+           "sizeof(Uniform)                                : %zu\n"
+           "sizeof(State)                                  : %zu\n"
+           "sizeof(Memory)                                 : %zu\n\n",
            glfwGetVersionString(),
            sizeof(Vec3),
            sizeof(Mat4),
@@ -518,7 +518,7 @@ i32 main() {
            sizeof(Index),
            sizeof(Range),
            sizeof(List),
-           sizeof(GridMemory<CAP_LISTS>),
+           sizeof(GridMemory<CAP_LISTS, COUNT_PLATFORMS>),
            sizeof(Player),
            sizeof(Frame),
            sizeof(Uniform),
@@ -535,8 +535,8 @@ i32 main() {
         init_get_shader(&memory->buffer, SHADER_VERT, GL_VERTEX_SHADER),
         init_get_shader(&memory->buffer, SHADER_FRAG, GL_FRAGMENT_SHADER));
     scene_set_buffers<FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT>();
-    hash_set_bounds(&memory->grid);
-    hash_set_grid(&memory->grid);
+    hash_set_bounds<CAP_LISTS, COUNT_PLATFORMS, PLATFORMS>(&memory->grid);
+    hash_set_grid<CAP_LISTS, COUNT_PLATFORMS, PLATFORMS>(&memory->grid);
     {
         const Native native = {
             glfwGetX11Display(),
