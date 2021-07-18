@@ -2,12 +2,7 @@
 #define __SCENE_H__
 
 #include "init.hpp"
-#include "math.hpp"
-
-// clang-format off
-#include "scene_assets.hpp"
 #include "scene_assets_codegen.hpp"
-// clang-format on
 
 struct Object {
     u32 vertex_array;

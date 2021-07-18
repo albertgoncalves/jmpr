@@ -35,6 +35,11 @@ union Mat4 {
     Simd4f32 column[4];
 };
 
+struct Cube {
+    Vec3 bottom_left_front;
+    Vec3 top_right_back;
+};
+
 #define ERROR(x)                                                            \
     {                                                                       \
         fprintf(stderr, "%s:%s:%d\n%s\n", __FILE__, __func__, __LINE__, x); \

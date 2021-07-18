@@ -1,5 +1,7 @@
 #ifndef __SCENE_ASSETS_CODEGEN_H__
 #define __SCENE_ASSETS_CODEGEN_H__
+#include "scene_assets.hpp"
+#define COUNT_PLATFORMS 25
 static const Instance INSTANCES[COUNT_PLATFORMS] = {
     {
         {

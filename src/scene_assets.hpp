@@ -1,14 +1,11 @@
 #ifndef __SCENE_ASSETS_H__
 #define __SCENE_ASSETS_H__
 
+#include "prelude.hpp"
+
 struct Instance {
     Mat4 matrix;
     Vec3 color;
-};
-
-struct Cube {
-    Vec3 bottom_left_front;
-    Vec3 top_right_back;
 };
 
 // clang-format off
@@ -81,8 +78,5 @@ static const Vec3 PLATFORM_POSITIONS[] = {
     { -40.0f,    22.5f,     5.0f },
 };
 // clang-format on
-
-#define COUNT_PLATFORMS \
-    (sizeof(PLATFORM_POSITIONS) / sizeof(PLATFORM_POSITIONS[0]))
 
 #endif

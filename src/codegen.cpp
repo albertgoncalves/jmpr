@@ -1,5 +1,10 @@
-#include "prelude.hpp"
 #include "scene_assets.hpp"
+
+#define COUNT_PLATFORMS \
+    (sizeof(PLATFORM_POSITIONS) / sizeof(PLATFORM_POSITIONS[0]))
+
+static Instance INSTANCES[COUNT_PLATFORMS];
+static Cube     PLATFORMS[COUNT_PLATFORMS];
 
 static Simd4f32 linear_combine(Simd4f32 a, Mat4 b) {
     Simd4f32 c;
@@ -69,9 +74,6 @@ static Cube scene_get_cube(Mat4 matrix) {
     };
 }
 
-static Instance INSTANCES[COUNT_PLATFORMS];
-static Cube     PLATFORMS[COUNT_PLATFORMS];
-
 static void scene_set_instances() {
     const Mat4 matrix = scale({10.0f, 0.5f, 10.0f});
     for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {
@@ -109,7 +111,10 @@ static void show(Vec3 v) {
 i32 main() {
     scene_set_instances();
     printf("#ifndef __SCENE_ASSETS_CODEGEN_H__\n"
-           "#define __SCENE_ASSETS_CODEGEN_H__\n");
+           "#define __SCENE_ASSETS_CODEGEN_H__\n"
+           "#include \"scene_assets.hpp\"\n"
+           "#define COUNT_PLATFORMS %zu\n",
+           COUNT_PLATFORMS);
     {
         printf("static const Instance INSTANCES[COUNT_PLATFORMS] = {");
         for (u8 i = 0; i < COUNT_PLATFORMS; ++i) {

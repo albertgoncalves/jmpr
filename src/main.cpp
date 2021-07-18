@@ -1,4 +1,5 @@
 #include "init_assets_codegen.hpp"
+#include "scene.hpp"
 #include "spatial_hash.hpp"
 
 #include <unistd.h>
