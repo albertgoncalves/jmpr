@@ -439,7 +439,6 @@ static void loop(GLFWwindow* window, GridMemory<N, M>* memory, u32 program) {
 }
 
 #pragma GCC diagnostic push
-
 #pragma GCC diagnostic ignored "-Wmissing-noreturn"
 
 static void error_callback(i32 code, const char* error) {
