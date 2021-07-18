@@ -123,22 +123,18 @@ static void set_input(GLFWwindow* window, State* state) {
         glfwSetWindowShouldClose(window, true);
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        state->player.speed =
-            state->player.speed -
-            (NORM_CROSS(cross(VIEW_TARGET, VIEW_UP), VIEW_UP) * RUN);
+        state->player.speed -=
+            NORM_CROSS(cross(VIEW_TARGET, VIEW_UP), VIEW_UP) * RUN;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        state->player.speed =
-            state->player.speed + (NORM_CROSS(VIEW_TARGET, VIEW_UP) * RUN);
+        state->player.speed += NORM_CROSS(VIEW_TARGET, VIEW_UP) * RUN;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        state->player.speed =
-            state->player.speed +
-            (NORM_CROSS(cross(VIEW_TARGET, VIEW_UP), VIEW_UP) * RUN);
+        state->player.speed +=
+            NORM_CROSS(cross(VIEW_TARGET, VIEW_UP), VIEW_UP) * RUN;
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        state->player.speed =
-            state->player.speed - (NORM_CROSS(VIEW_TARGET, VIEW_UP) * RUN);
+        state->player.speed -= NORM_CROSS(VIEW_TARGET, VIEW_UP) * RUN;
     }
     if ((glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) &&
         (state->player.can_jump))

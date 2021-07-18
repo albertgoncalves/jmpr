@@ -38,6 +38,13 @@ static Vec3 operator+(Vec3 l, Vec3 r) {
     };
 }
 
+static Vec3& operator+=(Vec3& a, Vec3 b) {
+    a.x += b.x;
+    a.y += b.y;
+    a.z += b.z;
+    return a;
+}
+
 static Vec3& operator+=(Vec3& l, f32 r) {
     l.x += r;
     l.y += r;
@@ -51,6 +58,13 @@ static Vec3 operator-(Vec3 l, Vec3 r) {
         l.y - r.y,
         l.z - r.z,
     };
+}
+
+static Vec3& operator-=(Vec3& a, Vec3 b) {
+    a.x -= b.x;
+    a.y -= b.y;
+    a.z -= b.z;
+    return a;
 }
 
 static Vec3 operator-(Vec3 l, f32 r) {
