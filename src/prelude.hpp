@@ -41,6 +41,12 @@ union Mat4 {
         exit(EXIT_FAILURE);                                                 \
     }
 
+#define EXIT()                                                       \
+    {                                                                \
+        fprintf(stderr, "%s:%s:%d\n", __FILE__, __func__, __LINE__); \
+        exit(EXIT_FAILURE);                                          \
+    }
+
 #define EXIT_IF(condition) \
     if (condition) {       \
         ERROR(#condition)  \

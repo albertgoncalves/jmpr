@@ -51,7 +51,7 @@ static GLFWwindow* init_get_window(const char* name) {
     GLFWwindow* window = glfwCreateWindow(W, H, name, null, null);
     if (!window) {
         glfwTerminate();
-        ERROR("!window");
+        EXIT();
     }
     glfwMakeContextCurrent(window);
     glfwSetWindowAspectRatio(window, W, H);
