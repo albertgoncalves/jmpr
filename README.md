@@ -15,7 +15,7 @@ Needed things
 Quick start
 ---
 ```
-$ ./shell
+$ nix-shell
 [nix-shell:path/to/jmpr]$ ./scripts/build.sh    # build only
 [nix-shell:path/to/jmpr]$ ./scripts/run.sh      # build, run
 [nix-shell:path/to/jmpr]$ ./scripts/profile.sh  # build, profile via perf, cachegrind

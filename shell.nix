@@ -5,6 +5,7 @@ mkShell.override { stdenv = llvmPackages_12.stdenv; } {
         doxygen
         libGL
         linuxPackages.perf
+        llvmPackages_12.lld
         pkg-config
         python3
         python3Packages.flake8
@@ -20,7 +21,13 @@ mkShell.override { stdenv = llvmPackages_12.stdenv; } {
         xorg.libXinerama
         xorg.libXrandr
     ];
+    APPEND_LIBRARY_PATH = lib.makeLibraryPath [
+        libGL
+        xorg.libX11
+        xorg.libXfixes
+    ];
     shellHook = ''
+        export LD_LIBRARY_PATH="$APPEND_LIBRARY_PATH:$LD_LIBRARY_PATH"
         . .shellhook
     '';
 }

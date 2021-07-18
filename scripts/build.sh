@@ -21,6 +21,7 @@ flags=(
     "-fno-rtti"
     "-fno-unwind-tables"
     "-fshort-enums"
+    "-fuse-ld=lld"
     "-g"
     "-march=native"
     "-nostdlib++"
