@@ -2,8 +2,6 @@
 
 export WD=$PWD
 
-export LD_LIBRARY_PATH="$WD/glfw/src:$LD_LIBRARY_PATH"
-
 set -eu
 
 if [ ! -d "$WD/bin" ]; then

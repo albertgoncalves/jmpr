@@ -7,7 +7,7 @@ if [ ! -d "$WD/glfw" ]; then
         cd "$WD"
         git clone https://github.com/glfw/glfw.git
         cd "$WD/glfw"
-        cmake -DBUILD_SHARED_LIBS=ON .
+        cmake .
         make
     )
 fi
@@ -36,14 +36,14 @@ flags=(
     "-Wno-reserved-id-macro"
 )
 libs=(
-    "-lglfw"
+    "-ldl"
     "-lGL"
     "-lX11"
     "-lXfixes"
+    "-pthread"
 )
 paths=(
     "-I$WD/glfw/include"
-    "-L$WD/glfw/src"
 )
 
 now () {
@@ -57,7 +57,7 @@ now () {
     "$WD/scripts/codegen.py" > "$WD/src/init_assets_codegen.hpp"
     clang-format -i -verbose "$WD/src"/*
     clang++ -O3 "${paths[@]}" "${libs[@]}" "${flags[@]}" -o "$WD/bin/main" \
-        "$WD/src/main.cpp"
+        "$WD/glfw/src/libglfw3.a" "$WD/src/main.cpp"
     end=$(now)
     python3 -c "print(\"Compiled! ({:.3f}s)\n\".format($end - $start))"
 )
