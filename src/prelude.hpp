@@ -20,8 +20,6 @@ typedef double f64;
 
 typedef __m128 Simd4f32;
 
-typedef FILE File;
-
 #define null nullptr
 
 struct Vec3 {
