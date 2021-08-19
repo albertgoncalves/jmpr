@@ -76,7 +76,7 @@ static u32 init_get_shader(BufferMemory<N>* memory,
                            sizeof(memory->buffer),
                            null,
                            memory->buffer);
-        ERROR(memory->buffer);
+        EXIT_WITH(memory->buffer);
     }
     return shader;
 }
@@ -96,7 +96,7 @@ static u32 init_get_program(BufferMemory<N>* memory,
                             sizeof(memory->buffer),
                             null,
                             memory->buffer);
-        ERROR(memory->buffer);
+        EXIT_WITH(memory->buffer);
     }
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);

@@ -22,28 +22,28 @@ static Object OBJECT;
 
 #define VERTEX_OFFSET 0
 
-#define CHECK_GL_ERROR()                               \
-    {                                                  \
-        switch (glGetError()) {                        \
-        case GL_INVALID_ENUM: {                        \
-            ERROR("GL_INVALID_ENUM");                  \
-        }                                              \
-        case GL_INVALID_VALUE: {                       \
-            ERROR("GL_INVALID_VALUE");                 \
-        }                                              \
-        case GL_INVALID_OPERATION: {                   \
-            ERROR("GL_INVALID_OPERATION");             \
-        }                                              \
-        case GL_INVALID_FRAMEBUFFER_OPERATION: {       \
-            ERROR("GL_INVALID_FRAMEBUFFER_OPERATION"); \
-        }                                              \
-        case GL_OUT_OF_MEMORY: {                       \
-            ERROR("GL_OUT_OF_MEMORY");                 \
-        }                                              \
-        case GL_NO_ERROR: {                            \
-            break;                                     \
-        }                                              \
-        }                                              \
+#define CHECK_GL_ERROR()                                   \
+    {                                                      \
+        switch (glGetError()) {                            \
+        case GL_INVALID_ENUM: {                            \
+            EXIT_WITH("GL_INVALID_ENUM");                  \
+        }                                                  \
+        case GL_INVALID_VALUE: {                           \
+            EXIT_WITH("GL_INVALID_VALUE");                 \
+        }                                                  \
+        case GL_INVALID_OPERATION: {                       \
+            EXIT_WITH("GL_INVALID_OPERATION");             \
+        }                                                  \
+        case GL_INVALID_FRAMEBUFFER_OPERATION: {           \
+            EXIT_WITH("GL_INVALID_FRAMEBUFFER_OPERATION"); \
+        }                                                  \
+        case GL_OUT_OF_MEMORY: {                           \
+            EXIT_WITH("GL_OUT_OF_MEMORY");                 \
+        }                                                  \
+        case GL_NO_ERROR: {                                \
+            break;                                         \
+        }                                                  \
+        }                                                  \
     }
 
 static void scene_set_vertex_attrib(u32         index,
