@@ -4,7 +4,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <unistd.h>
 #include <xmmintrin.h>
 
 #define PI 3.1415926535897932385f
@@ -14,6 +14,7 @@ typedef uint32_t u32;
 typedef size_t   usize;
 
 typedef int32_t i32;
+typedef ssize_t isize;
 
 typedef float  f32;
 typedef double f64;
@@ -41,13 +42,13 @@ struct Cube {
 #define EXIT()                                                       \
     {                                                                \
         fprintf(stderr, "%s:%s:%d\n", __FILE__, __func__, __LINE__); \
-        exit(EXIT_FAILURE);                                          \
+        _exit(EXIT_FAILURE);                                         \
     }
 
 #define EXIT_WITH(x)                                                        \
     {                                                                       \
         fprintf(stderr, "%s:%s:%d\n%s\n", __FILE__, __func__, __LINE__, x); \
-        exit(EXIT_FAILURE);                                                 \
+        _exit(EXIT_FAILURE);                                                \
     }
 
 #define EXIT_IF(condition)    \

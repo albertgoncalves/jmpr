@@ -2,8 +2,6 @@
 #include "scene.hpp"
 #include "spatial_hash.hpp"
 
-#include <unistd.h>
-
 #define CAP_CHARS (1 << 10)
 #define CAP_LISTS (1 << 7)
 
@@ -443,7 +441,7 @@ static void loop(GLFWwindow* window, GridMemory<N, M>* memory, u32 program) {
 
 static void error_callback(i32 code, const char* error) {
     fprintf(stderr, "%d: %s\n", code, error);
-    exit(EXIT_FAILURE);
+    _exit(EXIT_FAILURE);
 }
 
 #pragma GCC diagnostic pop
@@ -487,9 +485,15 @@ static void framebuffer_size_callback(GLFWwindow* window,
     WINDOW_HEIGHT = height;
 }
 
+static void* alloc(usize size) {
+    void* memory = sbrk(static_cast<isize>(size));
+    EXIT_IF(memory == reinterpret_cast<void*>(-1));
+    memset(memory, 0, size);
+    return memory;
+}
+
 i32 main() {
-    Memory* memory = reinterpret_cast<Memory*>(calloc(1, sizeof(Memory)));
-    EXIT_IF(!memory);
+    Memory* memory = reinterpret_cast<Memory*>(alloc(sizeof(Memory)));
     printf("GLFW version : %s\n\n"
            "sizeof(Vec3)                                   : %zu\n"
            "sizeof(Mat4)                                   : %zu\n"
@@ -549,6 +553,5 @@ i32 main() {
     scene_delete_buffers();
     glDeleteProgram(program);
     glfwTerminate();
-    free(memory);
     return EXIT_SUCCESS;
 }
