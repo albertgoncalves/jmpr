@@ -2,6 +2,8 @@
 #include "scene.hpp"
 #include "spatial_hash.hpp"
 
+#include <sys/mman.h>
+
 #define CAP_CHARS (1 << 10)
 #define CAP_LISTS (1 << 7)
 
@@ -486,9 +488,13 @@ static void framebuffer_size_callback(GLFWwindow* window,
 }
 
 static void* alloc(usize size) {
-    void* memory = sbrk(static_cast<isize>(size));
-    EXIT_IF(memory == reinterpret_cast<void*>(-1));
-    memset(memory, 0, size);
+    void* memory = mmap(null,
+                        size,
+                        PROT_READ | PROT_WRITE,
+                        MAP_ANONYMOUS | MAP_PRIVATE,
+                        -1,
+                        0);
+    EXIT_IF(memory == MAP_FAILED);
     return memory;
 }
 
