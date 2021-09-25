@@ -462,8 +462,7 @@ static void loop(GLFWwindow* window, GridMemory<N, M>* memory, u32 program) {
         VIEW_TARGET = norm(VIEW_TARGET);                                 \
     }
 
-static void cursor_callback(GLFWwindow* _, f64 x, f64 y) {
-    (void)_;
+static void cursor_callback(GLFWwindow*, f64 x, f64 y) {
     CURSOR_X_DELTA = (static_cast<f32>(x) - CURSOR_X) * CURSOR_SENSITIVITY;
     CURSOR_Y_DELTA = (CURSOR_Y - static_cast<f32>(y)) * CURSOR_SENSITIVITY;
     CURSOR_CALLBACK(x, y);
@@ -474,10 +473,7 @@ static void set_cursor_callback(GLFWwindow* window, f64 x, f64 y) {
     glfwSetCursorPosCallback(window, cursor_callback);
 }
 
-static void framebuffer_size_callback(GLFWwindow* window,
-                                      i32         width,
-                                      i32         height) {
-    (void)window;
+static void framebuffer_size_callback(GLFWwindow*, i32 width, i32 height) {
     WINDOW_WIDTH = width;
     WINDOW_HEIGHT = height;
 }
