@@ -98,7 +98,7 @@ static void show(Mat4 m) {
         }
         printf("%ff},", static_cast<f64>(m.cell[i][3]));
     }
-    printf("},}");
+    printf("}}");
 }
 
 static void show(Vec3 v) {
