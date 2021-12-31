@@ -5,7 +5,7 @@ mkShell.override { stdenv = llvmPackages_12.stdenv; } {
         doxygen
         libGL
         linuxPackages.perf
-        llvmPackages_12.lld
+        mold
         pkg-config
         python3
         python3Packages.flake8

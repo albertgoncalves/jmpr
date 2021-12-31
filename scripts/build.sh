@@ -21,7 +21,6 @@ flags=(
     "-fno-rtti"
     "-fno-unwind-tables"
     "-fshort-enums"
-    "-fuse-ld=lld"
     "-g"
     "-march=native"
     "-nostdlib++"
@@ -52,12 +51,13 @@ now () {
 
 (
     start=$(now)
-    clang++ -O1 "${flags[@]}" -o "$WD/bin/codegen" "$WD/src/codegen.cpp"
+    mold -run clang++ -O1 "${flags[@]}" -o "$WD/bin/codegen" \
+        "$WD/src/codegen.cpp"
     "$WD/bin/codegen" > "$WD/src/scene_assets_codegen.hpp"
     "$WD/scripts/codegen.py" > "$WD/src/init_assets_codegen.hpp"
     clang-format -i -verbose "$WD/src"/*
-    clang++ -O3 "${paths[@]}" "${libs[@]}" "${flags[@]}" -o "$WD/bin/main" \
-        "$WD/glfw/src/libglfw3.a" "$WD/src/main.cpp"
+    mold -run clang++ -O3 "${paths[@]}" "${libs[@]}" "${flags[@]}" \
+        -o "$WD/bin/main" "$WD/glfw/src/libglfw3.a" "$WD/src/main.cpp"
     end=$(now)
     python3 -c "print(\"Compiled! ({:.3f}s)\n\".format($end - $start))"
 )
