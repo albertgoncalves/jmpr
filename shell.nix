@@ -7,7 +7,6 @@ mkShell.override { stdenv = llvmPackages_14.stdenv; } {
         linuxPackages.perf
         mold
         pkg-config
-        python3
         python3Packages.flake8
         renderdoc
         shellcheck
