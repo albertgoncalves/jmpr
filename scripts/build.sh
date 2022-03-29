@@ -14,32 +14,38 @@ fi
 
 flags=(
     "-ferror-limit=1"
-    "-ffast-math"
-    "-fno-autolink"
-    "-fno-exceptions"
-    "-fno-math-errno"
-    "-fno-rtti"
-    "-fno-unwind-tables"
-    "-fshort-enums"
-    "-g"
+    -ffast-math
+    -fno-autolink
+    -fno-exceptions
+    -fno-math-errno
+    -fno-rtti
+    -fno-unwind-tables
+    "-fsanitize=address"
+    "-fsanitize=bounds"
+    "-fsanitize=float-divide-by-zero"
+    "-fsanitize=implicit-conversion"
+    "-fsanitize=integer"
+    "-fsanitize=nullability"
+    "-fsanitize=undefined"
+    -fshort-enums
+    -g
     "-march=native"
-    "-nostdlib++"
     "-std=c++11"
-    "-Werror"
-    "-Weverything"
-    "-Wno-c++98-compat-pedantic"
-    "-Wno-c99-extensions"
-    "-Wno-disabled-macro-expansion"
-    "-Wno-extra-semi-stmt"
-    "-Wno-padded"
-    "-Wno-reserved-id-macro"
+    -Werror
+    -Weverything
+    -Wno-c++98-compat-pedantic
+    -Wno-c99-extensions
+    -Wno-disabled-macro-expansion
+    -Wno-extra-semi-stmt
+    -Wno-padded
+    -Wno-reserved-id-macro
 )
 libs=(
-    "-ldl"
-    "-lGL"
-    "-lX11"
-    "-lXfixes"
-    "-pthread"
+    -ldl
+    -lGL
+    -lX11
+    -lXfixes
+    -pthread
 )
 paths=(
     "-I$WD/glfw/include"
